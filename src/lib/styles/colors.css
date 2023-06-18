@@ -1,0 +1,22 @@
+:root {
+  /* Colors */
+  --neutral-1: #F8FAFC;
+  --neutral-2: #E2E8F0;
+  --neutral-3: #CBD5E1;
+  --neutral-4: #94A3B8;
+  --neutral-5: #64748B;
+  --neutral-6: #475569;
+  --neutral-7: #334155;
+  --neutral-8: #1E293B;
+  --neutral-9: #0F172A;
+
+  --orange-1: #FFFAF0;
+  --orange-2: #FFE8CC;
+  --orange-3: #FFD3A5;
+  --orange-4: #FFB74D;
+  --orange-5: #FB8C00;
+  --orange-6: #F97316;
+  --orange-7: #EA580C;
+  --orange-8: #C2410C;
+  --orange-9: #9A3412;
+}

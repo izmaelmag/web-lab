@@ -7,9 +7,6 @@
 </svelte:head>
 
 <section>
-	<h1>
-		Hi! This is very start
-	</h1>
 </section>
 
 <style>

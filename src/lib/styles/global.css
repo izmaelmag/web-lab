@@ -1,0 +1,29 @@
+body, html, main {
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  background: var(--neutral-1);
+  font-family: Archivo, sans-serif;
+}
+
+main {
+  background: inherit;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 16px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 900;
+	margin: 0;
+	line-height: 1.05;
+	font-family: var(--font-heading);
+}
