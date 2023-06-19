@@ -13,6 +13,7 @@
 	picture {
 		padding: 0;
 		margin: 0;
+		width: 190px;
 		display: block;
 	}
 </style>
