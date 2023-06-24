@@ -1,8 +1,9 @@
 import type { Sketch } from 'p5-svelte';
+import { createNoise3D } from 'simplex-noise';
 
 const PX = 4;
 const GAP = 2;
-const NX = 32;
+const NX = 16;
 const NY = 16;
 const W = NX * (PX + GAP) - GAP;
 const H = NY * (PX + GAP) - GAP;
@@ -16,20 +17,18 @@ const shader = (fragCoord: number[], time: number): number[] => {
 		y: fragCoord[1] / NY
 	};
 
-	const amp = 0.2;
-	const freq = 3 * 2 * Math.PI;
+	const amp = 0.1;
+	const freq = 1.5 * 2 * Math.PI;
 
 	const sine = amp * Math.sin(freq * (uv.x - 0.5) - time * 2);
-	const lineWidth = 0.1
+	const lineWidth = 0.05;
 
-	if (Math.abs(uv.y + sine - 0.5) > lineWidth) {
-		return CELL_DARK; // BG color
-	} else {
-		return CELL_BRIGHT; // Sine color
-	}
+	const isSinePixel = Math.abs(uv.y + sine - 0.5) <= lineWidth;
+
+	return isSinePixel ? CELL_BRIGHT : CELL_DARK;
 };
 
-const LCD: Sketch = (p5) => {
+const LCD: () => Sketch = () => (p5) => {
 	const renderPixel = (xi: number, yi: number, rgb = [0, 0, 0]) => {
 		// Scale indexed coordinates to the canvas
 		const x = xi * (PX + GAP);
@@ -39,6 +38,8 @@ const LCD: Sketch = (p5) => {
 		p5.fill(rgb);
 		p5.rect(x, y, PX);
 	};
+
+	const noise3D = createNoise3D();
 
 	p5.setup = () => {
 		p5.createCanvas(W, H);
@@ -51,9 +52,10 @@ const LCD: Sketch = (p5) => {
 
 		for (let xi = 0; xi < NX; xi++) {
 			for (let yi = 0; yi < NY; yi++) {
-				let rgb = shader([xi, yi], TIME);
-				if (isCorner(xi, yi, NX, NY)) rgb = BG;
-				renderPixel(xi, yi, rgb);
+				const noiseValR = noise3D(xi * 0.05, yi * 0.05 + TIME * 0.2, TIME * 0.2);
+
+				if (!isCorner(xi, yi, NX, NY))
+					renderPixel(xi, yi, noiseValR >= 0 ? [255, 120, 0, 255] : [51, 65, 85, 255]);
 			}
 		}
 	};

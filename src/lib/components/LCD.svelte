@@ -1,8 +1,13 @@
 <script lang="ts">
-	import P5 from 'p5-svelte';
+	import { onMount } from 'svelte';
+	import P5, { type Sketch } from 'p5-svelte';
 	import LCDSketch from '$lib/sketches/LCD';
 
-	const sketch = LCDSketch;
+	let sketch: Sketch;
+
+	onMount(() => {
+		sketch = LCDSketch();
+	});
 </script>
 
 <picture>
@@ -13,7 +18,7 @@
 	picture {
 		padding: 0;
 		margin: 0;
-		width: 190px;
+		width: calc(95px * 1);
 		display: block;
 	}
 </style>
