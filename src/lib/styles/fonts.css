@@ -1,3 +1,9 @@
 :root {
-  --font-heading: Archivo, sans-serif;
+	--font-heading: Caprasimo, serif;
+	--font-body: Alexandria, sans-serif;
+}
+
+* {
+	-webkit-font-smoothing: antialiased;
+	font-smooth: never;
 }

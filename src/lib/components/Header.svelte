@@ -3,35 +3,36 @@
 </script>
 
 <header>
-	<LCD />
 	<h1>
-		<span>I</span>ZMAEL<span>M</span>AG
+		<span>I</span>zmael<span>M</span>ag
 	</h1>
+	<div class="subheading">Designer & Creative Developer</div>
 </header>
 
 <style>
 	header {
 		padding: 16px;
+		width: 100%;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		gap: 16px;
-		flex-shrink: 0;
 	}
 
 	h1 {
-		/* Manual adjustment values */
-		font-size: 136px;
-		line-height: 97.5px;
-		letter-spacing: -28px;
-		transform-origin: 0 100%;
-		animation: fadeInPrimary 1s 2s ease both;
-		color: var(--neutral-7);
+		font-size: 96px;
+		color: var(--neutral-9);
 	}
 
 	h1 span {
-		position: relative;
-		z-index: 1;
 		color: var(--orange-5);
-		animation: fadeInSecondary 1s 1s ease both;
+	}
+
+	.subheading {
+		font-size: 24px;
+		line-height: 1;
+		font-family: var(--font-body);
+		font-weight: 450;
+		margin-top: -8px;
+		color: var(--neutral-8);
 	}
 </style>
