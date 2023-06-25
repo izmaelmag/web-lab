@@ -1,8 +1,13 @@
-<script>
-	import P5 from 'p5-svelte';
-	import Sketch from '$lib/sketches/Circles';
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import P5, { type Sketch } from 'p5-svelte';
+	import Circles from '$lib/sketches/Circles';
 
-	const sketch = Sketch();
+	let sketch: Sketch;
+
+	onMount(() => {
+		sketch = Circles();
+	})
 </script>
 
 <svelte:head>

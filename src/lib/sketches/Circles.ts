@@ -1,11 +1,11 @@
 import type { Sketch } from 'p5-svelte';
 
-const S = window.innerWidth < 420 ? window.innerWidth : 420;
-const C = S / 2;
-const N = 16;
-const SPEED = -0.125;
-
 const Circles: () => Sketch = () => (p5) => {
+	const S = window.innerWidth < 420 ? window.innerWidth : 420;
+	const C = S / 2;
+	const N = 16;
+	const SPEED = -0.125;
+
 	const drawCircle = (phase = 0) => {
 		const dt = p5.millis() * 0.001 * SPEED;
 		const mainSin = p5.sin(dt + phase);
