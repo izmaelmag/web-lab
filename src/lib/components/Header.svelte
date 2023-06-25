@@ -21,6 +21,10 @@
 	h1 {
 		font-size: 96px;
 		color: var(--neutral-9);
+
+		@media (max-width: 480px) {
+			font-size: 64px;
+		}
 	}
 
 	h1 span {
@@ -34,5 +38,10 @@
 		font-weight: 450;
 		margin-top: -8px;
 		color: var(--neutral-8);
+
+		@media (max-width: 480px) {
+			font-size: 16px;
+			margin-top: -2px;
+		}
 	}
 </style>

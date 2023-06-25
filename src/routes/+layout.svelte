@@ -23,4 +23,7 @@
 </main>
 
 <style>
+	main {
+		max-height: 100%;
+	}
 </style>

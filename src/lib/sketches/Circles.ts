@@ -1,6 +1,6 @@
 import type { Sketch } from 'p5-svelte';
 
-const S = 420;
+const S = window.innerWidth < 420 ? window.innerWidth : 420;
 const C = S / 2;
 const N = 16;
 const SPEED = -0.125;

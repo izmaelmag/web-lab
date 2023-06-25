@@ -1,22 +1,26 @@
 <footer>
-  <div>
-    Contact me:&nbsp;<a href="mailto:izmaelmag@pm.me">izmaelmag@pm.me</a>
-  </div>
+	<div>
+		Contact&nbsp;me:&nbsp;<a href="mailto:izmaelmag@pm.me">izmaelmag@pm.me</a>
+	</div>
 </footer>
 
 <style>
-  footer {
-    width: 100%;
+	footer {
+		width: 100%;
 		padding: 16px 16px 32px;
 		margin-top: auto;
 		display: flex;
-    justify-content: center;
+		justify-content: center;
 		align-items: baseline;
 		gap: 24px;
 		flex-shrink: 0;
-    font-size: 24px;
-    font-family: var(--font-heading);
-    color: var(--neutral-9);
+		font-size: 24px;
+		font-family: var(--font-heading);
+		color: var(--neutral-9);
+
+		@media (max-width: 480px) {
+			font-size: 20px;
+		}
 	}
 
 	footer a,
