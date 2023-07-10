@@ -14,11 +14,21 @@
 </svelte:head>
 
 <main class="app">
+	<div class="interface">
+		<a href="/">Home</a>
+	</div>
 	<slot />
 </main>
 
 <style>
 	main {
 		max-height: 100%;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.interface {
+		position: relative;
+		z-index: 1;
 	}
 </style>

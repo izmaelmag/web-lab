@@ -37,6 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"gsap": "^3.12.2",
 		"p5": "^1.6.0",
 		"p5-svelte": "^3.1.2"
 	}

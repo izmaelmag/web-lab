@@ -1,16 +1,29 @@
-<script>
-	import LCD from '$lib/components/LCD.svelte';
+<script lang="ts">
+	export let title: string | undefined = 'Izmael Mag';
+	export let subtitle: string;
+
+	const processedTitle = title
+		?.split(' ')
+		.map((word) => {
+			const [first, ...rest] = [...word];
+			return `<span class="org">${first}</span><span>${rest.join('')}</span>`;
+		})
+		.join('');
 </script>
 
 <header>
 	<h1>
-		<span>I</span>zmael<span>M</span>ag
+		{@html processedTitle}
 	</h1>
-	<div class="subheading">Designer & Creative Developer</div>
+
+	{#if Boolean(subtitle)}
+		<div class="subheading">{subtitle}</div>
+	{/if}
 </header>
 
 <style>
 	header {
+		text-align: center;
 		padding: 16px;
 		width: 100%;
 		display: flex;
@@ -27,7 +40,7 @@
 		}
 	}
 
-	h1 span {
+	:global(.org) {
 		color: var(--orange-5);
 	}
 

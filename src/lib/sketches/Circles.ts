@@ -1,7 +1,8 @@
 import type { Sketch } from 'p5-svelte';
 
 const Circles: () => Sketch = () => (p5) => {
-	const S = window.innerWidth < 420 ? window.innerWidth : 420;
+	const EXPECTED_SIZE = window.innerHeight * 0.66
+	const S = window.innerWidth < EXPECTED_SIZE ? window.innerWidth : EXPECTED_SIZE;
 	const C = S / 2;
 	const N = 16;
 	const SPEED = -0.125;
@@ -20,7 +21,7 @@ const Circles: () => Sketch = () => (p5) => {
 		const midPoint = { x: center.x + xRad / 2, y: center.y };
 
 		p5.noFill();
-		p5.stroke(255, 125, 0, 255);
+		p5.stroke(200, 200, 200, 255);
 		p5.ellipse(midPoint.x, midPoint.y, p5.abs(xRad), yRad);
 	};
 
