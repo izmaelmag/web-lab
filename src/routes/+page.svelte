@@ -21,7 +21,7 @@
 <Header subtitle="Designer & Creative developer" />
 
 <nav class="links">
-	<a href="/text-motion">Text Motion</a>
+	<a href="/polyrhythm">Polyrhythm Sounds</a>
 </nav>
 
 <section class="sketch_section">
