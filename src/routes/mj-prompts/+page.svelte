@@ -33,27 +33,51 @@
 			}
 		]);
 	};
+
+	const deletePart = (index: number) => {
+		console.log('Deleting', index);
+		promptsStore.set([
+			{
+				parts: parts.toSpliced(index, 1)
+			}
+		]);
+	};
 </script>
 
 <Header subtitle="Midjourney prompts constructor" title="Prompster 🤖" />
 
 <div class="columnsView">
 	<div class="editor">
-		<div class="promptParts">
-			{#each parts as part, index}
-				<PromptPartForm onDelete={() => {}} onChange={(p) => updatePart(index, p)} {part} />
-			{/each}
+		<div class="section">
+			<h3>Prompt content</h3>
 
-			<PromptPartAdd onClick={addNewPart} />
+			<div class="promptParts">
+				{#each parts as part, index}
+					<PromptPartForm
+						onDelete={() => deletePart(index)}
+						onChange={(p) => updatePart(index, p)}
+						{part}
+					/>
+				{/each}
+
+				<PromptPartAdd onClick={addNewPart} />
+			</div>
 		</div>
 	</div>
 
 	<div class="preview">
-		<div class="result">{partsToPrompt(parts)}</div>
+		<div class="section">
+			<h3>Prompt</h3>
+			<div class="result">{partsToPrompt(parts) || '[empty]'}</div>
+		</div>
 	</div>
 </div>
 
 <style>
+	h3 {
+		margin-bottom: 8px;
+		color: var(--cool-gray-700);
+	}
 	.result {
 		background: var(--cool-gray-200);
 		padding: 12px;
@@ -66,7 +90,9 @@
 	.columnsView {
 		display: flex;
 		width: 100%;
+		height: 100%;
 		gap: 32px;
+		padding-bottom: 32px;
 
 		& > div {
 			width: 100%;
@@ -78,5 +104,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
+	}
+
+	.section:not(:last-child) {
+		margin-bottom: 32px;
 	}
 </style>

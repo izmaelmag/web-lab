@@ -44,7 +44,7 @@
 		</div>
 	</div>
 
-	<button class="delete" />
+	<button class="delete" on:click={onDelete}>❌</button>
 </div>
 
 <style>
@@ -63,9 +63,12 @@
 		opacity: 0;
 		transform: translateX(-16px);
 		z-index: 2;
+		visibility: hidden;
 
+		&:focus,
 		&:hover {
-			border-color: var(--rose-300);
+			outline: none;
+			border-color: var(--rose-400);
 		}
 	}
 
@@ -82,10 +85,12 @@
 		border: 2px solid var(--cool-gray-100);
 		transition: border-color 0.3s;
 
+		&:focus-within,
 		&:hover {
 			& .delete {
 				transform: translateX(0);
 				opacity: 1;
+				visibility: visible;
 
 				&::after {
 					content: '';
@@ -113,12 +118,12 @@
 		color: var(--cool-gray-700);
 		font-size: 16px;
 		font-family: var(--font-body);
-		box-shadow: 0 0 0 1px var(--cool-gray-200);
-		transition: box-shadow 0.3s;
+		box-shadow: 0 0 0 2px var(--cool-gray-200);
+		transition: all 0.3s;
 
 		&:focus {
 			outline: none;
-			box-shadow: 0 0 0 1px var(--amber-500);
+			box-shadow: 0 0 0 2px var(--amber-400);
 		}
 	}
 
@@ -152,16 +157,16 @@
 		&::-webkit-slider-thumb {
 			height: 20px;
 			width: 20px;
-			transform: translateY(calc(-50% + 2px));
+			transform: translateY(calc(-50% + 2px)) scale(1);
 			background: var(--rose-500);
 			border-radius: 24px;
 			border: 3px solid var(--white);
 			appearance: none;
-			transition: background-color 0.3s;
+			transition: all 0.3s;
 		}
 
 		&:focus::-webkit-slider-thumb {
-			background: var(--rose-500);
+			transform: translateY(calc(-50% + 2px)) scale(1.3);
 		}
 
 		&::-webkit-slider-runnable-track {

@@ -44,6 +44,7 @@
 			}
 		}
 	}
+	
 	.sketch_section {
 		z-index: 0;
 		width: 100%;
