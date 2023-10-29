@@ -20,8 +20,8 @@
 
 <Header subtitle="Designer & Creative developer" />
 
-<nav class="links">
-	<a href="/polyrhythm">Polyrhythm Sounds</a>
+<nav class="nav">
+	<a href="/mj-prompts">Midjourney prompt helper</a>
 </nav>
 
 <section class="sketch_section">
@@ -31,39 +31,30 @@
 <Footer />
 
 <style>
-	.links {
-		position: relative;
-		z-index: 1;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		flex-direction: column;
-		gap: 16px;
+	.nav {
+		padding: 0 16px;
+		font-family: var(--font-heading);
+		font-size: 24px;
 
 		& a {
-			font-size: 40px;
-			color: var(--orange-5);
 			text-decoration: none;
-			font-family: var(--font-heading);
+			color: var(--orange-500);
 
 			&:hover {
-				color: var(--orange-7);
+				color: var(--orange-700);
 			}
 		}
 	}
-
 	.sketch_section {
 		z-index: 0;
 		width: 100%;
 		height: 100%;
 		position: fixed;
 		top: 0;
-		left: 0;
+		right: 0;
+		transform: translateX(60%);
 		flex-grow: 1;
 		flex-shrink: 1;
 		min-height: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
 	}
 </style>

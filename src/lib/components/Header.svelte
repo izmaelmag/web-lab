@@ -23,38 +23,35 @@
 
 <style>
 	header {
-		text-align: center;
 		padding: 16px;
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		align-items: flex-start;
 	}
 
 	h1 {
-		font-size: 96px;
-		color: var(--neutral-9);
+		font-size: 56px;
+		color: var(--cool-gray-800);
 
 		@media (max-width: 480px) {
-			font-size: 64px;
+			font-size: 32px;
 		}
 	}
 
 	:global(.org) {
-		color: var(--orange-5);
+		color: var(--orange-500);
 	}
 
 	.subheading {
-		font-size: 24px;
-		line-height: 1;
+		font-size: 16px;
+		line-height: 1.2;
 		font-family: var(--font-body);
 		font-weight: 450;
-		margin-top: -8px;
-		color: var(--neutral-8);
+		color: var(--cool-gray-600);
 
 		@media (max-width: 480px) {
 			font-size: 16px;
-			margin-top: -2px;
 		}
 	}
 </style>

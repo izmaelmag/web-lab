@@ -8,25 +8,6 @@ const NY = 16;
 const W = NX * (PX + GAP) - GAP;
 const H = NY * (PX + GAP) - GAP;
 const BG = [248, 250, 252, 255];
-const CELL_DARK = [251, 140, 0, 255];
-const CELL_BRIGHT = [0, 0, 0, 255];
-
-const shader = (fragCoord: number[], time: number): number[] => {
-	const uv = {
-		x: fragCoord[0] / NX,
-		y: fragCoord[1] / NY
-	};
-
-	const amp = 0.1;
-	const freq = 1.5 * 2 * Math.PI;
-
-	const sine = amp * Math.sin(freq * (uv.x - 0.5) - time * 2);
-	const lineWidth = 0.05;
-
-	const isSinePixel = Math.abs(uv.y + sine - 0.5) <= lineWidth;
-
-	return isSinePixel ? CELL_BRIGHT : CELL_DARK;
-};
 
 const LCD: () => Sketch = () => (p5) => {
 	const renderPixel = (xi: number, yi: number, rgb = [0, 0, 0]) => {

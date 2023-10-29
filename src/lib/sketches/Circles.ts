@@ -1,7 +1,7 @@
 import type { Sketch } from 'p5-svelte';
 
 const Circles: () => Sketch = () => (p5) => {
-	const EXPECTED_SIZE = window.innerHeight * 0.66
+	const EXPECTED_SIZE = window.innerHeight * 1
 	const S = window.innerWidth < EXPECTED_SIZE ? window.innerWidth : EXPECTED_SIZE;
 	const C = S / 2;
 	const N = 16;
