@@ -3,12 +3,12 @@
 	export let subtitle: string;
 
 	const processedTitle = title
-		?.split(' ')
+		?.split(/\s+/)
 		.map((word) => {
 			const [first, ...rest] = [...word];
 			return `<span class="org">${first}</span><span>${rest.join('')}</span>`;
 		})
-		.join('');
+		.join(' ');
 </script>
 
 <header>
@@ -23,7 +23,7 @@
 
 <style>
 	header {
-		padding: 16px;
+		padding: 16px 0;
 		width: 100%;
 		display: flex;
 		flex-direction: column;

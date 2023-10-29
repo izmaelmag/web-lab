@@ -2,6 +2,7 @@
 	import '$lib/styles/fonts.css';
 	import '$lib/styles/colors.css';
 	import '$lib/styles/global.css';
+	import Container from '$lib/components/Container.svelte';
 </script>
 
 <svelte:head>
@@ -14,11 +15,13 @@
 </svelte:head>
 
 <main class="app">
-	<slot />
+	<Container>
+		<slot />
+	</Container>
 </main>
 
 <style>
 	main {
-		max-height: 100%;
+		min-height: 100vh;
 	}
 </style>

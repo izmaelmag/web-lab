@@ -32,7 +32,6 @@
 
 <style>
 	.nav {
-		padding: 0 16px;
 		font-family: var(--font-heading);
 		font-size: 24px;
 

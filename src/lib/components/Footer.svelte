@@ -7,7 +7,7 @@
 <style>
 	footer {
 		width: 100%;
-		padding: 16px 16px 32px;
+		padding: 16px 0 32px;
 		margin-top: auto;
 		display: flex;
 		justify-content: flex-start;
