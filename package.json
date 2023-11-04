@@ -37,10 +37,12 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@types/uuid": "^9.0.6",
 		"dexie": "^4.0.1-beta.1",
 		"gsap": "^3.12.2",
 		"p5": "^1.6.0",
 		"p5-svelte": "^3.1.2",
-		"tone": "^14.7.77"
+		"tone": "^14.7.77",
+		"uuid": "^9.0.1"
 	}
 }

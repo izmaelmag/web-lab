@@ -9,6 +9,6 @@ export const load: Load = async ({ params }) => {
 	if (id < 0 || isNaN(id)) throw error(404, 'Id must be a positive integer');
 
 	return {
-		id
+		id: id || 0
 	};
 };

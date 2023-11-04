@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie';
-import { type PromptsDB, PromptsDBName, type PromptPart, type Prompt } from './types';
+import { type PromptsDB, PromptsDBName, type PromptPart } from './types';
 
 export class TypedDexie extends Dexie {
 	['prompts']!: Table<PromptsDB>;

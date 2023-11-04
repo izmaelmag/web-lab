@@ -10,8 +10,6 @@
 	export let data: PageData;
 	$: ({ id } = data);
 
-	console.log(id);
-
 	const handlePromptCreate = async () => {
 		const newId = await promptsDB.prompts.add({
 			name: `New prompt ${$prompts.length + 1}`,
@@ -83,7 +81,8 @@
 		text-decoration: none;
 		font-family: var(--font-body);
 		font-weight: 500;
-		display: block;
+		display: flex;
+		justify-content: space-between;
 		background: transparent;
 		padding: 2px 4px;
 		border-radius: 2px;
