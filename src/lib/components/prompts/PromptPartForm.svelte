@@ -26,7 +26,10 @@
 </script>
 
 <div class="promptPart">
-	<input on:input={handleTextChange} class="input text" type="text" value={pp.text} />
+	<div class="fieldContainer">
+		<input on:input={handleTextChange} class="input text" type="text" value={pp.text} />
+		<button class="delete" on:click={onDelete}>❌</button>
+	</div>
 
 	<div class="rangeContainer">
 		<input
@@ -43,27 +46,20 @@
 			{pp.weight}
 		</div>
 	</div>
-
-	<button class="delete" on:click={onDelete}>❌</button>
 </div>
 
 <style>
 	.delete {
-		position: absolute;
-		border: none;
-		top: 0;
-		right: calc(-32px - 8px);
+		padding: 0;
 		width: 32px;
 		height: 32px;
+		flex-shrink: 0;
 		border-radius: 6px;
 		background-color: var(--white);
 		border: 2px solid var(--rose-100);
 		transition: all 0.3s;
+		font-size: 14px;
 		cursor: pointer;
-		opacity: 0;
-		transform: translateX(-16px);
-		z-index: 2;
-		visibility: hidden;
 
 		&:focus,
 		&:hover {
@@ -84,26 +80,6 @@
 		background-color: var(--cool-gray-50);
 		border: 2px solid var(--cool-gray-100);
 		transition: border-color 0.3s;
-
-		&:focus-within,
-		&:hover {
-			& .delete {
-				transform: translateX(0);
-				opacity: 1;
-				visibility: visible;
-
-				&::after {
-					content: '';
-					display: block;
-					position: absolute;
-					top: -30%;
-					right: -30%;
-					width: 160%;
-					height: 160%;
-					z-index: 1;
-				}
-			}
-		}
 	}
 
 	.promptPart:focus-within {
@@ -112,18 +88,21 @@
 
 	.input {
 		background-color: var(--white);
-		border: 0;
+		width: 100%;
+		border: none;
+		height: 32px;
 		border-radius: 3px;
 		padding: 8px 12px;
 		color: var(--cool-gray-700);
-		font-size: 16px;
+		font-size: 14px;
+		line-height: 1;
 		font-family: var(--font-body);
-		box-shadow: 0 0 0 2px var(--cool-gray-200);
-		transition: all 0.3s;
+		box-shadow: 0 0 0 2px var(--cool-gray-200) inset;
+		transition: box-shadow 0.3s;
 
 		&:focus {
 			outline: none;
-			box-shadow: 0 0 0 2px var(--amber-400);
+			box-shadow: 0 0 0 2px var(--amber-400) inset;
 		}
 	}
 
@@ -210,5 +189,11 @@
 		&.number-positive {
 			color: var(--lime-600);
 		}
+	}
+
+	.fieldContainer {
+		width: 100%;
+		display: flex;
+		gap: 8px;
 	}
 </style>

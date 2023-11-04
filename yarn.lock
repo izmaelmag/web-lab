@@ -627,6 +627,11 @@ devalue@^4.3.1:
   resolved "https://registry.npmjs.org/devalue/-/devalue-4.3.2.tgz"
   integrity sha512-KqFl6pOgOW+Y6wJgu80rHpo2/3H07vr8ntR9rkkFIRETewbf5GaYYcakYfiKz89K+sLsuPkQIZaXDMjUObZwWg==
 
+dexie@^4.0.1-beta.1:
+  version "4.0.1-beta.1"
+  resolved "https://registry.yarnpkg.com/dexie/-/dexie-4.0.1-beta.1.tgz#40a72cb8972034deb3384018d21e69e833ea96ac"
+  integrity sha512-+IAkY8U09pavDFecWFOfTkwVN3NTmIsWZN2wh+RQ+9ya35Kr6AicQp+Tt1NDCM4UG2P/PDFBq/Mp4dt151LmuQ==
+
 dir-glob@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/dir-glob/-/dir-glob-3.0.1.tgz"
