@@ -4,6 +4,7 @@
 	import Header from '$lib/components/Header.svelte';
 	import { liveQuery } from 'dexie';
 	import type { PageData } from './$types';
+	import Button from '$lib/components/Button.svelte';
 
 	const prompts = liveQuery(() => promptsDB.prompts.toArray());
 
@@ -23,11 +24,12 @@
 	};
 </script>
 
-<Header subtitle="Midjourney prompts constructor" title="Prompster 🤖" />
-
 <div class="layout">
 	<div class="sidebar">
+		<Header subtitle="" title="🤖 Prompster" />
+
 		<h2>Prompts</h2>
+
 		{#if $prompts}
 			{#each $prompts as prompt (prompt.id)}
 				<a
@@ -42,9 +44,9 @@
 			{/each}
 		{/if}
 
-		<button type="button" class="add" on:click|preventDefault={handlePromptCreate}>
+		<Button theme="black" onClick={handlePromptCreate}>
 			Add prompt
-		</button>
+		</Button>
 	</div>
 
 	<div class="content">
@@ -57,6 +59,8 @@
 		display: flex;
 		align-items: stretch;
 		gap: 24px;
+		height: 100%;
+		padding: 24px 0;
 	}
 
 	.sidebar {
@@ -64,7 +68,7 @@
 		flex-shrink: 0;
 
 		& h2 {
-			margin: 0 0 16px;
+			margin: 16px 0;
 			color: var(--cool-gray-700);
 		}
 	}
@@ -73,6 +77,13 @@
 		flex: 1 1;
 		min-width: 0;
 		width: 100%;
+		padding: 16px;
+		background-color: var(--white);
+		border-radius: 16px;
+		height: 100%;
+		box-shadow: 0 0 16px var(--blue-gray-200);
+		overflow-y: auto;
+		padding-bottom: 24px;
 	}
 
 	.link {

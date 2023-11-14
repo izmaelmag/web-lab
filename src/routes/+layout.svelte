@@ -23,5 +23,6 @@
 <style>
 	main {
 		height: 100vh;
+		background: var(--blue-gray-100);
 	}
 </style>

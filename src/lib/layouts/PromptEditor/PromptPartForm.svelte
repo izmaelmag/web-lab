@@ -2,11 +2,11 @@
 </script>
 
 <script lang="ts">
-	import type { PromptPart } from '$lib/stores/prompts';
+	import type { PromptPart } from '$lib/database/prompts';
 
 	export let part: PromptPart;
 	export let onChange: (part: PromptPart) => void;
-	export let onDelete: () => void;
+	export let onDelete: (id: PromptPart['id']) => void;
 
 	$: pp = part;
 
@@ -23,12 +23,16 @@
 
 		onChange(pp);
 	};
+
+	const handleDelete = () => {
+		onDelete(pp.id);
+	};
 </script>
 
 <div class="promptPart">
 	<div class="fieldContainer">
 		<input on:input={handleTextChange} class="input text" type="text" value={pp.text} />
-		<button class="delete" on:click={onDelete}>❌</button>
+		<button class="delete" on:click={handleDelete}>❌</button>
 	</div>
 
 	<div class="rangeContainer">
@@ -75,11 +79,9 @@
 		align-items: flex-start;
 		width: 100%;
 		gap: 8px;
-		padding: 6px;
+		padding: 8px;
 		border-radius: 6px;
-		background-color: var(--cool-gray-50);
-		border: 2px solid var(--cool-gray-100);
-		transition: border-color 0.3s;
+		background-color: var(--blue-gray-100);
 	}
 
 	.promptPart:focus-within {
@@ -90,19 +92,17 @@
 		background-color: var(--white);
 		width: 100%;
 		border: none;
-		height: 32px;
-		border-radius: 3px;
-		padding: 8px 12px;
-		color: var(--cool-gray-700);
-		font-size: 14px;
-		line-height: 1;
+		border-radius: 6px;
+		padding: 12px 16px;
+		color: var(--blue-gray-700);
+		font-size: 16px;
 		font-family: var(--font-body);
-		box-shadow: 0 0 0 2px var(--cool-gray-200) inset;
+		box-shadow: 0 0 0 1px var(--blue-gray-200) inset;
 		transition: box-shadow 0.3s;
 
 		&:focus {
 			outline: none;
-			box-shadow: 0 0 0 2px var(--amber-400) inset;
+			box-shadow: 0 0 0 1px var(--amber-400) inset;
 		}
 	}
 
@@ -134,12 +134,11 @@
 		}
 
 		&::-webkit-slider-thumb {
-			height: 20px;
-			width: 20px;
+			height: 16px;
+			width: 16px;
 			transform: translateY(calc(-50% + 2px)) scale(1);
 			background: var(--rose-500);
-			border-radius: 24px;
-			border: 3px solid var(--white);
+			border-radius: 50%;
 			appearance: none;
 			transition: all 0.3s;
 		}

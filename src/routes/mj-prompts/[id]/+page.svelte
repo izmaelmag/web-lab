@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { promptsDB, type Prompt } from '$lib/database/prompts';
 	import type { PageData } from './$types';
-	import PromptEditor from '$lib/components/prompts/PromptEditor.svelte';
+	import PromptEditor from '$lib/layouts/PromptEditor/PromptEditor.svelte';
 	import { liveQuery } from 'dexie';
 
 	export let data: PageData;

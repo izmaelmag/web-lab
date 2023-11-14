@@ -23,7 +23,6 @@
 
 <style>
 	header {
-		padding: 16px 0;
 		width: 100%;
 		display: flex;
 		flex-direction: column;
@@ -31,8 +30,8 @@
 	}
 
 	h1 {
-		font-size: 56px;
-		color: var(--cool-gray-800);
+		font-size: 48px;
+		color: var(--blue-gray-800);
 
 		@media (max-width: 480px) {
 			font-size: 32px;

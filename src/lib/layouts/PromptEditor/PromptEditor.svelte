@@ -4,7 +4,7 @@
 	import { liveQuery } from 'dexie';
 
 	import PromptPartForm from './PromptPartForm.svelte';
-	import PromptPartAdd from './PromptPartAdd.svelte';
+	import Button from '$lib/components/Button.svelte';
 
 	export let prompt: Prompt;
 	$: prompt;
@@ -24,7 +24,7 @@
 	const addNewPart = async () => {
 		await promptsDB.parts.add({
 			promptId: prompt.id,
-			text: 'New text',
+			text: '',
 			weight: 0
 		});
 	};
@@ -33,16 +33,16 @@
 <div class="columnsView">
 	<div class="editor">
 		<div class="section">
-			<h3>Prompt content</h3>
+			<h3>Prompt groups</h3>
 
 			<div class="promptParts">
 				{#if $parts}
-					{#each $parts as part, index}
-						<PromptPartForm onDelete={() => deletePart(part.id)} onChange={updatePart} {part} />
+					{#each $parts as part}
+						<PromptPartForm onDelete={deletePart} onChange={updatePart} {part} />
 					{/each}
 				{/if}
 
-				<PromptPartAdd onClick={addNewPart} />
+				<Button onClick={addNewPart}>New group</Button>
 			</div>
 		</div>
 	</div>
