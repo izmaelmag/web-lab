@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { DemoResume } from './mock';
 	let link: string = '';
 	$: link;
 
 	const generate = async () => {
 		const response = await fetch('api/resume-pdf', {
 			method: 'POST',
-			body: JSON.stringify({ test: 'Check' }),
+			body: JSON.stringify({ document: DemoResume }),
 			headers: {
 				'Content-Type': 'application/json'
 			}
