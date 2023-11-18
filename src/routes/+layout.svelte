@@ -20,7 +20,7 @@
 <style>
 	main {
 		font-family: 'Azeret Mono', monospace;
-		height: -webkit-fill-available;
+		max-height: -webkit-fill-available;
 		background: var(--blue-gray-100);
 	}
 </style>

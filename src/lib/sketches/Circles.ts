@@ -1,11 +1,10 @@
 import type { Sketch } from 'p5-svelte';
 
 const Circles: () => Sketch = () => (p5) => {
-	const EXPECTED_SIZE = window.innerHeight * 1
-	const S = window.innerWidth < EXPECTED_SIZE ? window.innerWidth : EXPECTED_SIZE;
+	const S = 480;
 	const C = S / 2;
-	const N = 16;
-	const SPEED = -0.125;
+	const N = Math.floor(4 + Math.random() * 24);
+	const SPEED = 0.1 + p5.map(Math.random(), 0, 1, -0.15, 0.15);
 
 	const drawCircle = (phase = 0) => {
 		const dt = p5.millis() * 0.001 * SPEED;
