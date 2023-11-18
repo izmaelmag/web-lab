@@ -1,6 +1,5 @@
 :root {
-	--font-heading: Caprasimo, serif;
-	--font-body: Alexandria, sans-serif;
+	font-family: 'Azeret Mono', monospace;
 }
 
 * {

@@ -1,3 +1,9 @@
+// Employment section =============
+export type EmploymentSection = {
+	title: string;
+	cards: EmploymentCard[];
+};
+
 export type EmploymentCard = {
 	title: string;
 	location: string;
@@ -5,20 +11,24 @@ export type EmploymentCard = {
 	endDate: string;
 	description?: string;
 };
-
-export type EmploymentSection = {
+// =================================
+// =================================
+// Courses section =================
+export type CourseSection = {
 	title: string;
-	cards: EmploymentCard[];
+	cards: CourseCard[];
 };
 
 export type CourseCard = {
 	university: string;
 	course: string;
 };
-
-export type CourseSection = {
+// =================================
+// =================================
+// Education section ===============
+export type EducationSection = {
 	title: string;
-	cards: CourseCard[];
+	cards: EducationCard[];
 };
 
 export type EducationCard = {
@@ -27,12 +37,9 @@ export type EducationCard = {
 	location: string;
 	date: string;
 };
-
-export type EducationSection = {
-	title: string;
-	cards: EducationCard[];
-};
-
+// =================================
+// =================================
+// Secondary sections ==============
 export type LanguageOrSkill = {
 	name: string;
 	level: string;
@@ -44,21 +51,32 @@ export type Link = {
 };
 
 export type Hobbies = string[];
+// =================================
+// =================================
+// Resume document =================
+export type ResumeData = {
+	personal: {
+		fullName: string;
+		age?: number;
+	};
 
-export type Resume = {
-	fullName: string;
-	age?: number;
+	contacts: {
+		email?: string;
+		phone?: string;
+		country?: string;
+		city?: string;
+	};
+
 	position?: string;
-
-	email?: string;
-	phone?: string;
-	country?: string;
-	city?: string;
 
 	summary?: string;
 
-	employment: EmploymentSection[];
 	languages: LanguageOrSkill[];
+
 	skills: LanguageOrSkill[];
+
 	hobbies: Hobbies;
+
+	employment: EmploymentSection[];
 };
+// =================================
