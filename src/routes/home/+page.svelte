@@ -25,7 +25,9 @@
 	</p>
 
 	<nav class="links">
-		<a href="/gallery"><span>09</span>Gallery</a>
+		<a href="/gallery">
+			<div class="linkText"><span>09</span>Gallery</div>
+		</a>
 		<a href="/lab"><span>11</span>Experiments</a>
 		<a href="/blueprint"><span>03</span>Blueprints</a>
 		<a href="/about"><span>**</span>About<i>/</i>CV</a>
@@ -152,7 +154,7 @@
 				right: 0;
 				width: 150px;
 				height: 24px;
-				background: url($lib/images/corner.svg) no-repeat right bottom;
+				background: url(./corner.svg) no-repeat right bottom;
 				background-size: auto 8px;
 				transform: translateX(8px);
 				transition: all 0.3s ease;
