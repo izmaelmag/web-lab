@@ -76,7 +76,7 @@
 				right: 0;
 				width: 150px;
 				height: 24px;
-				background: url(/corner.svg) no-repeat right bottom;
+				background: url($lib/images/corner.svg) no-repeat right bottom;
 				background-size: auto 8px;
 				transform: translateX(8px);
         transition: all .3s ease;
