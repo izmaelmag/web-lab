@@ -143,38 +143,9 @@
 				color: var(--cool-gray-400);
 			}
 
-			&::before,
-			&::after {
-				content: '';
-				display: block;
-				position: absolute;
-				bottom: 0;
-				right: 0;
-				width: 150px;
-				height: 24px;
-				background: url(./corner.svg) no-repeat right bottom;
-				background-size: auto 8px;
-				transform: translateX(8px);
-				transition: all 0.3s ease;
-			}
-
-			&::before {
-				transform: rotateY(180deg) translateX(28px);
-				right: auto;
-				left: 0;
-			}
-
 			&:hover {
 				color: var(--orange-600);
 				border-bottom: 0.5px solid var(--cool-gray-900);
-
-				&::before {
-					transform: rotateY(180deg) translateX(8px);
-				}
-
-				&::after {
-					transform: translateX(0);
-				}
 
 				& span {
 					margin-bottom: 12px;

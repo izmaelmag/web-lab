@@ -11,7 +11,7 @@ body, html, main {
   padding: 0;
   margin: 0;
   background: var(--neutral-1);
-  font-family: Archivo, sans-serif;
+  font-family: monospace;
 }
 
 main {
