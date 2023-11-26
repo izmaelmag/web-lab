@@ -458,6 +458,11 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-20.2.5.tgz"
   integrity sha512-JJulVEQXmiY9Px5axXHeYGLSjhkZEnD+MDPDGbCbIAbMslkKwmygtZFy1X6s/075Yo94sf8GuSlFfPzysQrWZQ==
 
+"@types/p5@^1.7.4":
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/@types/p5/-/p5-1.7.4.tgz#bcf20df35b2e897e9accb550b64b59c1c6887312"
+  integrity sha512-cMF3SvlBSzJV9m3enUYBx9UvJmQP9fxmPS17EDtYJVCQwwNMc/BRrDtHUHaxZH+BhuESNuUnfUKNVpJIjRT+Xw==
+
 "@types/prop-types@*":
   version "15.7.10"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.10.tgz#892afc9332c4d62a5ea7e897fe48ed2085bbb08a"
@@ -1638,10 +1643,15 @@ p5-svelte@^3.1.2:
   dependencies:
     p5 "^1.4.1"
 
-p5@^1.4.1, p5@^1.6.0:
+p5@^1.4.1:
   version "1.6.0"
   resolved "https://registry.npmjs.org/p5/-/p5-1.6.0.tgz"
   integrity sha512-RowF+RxfVUhJm/YKXL5TCFzTqnwAIwK6W1VGs9LAqSf3PCmLz9Igbxzlf0Ry5IMV71L42wipCdH/bDiNsqAstA==
+
+p5@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/p5/-/p5-1.8.0.tgz#91a720357a4377d85405f29cdd276cf1fa4eb45c"
+  integrity sha512-LHzRRl+aWEZVXmK+L9TDRNw5zm90wvwMdY7yTmsFkdNeXrU9n2KSZbonCTXkyGgriguovxJrDDgyhkynOxWB1A==
 
 pako@^0.2.5:
   version "0.2.9"

@@ -27,7 +27,7 @@
 	<nav class="links">
 		<a href="/gallery"><span>00</span>Gallery</a>
 		<a href="/lab"><span>00</span>Experiments</a>
-		<a href="/blueprint"><span>00</span>Blueprints</a>
+		<a href="/playground"><span>00</span>Playground</a>
 		<a href="/about"><span>**</span>About<i>/</i>CV</a>
 	</nav>
 
