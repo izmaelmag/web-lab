@@ -1,8 +1,17 @@
 <script lang="ts">
 	import P5 from 'p5-svelte';
-	import { spirograph } from './spirograph';
+	import { Spirograph } from './spirograph';
+	import { onMount } from 'svelte';
+
+	let sketch: Spirograph;
+
+	onMount(() => {
+		sketch = new Spirograph({ params: { radius: 100 } });
+	});
 </script>
 
 <h1>Spirograph</h1>
 
-<P5 sketch={spirograph} />
+{#if sketch}
+	<P5 sketch={sketch.render} />
+{/if}

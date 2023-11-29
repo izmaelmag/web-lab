@@ -1,111 +1,77 @@
-import type { Graphics } from 'p5';
-import type { Sketch } from 'p5-svelte';
+import { P5Sketch, type SketchConstructorProps } from '$lib/modules/sketch/P5Sketch';
+import type { Graphics, Vector } from 'p5';
 
-function easeOutQuad(x: number): number {
-	return 1 - (1 - x);
-}
-
-const easeInQuad = (x: number): number => {
-	return x * x * x * x * x * x * x * x * x * x * x;
+type Params = {
+	radius: number;
 };
 
-const easeInQuint = (x: number): number => {
-	return x * x * x * x * x;
-};
+export class Spirograph extends P5Sketch<Params> {
+	bg: Graphics;
+	fg: Graphics;
 
-function easeOutElastic(x: number): number {
-	const c4 = (2 * Math.PI) / 3;
+	constructor(props: SketchConstructorProps<Params>) {
+		super(props);
 
-	return x === 0 ? 0 : x === 1 ? 1 : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1;
-}
+		this.params = props.params;
+	}
 
-function easeOutExpo(x: number): number {
-	return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
-}
-
-export const spirograph: Sketch = (p) => {
-	const w = 520;
-	const h = 520;
-	const fps = 60;
-	const duration = 5;
-	const totalFrames = fps * duration;
-
-	let bg: Graphics;
-
-	let progress = 0;
-	let currentFrame = 0;
-
-	let prevPoint: { x: number; y: number } | null = null;
-
-	const C = {
-		x: w / 2,
-		y: h / 2
+	// Map progress value on full circle radians of 2𝜋
+	private getRad = (fraction = 1) => {
+		const { map, TWO_PI } = this.p;
+		return map(this.currentFrame, 0, this.totalFrames / fraction, 0, TWO_PI);
 	};
 
-	const getRad = (fraction = 1) => p.map(currentFrame, 0, totalFrames / fraction, 0, p.TWO_PI);
-	const getDeg = (fraction = 1) => p.map(currentFrame, 0, totalFrames / fraction, 0, 360);
+	setup = (p) => {
+		const {
+			size: { w, h }
+		} = this;
 
-	p.setup = () => {
-		p.createCanvas(w, h);
-
-		bg = p.createGraphics(w, h);
-		bg.background(255);
+		this.bg = p.createGraphics(0, 0);
+		this.fg = p.createGraphics(w, h);
 	};
 
-	p.draw = () => {
-		// p.background(255);
+	draw = () => {
+		const {
+			p,
+			center,
+			params,
+			size: { w, h }
+		} = this;
 
-		// Progress calculations
-		currentFrame += 1;
-		progress = p.map(currentFrame, 0, totalFrames, 0, 1);
+		let prevPoint: Vector | null = null;
 
-		p.image(bg, 0, 0, w, h);
+		p.background(255);
+		p.image(this.bg, 0, 0, w, h);
 
-		let R =
-			100 +
-			75 * easeOutQuad(p.map(p.sin(getRad(12) ), -1, 1, 0, 1)) +
-		 -100 * easeInQuad(p.map(p.sin(getRad(0.4) ), -1, 1, 0, 1));
+		const R = params.radius;
 
-		// p.noFill();
-		// p.stroke(0);
-		// p.circle(C.x, C.y, R);
+		p.noFill();
+		p.stroke(0);
+		p.circle(center.x, center.y, R);
 
 		p.noStroke();
 
-		const dot = {
-			x: C.x + R * p.cos(p.PI + getRad(1)),
-			y: C.y + R * p.sin(p.PI + getRad(1))
-		};
+		const dot = p.createVector(
+			center.x + R * p.cos(p.PI + this.getRad(1)),
+			center.y + R * p.sin(p.PI + this.getRad(1))
+		);
 
-		// bg.stroke(255, 0, 0);
-		// bg.line(C.x, C.y, dot.x, dot.y);
+		p.stroke(255, 0, 0);
+		p.line(center.x, center.y, dot.x, dot.y);
 
 		p.noStroke();
 		p.fill(255, 0, 0);
-		p.circle(dot.x, dot.y, 5);
+		p.circle(dot.x, dot.y, 4);
 
-		bg.noStroke();
-		bg.fill(255, 0, 0);
-		bg.circle(dot.x, dot.y, 1);
-
-		if (prevPoint) {
-			bg.stroke(255, 0, 0);
-			bg.line(dot.x, dot.y, prevPoint.x, prevPoint.y);
-		}
+		this.bg.noStroke();
+		this.bg.fill(255, 0, 0);
+		this.bg.circle(dot.x, dot.y, 0.5);
 
 		prevPoint = dot;
-	};
 
-	p.keyPressed = () => {
-		if (p.key === 's') {
-			progress = 0;
-			currentFrame = 0;
-
-			p.saveGif('mySketch', totalFrames, {
-				delay: 0,
-				units: 'frames',
-				silent: false
-			});
+		if (prevPoint) {
+			this.bg.stroke(255, 0, 0);
+			this.bg.line(dot.x, dot.y, prevPoint.x, prevPoint.y);
 		}
 	};
-};
+}
