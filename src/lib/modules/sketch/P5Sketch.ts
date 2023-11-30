@@ -1,5 +1,5 @@
-import p5, { Vector } from 'p5';
-import type { Sketch as P5SvelteSketch } from 'p5-svelte';
+import type { Point } from '$lib/types/math';
+import type { Sketch as P5SvelteSketch, p5 } from 'p5-svelte';
 
 export type ParametrizedSet = Record<string, string | number | boolean>;
 
@@ -12,25 +12,30 @@ export type SketchSettings = {
 
 export type SketchConstructorProps<T> = {
 	params: T;
+	settings: SketchSettings;
 };
 
 export class P5Sketch<T> {
-	private settings: SketchSettings = {
+	settings: SketchSettings = {
 		w: 520,
 		h: 520,
 		fps: 60,
 		duration: 10
 	};
 
-	center: Vector;
-
+	p: p5;
+	center: Point;
 	params: T;
 	isPlaying = false;
 	currentFrame = 0;
 
-	constructor({ params }: SketchConstructorProps<T>) {
+	constructor({ params, settings }: SketchConstructorProps<T>) {
 		this.params = params;
-		this.center = new Vector(this.size.w / 2, this.size.h / 2);
+		this.settings = settings;
+		this.center = {
+			x: this.size.w / 2,
+			y: this.size.h / 2
+		};
 	}
 
 	setParams(newParams: T) {
@@ -38,6 +43,13 @@ export class P5Sketch<T> {
 			...this.params,
 			...newParams
 		};
+
+		this.render(this.p);
+	}
+
+	setProgress(newProgress: number) {
+		const newFrame = Math.round(this.totalFrames * newProgress);
+		this.currentFrame = newFrame;
 	}
 
 	get size() {
@@ -52,7 +64,7 @@ export class P5Sketch<T> {
 	}
 
 	get progress() {
-		return Number((this.currentFrame / this.totalFrames).toFixed(2));
+		return this.currentFrame / this.totalFrames;
 	}
 
 	// Controls rendering frames loop
@@ -60,10 +72,15 @@ export class P5Sketch<T> {
 		if (this.isPlaying) {
 			this.currentFrame += 1;
 
-			if (this.currentFrame === this.totalFrames) {
+			if (this.currentFrame >= this.totalFrames) {
 				this.currentFrame = 0;
+				this.onLoop();
 			}
 		}
+	};
+
+	onLoop = () => {
+		// Runs after full loop
 	};
 
 	// Saves drawing sequence
@@ -81,8 +98,9 @@ export class P5Sketch<T> {
 		});
 	};
 
-	init: P5SvelteSketch = () => {
-		this.isPlaying = true;
+	init: P5SvelteSketch = (p) => {
+		this.isPlaying = false;
+		this.p = p;
 	};
 
 	// Runs at the start of frame

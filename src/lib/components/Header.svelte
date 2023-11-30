@@ -1,56 +1,87 @@
 <script lang="ts">
-	export let title: string | undefined = 'Izmael Mag';
-	export let subtitle: string;
+	export let links: Array<{ title: string; url?: string }> = [];
 
-	const processedTitle = title
-		?.split(/\s+/)
-		.map((word) => {
-			const [first, ...rest] = [...word];
-			return `<span class="org">${first}</span><span>${rest.join('')}</span>`;
-		})
-		.join(' ');
+	let hasLinks = links.length > 0;
 </script>
 
-<header>
-	<h1>
-		{@html processedTitle}
-	</h1>
+<div class="header">
+	<div>
+		{#if hasLinks}
+			<nav class="breadcrumbs">
+				<a href="/">Home</a>
+				<span class="divider">↳</span>
 
-	{#if Boolean(subtitle)}
-		<div class="subheading">{subtitle}</div>
-	{/if}
-</header>
+				{#each links as link, index}
+					{#if index < links.length - 1}
+						<a href={link.url}>{link.title}</a>
+						<span class="divider">↳</span>
+					{:else}
+						<span class="pageName">{link.title}</span>
+					{/if}
+				{/each}
+			</nav>
+		{:else}
+			<h1>IZMAEL</h1>
+		{/if}
+	</div>
+
+	<div>
+		{#if hasLinks}
+			<h1>IZMAELMAG</h1>
+		{:else}
+			<h1>MAG</h1>
+		{/if}
+	</div>
+</div>
 
 <style>
-	header {
-		width: 100%;
+	.header {
+		margin: 8px;
+		max-width: 800px;
 		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-	}
+		justify-content: space-between;
+		align-items: baseline;
+		border-top: 1px solid var(--blue-gray-600);
+		border-bottom: 1px solid var(--blue-gray-600);
 
-	h1 {
-		font-size: 48px;
-		color: var(--blue-gray-800);
+		& a,
+		& h1 {
+			font-size: 14px;
+			text-decoration: none;
+			font-weight: 700;
+			line-height: 1;
+			letter-spacing: 0.05em;
+			text-transform: uppercase;
+			color: var(--orange-500);
+		}
 
-		@media (max-width: 480px) {
-			font-size: 32px;
+		& a:hover {
+			color: var(--orange-700);
 		}
 	}
 
-	:global(.org) {
-		color: var(--orange-500);
-	}
-
-	.subheading {
-		font-size: 16px;
-		line-height: 1.2;
-		font-family: var(--font-body);
-		font-weight: 450;
+	.pageName {
+		font-size: 14px;
+		text-decoration: none;
+		font-weight: 500;
+		line-height: 1;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
 		color: var(--cool-gray-600);
+	}
 
-		@media (max-width: 480px) {
-			font-size: 16px;
-		}
+	.divider {
+		color: var(--blue-gray-600);
+		margin: 0 2px;
+		position: relative;
+		top: -2px;
+		font-weight: 100;
+		font-size: 16px;
+		line-height: 14px;
+	}
+
+	.breadcrumbs {
+		display: flex;
+		align-items: baseline;
 	}
 </style>

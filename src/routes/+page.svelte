@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import P5, { type Sketch } from 'p5-svelte';
 	import Circles from '$lib/sketches/Circles';
+	import Header from '$lib/components/Header.svelte';
+	import Layout from '$lib/components/Layout.svelte';
 
 	let sketch: Sketch;
 
@@ -10,19 +12,19 @@
 	});
 </script>
 
-<div class="layout">
-	<div class="header">
-		<h1 class="name">IZMAEL<span />MAG</h1>
-	</div>
+<Layout>
+	<Header />
 
-	<p class="intro">Welcome to my digital workspace.</p>
-	<p class="intro">
-		Join me as I explore and express through art and tech, using them together to enhance my
-		creativity and bring new visions to life.
-	</p>
-	<p class="intro">
-		It's a journey of learning, experimenting, and growing as an artist and technologist.
-	</p>
+	<div class="intro">
+		<p>Welcome to my digital workspace.</p>
+
+		<p>
+			Join me as I explore and express through art and tech, using them together to enhance my
+			creativity and bring new visions to life.
+		</p>
+
+		<p>It's a journey of learning, experimenting, and growing as an artist and technologist.</p>
+	</div>
 
 	<nav class="links">
 		<a href="/gallery"><span>00</span>Gallery</a>
@@ -34,64 +36,32 @@
 	<picture class="sketch">
 		<P5 {sketch} />
 	</picture>
-</div>
+</Layout>
 
 <style>
-	.layout {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
-		position: relative;
-	}
-
 	.intro {
 		padding: 0 8px;
-		margin: 8px 0 8px;
-		text-wrap: balance;
 		max-width: 800px;
-		font-weight: 100;
-		color: var(--cool-gray-700);
-		font-size: 28px;
 		z-index: 20;
-		transition: all 0.3s ease;
 
-		& br {
-			display: block;
-			border: 1px solid red;
-			margin-bottom: 24px;
-		}
+		& p {
+			color: var(--cool-gray-700);
+			transition: all 0.3s ease;
+			font-size: 28px;
+			font-weight: 100;
+			text-wrap: balance;
+			margin: 8px 0 8px;
+			letter-spacing: -0.02em;
 
-		@media screen and (max-width: 1400px) {
-			font-size: 20px;
-			max-width: 640px;
-		}
-
-		@media screen and (max-width: 480px) {
-			font-size: 16px;
-			max-width: 280px;
-
-			& br {
-				margin-bottom: 8px;
+			@media screen and (max-width: 1400px) {
+				font-size: 20px;
+				max-width: 640px;
 			}
-		}
-	}
 
-	.header {
-		padding: 8px 8px 0;
-		max-width: 800px;
-
-		& h1 {
-			font-size: 14px;
-			font-weight: 600;
-			display: flex;
-			line-height: 1;
-			justify-content: space-between;
-			letter-spacing: 0.05em;
-			color: var(--orange-500);
-			border-top: 1px solid var(--blue-gray-600);
-			border-bottom: 1px solid var(--blue-gray-600);
+			@media screen and (max-width: 480px) {
+				font-size: 16px;
+				max-width: 280px;
+			}
 		}
 	}
 

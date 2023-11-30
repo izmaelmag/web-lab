@@ -1,5 +1,7 @@
 import { P5Sketch, type SketchConstructorProps } from '$lib/modules/sketch/P5Sketch';
-import type { Graphics, Vector } from 'p5';
+import { Circle, pointAtAngle } from '$lib/utils/math/circle';
+import type { Graphics } from 'p5';
+import type { Sketch } from 'p5-svelte';
 
 type Params = {
 	radius: number;
@@ -7,71 +9,62 @@ type Params = {
 
 export class Spirograph extends P5Sketch<Params> {
 	bg: Graphics;
-	fg: Graphics;
+	params: Params;
+	circle: Circle;
 
 	constructor(props: SketchConstructorProps<Params>) {
 		super(props);
 
 		this.params = props.params;
+		this.settings = props.settings;
 	}
 
-	// Map progress value on full circle radians of 2𝜋
-	private getRad = (fraction = 1) => {
-		const { map, TWO_PI } = this.p;
-		return map(this.currentFrame, 0, this.totalFrames / fraction, 0, TWO_PI);
-	};
+	setup: Sketch = (p) => {
+		p.createCanvas(this.size.w, this.size.h);
 
-	setup = (p) => {
-		const {
-			size: { w, h }
-		} = this;
+		this.bg = p.createGraphics(this.size.w, this.size.h);
 
-		this.bg = p.createGraphics(0, 0);
-		this.fg = p.createGraphics(w, h);
+		this.circle = new Circle({
+			c: this.center,
+			r: this.params.radius,
+			a: this.progress * Math.PI * 2
+		});
 	};
 
 	draw = () => {
-		const {
-			p,
-			center,
-			params,
-			size: { w, h }
-		} = this;
-
-		let prevPoint: Vector | null = null;
-
+		const { p } = this;
 		p.background(255);
-		p.image(this.bg, 0, 0, w, h);
+		p.image(this.bg, 0, 0, this.settings.w, this.settings.h);
 
-		const R = params.radius;
-
-		p.noFill();
-		p.stroke(0);
-		p.circle(center.x, center.y, R);
-
-		p.noStroke();
-
-		const dot = p.createVector(
-			center.x + R * p.cos(p.PI + this.getRad(1)),
-			center.y + R * p.sin(p.PI + this.getRad(1))
+		const point = pointAtAngle(
+			this.center.x,
+			this.center.y,
+			this.params.radius,
+			this.progress * Math.PI * 2 - Math.PI / 2
 		);
 
-		p.stroke(255, 0, 0);
-		p.line(center.x, center.y, dot.x, dot.y);
+		p.stroke(0);
+		p.fill(0);
+		p.circle(point.x, point.y, 4);
 
-		p.noStroke();
-		p.fill(255, 0, 0);
-		p.circle(dot.x, dot.y, 4);
+		p.stroke('green');
+		p.line(this.center.x, this.center.y, point.x, point.y)
+	};
 
-		this.bg.noStroke();
-		this.bg.fill(255, 0, 0);
-		this.bg.circle(dot.x, dot.y, 0.5);
-
-		prevPoint = dot;
-
-		if (prevPoint) {
-			this.bg.stroke(255, 0, 0);
-			this.bg.line(dot.x, dot.y, prevPoint.x, prevPoint.y);
-		}
+	onLoop = () => {
+		this.bg.clear(255, 255, 255, 255);
 	};
 }
+
+export const spirograph = new Spirograph({
+	settings: {
+		w: 480,
+		h: 480,
+		fps: 60,
+		duration: 10
+	},
+
+	params: {
+		radius: 10
+	}
+});
