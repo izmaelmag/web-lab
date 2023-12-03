@@ -27,10 +27,8 @@
 	</div>
 
 	<nav class="links">
-		<a href="/gallery"><span>00</span>Gallery</a>
-		<a href="/lab"><span>00</span>Experiments</a>
-		<a href="/playground"><span>00</span>Playground</a>
-		<a href="/about"><span>**</span>About<i>/</i>CV</a>
+		<a href="/playground">Playground</a>
+		<a href="/about">About<i>/</i>CV</a>
 	</nav>
 
 	<picture class="sketch">
@@ -40,7 +38,7 @@
 
 <style>
 	.intro {
-		padding: 0 8px;
+		padding: 0;
 		max-width: 800px;
 		z-index: 20;
 
@@ -71,6 +69,8 @@
 		align-items: stretch;
 		margin-top: auto;
 		margin-bottom: 16px;
+		margin-left: -8px;
+		margin-right: -8px;
 		z-index: 20;
 
 		& a {

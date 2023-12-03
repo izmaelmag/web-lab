@@ -1,4 +1,6 @@
 <script>
+	import { SvelteUIProvider } from '@svelteuidev/core';
+
 	import '$lib/styles/fonts.css';
 	import '$lib/styles/colors.css';
 	import '$lib/styles/global.css';
@@ -13,9 +15,11 @@
 	/>
 </svelte:head>
 
-<main class="app">
-	<slot />
-</main>
+<SvelteUIProvider>
+	<main class="app">
+		<slot />
+	</main>
+</SvelteUIProvider>
 
 <style>
 	main {

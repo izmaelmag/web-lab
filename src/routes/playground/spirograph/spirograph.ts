@@ -1,21 +1,27 @@
 import { P5Sketch, type SketchConstructorProps } from '$lib/modules/sketch/P5Sketch';
+import type { ControlsData } from '$lib/types/controls';
 import { Circle, pointAtAngle } from '$lib/utils/math/circle';
 import type { Graphics } from 'p5';
 import type { Sketch } from 'p5-svelte';
 
-type Params = {
+export type Params = {
 	radius: number;
+};
+
+export const defaultParams: Params & ControlsData = {
+	radius: 50
 };
 
 export class Spirograph extends P5Sketch<Params> {
 	bg: Graphics;
 	params: Params;
 	circle: Circle;
+	isPlaying = true;
 
 	constructor(props: SketchConstructorProps<Params>) {
 		super(props);
 
-		this.params = props.params;
+		this.params = props.params || defaultParams;
 		this.settings = props.settings;
 	}
 
@@ -36,6 +42,8 @@ export class Spirograph extends P5Sketch<Params> {
 		p.background(255);
 		p.image(this.bg, 0, 0, this.settings.w, this.settings.h);
 
+		console.log(this.isPlaying);
+
 		const point = pointAtAngle(
 			this.center.x,
 			this.center.y,
@@ -48,7 +56,7 @@ export class Spirograph extends P5Sketch<Params> {
 		p.circle(point.x, point.y, 4);
 
 		p.stroke('green');
-		p.line(this.center.x, this.center.y, point.x, point.y)
+		p.line(this.center.x, this.center.y, point.x, point.y);
 	};
 
 	onLoop = () => {
@@ -64,7 +72,5 @@ export const spirograph = new Spirograph({
 		duration: 10
 	},
 
-	params: {
-		radius: 10
-	}
+	params: defaultParams
 });

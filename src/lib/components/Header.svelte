@@ -36,8 +36,8 @@
 
 <style>
 	.header {
-		margin: 8px;
-		max-width: 800px;
+		z-index: 10;
+		margin-bottom: 8px;
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;

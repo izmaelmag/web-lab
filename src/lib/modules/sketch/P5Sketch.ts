@@ -26,7 +26,7 @@ export class P5Sketch<T> {
 	p: p5;
 	center: Point;
 	params: T;
-	isPlaying = false;
+	isPlaying = true;
 	currentFrame = 0;
 
 	constructor({ params, settings }: SketchConstructorProps<T>) {
@@ -44,7 +44,7 @@ export class P5Sketch<T> {
 			...newParams
 		};
 
-		this.render(this.p);
+		// this.render(this.p);
 	}
 
 	setProgress(newProgress: number) {

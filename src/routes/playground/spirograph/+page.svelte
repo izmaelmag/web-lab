@@ -1,32 +1,27 @@
 <script lang="ts">
 	import P5 from 'p5-svelte';
-	import { spirograph } from './spirograph';
+	import { spirograph, type Params as SketchParams } from './spirograph';
 	import Layout from '$lib/components/Layout.svelte';
 	import Header from '$lib/components/Header.svelte';
+	import Controls from '$lib/components/Controls/Controls.svelte';
+	import { controlsConfig } from './controls';
+	import type { ControlsData } from '$lib/types/controls';
 
 	let sketch = spirograph;
 	$: sketch;
+
+	const handleControlsChange = (newParams: ControlsData) => {
+		const params = newParams as SketchParams;
+		sketch.setParams(params);
+	};
 </script>
 
 <Layout>
-	<Header
-		links={[
-			{ title: 'Playground', url: '/playground' },
-			{ title: 'Spirograph', url: '/playground/spirograph' }
-		]}
-	/>
+	<Header links={[{ title: 'Playground', url: '/playground' }, { title: 'Spirograph' }]} />
 
 	<div class="playground">
 		<div class="controls">
-			<h2>Controls</h2>
-			<section>
-				<h3>Base circle</h3>
-
-				<div class="field">
-					<div class="label">X-Radius</div>
-					<input type="range" value="20" min={20} max={200} />
-				</div>
-			</section>
+			<Controls onChange={handleControlsChange} config={controlsConfig} title="Controls" />
 		</div>
 
 		<div class="preview">
@@ -40,14 +35,27 @@
 <style>
 	.playground {
 		display: flex;
-		align-items: flex-start;
-		gap: 24px;
-		padding: 8px;
+		align-items: stretch;
+		gap: 8px;
+		height: 100%;
 	}
 
 	.controls {
 		width: 300px;
+		height: 100%;
 		padding-right: 8px;
-		border-right: 1px solid var(--cool-gray-300);
+		/* border: 1px solid var(--cool-gray-300); */
+		overflow: auto;
+		flex-shrink: 0;
+	}
+
+	.preview {
+		border: 1px solid var(--cool-gray-300);
+		width: 100%;
+		min-width: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #fff;
 	}
 </style>
