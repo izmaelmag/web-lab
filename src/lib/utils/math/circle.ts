@@ -30,6 +30,6 @@ export class Circle {
 export const pointAtAngle = (x: number, y: number, r: number, a: number): Point => {
 	return {
 		x: x + r * Math.cos(a),
-		y: x + r * Math.sin(a)
+		y: y + r * Math.sin(a)
 	};
 };

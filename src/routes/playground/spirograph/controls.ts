@@ -17,8 +17,23 @@ const radiusNode: NumberControl = {
 	key: 'radius'
 };
 
+const branchesNode: NumberControl = {
+	name: 'Branches',
+	placeholder: 'Branches',
+	group: 'main',
+	order: 2,
+	type: 'number',
+	min: 1,
+	max: 6,
+	step: 1,
+	defaultValue: defaultParams.branches,
+	icon: 'ColorWheel',
+	key: 'branches'
+};
+
 const nodes: Record<ParamsKey, AnyControl> = {
-	radius: radiusNode
+	radius: radiusNode,
+	branches: branchesNode
 };
 
 export const controlsConfig: ControlsConfig = {

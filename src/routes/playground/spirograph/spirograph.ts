@@ -6,10 +6,12 @@ import type { Sketch } from 'p5-svelte';
 
 export type Params = {
 	radius: number;
+	branches: number;
 };
 
 export const defaultParams: Params & ControlsData = {
-	radius: 50
+	radius: 50,
+	branches: 1
 };
 
 export class Spirograph extends P5Sketch<Params> {
@@ -42,21 +44,29 @@ export class Spirograph extends P5Sketch<Params> {
 		p.background(255);
 		p.image(this.bg, 0, 0, this.settings.w, this.settings.h);
 
-		console.log(this.isPlaying);
+		const points = [];
 
-		const point = pointAtAngle(
-			this.center.x,
-			this.center.y,
-			this.params.radius,
-			this.progress * Math.PI * 2 - Math.PI / 2
-		);
+		for (let i = 0; i < this.params.branches; i++) {
+			const angle = (Math.PI * 2 * i) / this.params.branches;
 
-		p.stroke(0);
-		p.fill(0);
-		p.circle(point.x, point.y, 4);
+			const point = pointAtAngle(
+				this.center.x,
+				this.center.y,
+				this.params.radius,
+				angle + this.progress * (Math.PI * 2) - Math.PI / 2
+			);
 
-		p.stroke('green');
-		p.line(this.center.x, this.center.y, point.x, point.y);
+			points.push(point);
+		}
+
+		points.forEach((point) => {
+			p.stroke(0);
+			p.fill(0);
+			p.circle(point.x, point.y, 4);
+
+			p.stroke('green');
+			p.line(this.center.x, this.center.y, point.x, point.y);
+		});
 	};
 
 	onLoop = () => {

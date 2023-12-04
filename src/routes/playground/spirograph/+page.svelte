@@ -44,7 +44,6 @@
 		width: 300px;
 		height: 100%;
 		padding-right: 8px;
-		/* border: 1px solid var(--cool-gray-300); */
 		overflow: auto;
 		flex-shrink: 0;
 	}
@@ -56,6 +55,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #fff;
+
+		& canvas {
+			border: 1px solid var(--cool-gray-300);
+		}
 	}
 </style>
