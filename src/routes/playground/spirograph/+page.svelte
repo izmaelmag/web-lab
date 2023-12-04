@@ -1,18 +1,34 @@
 <script lang="ts">
 	import P5 from 'p5-svelte';
-	import { spirograph, type Params as SketchParams } from './spirograph';
+	import { Spirograph, defaultParams, type Params as SketchParams } from './spirograph';
 	import Layout from '$lib/components/Layout.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Controls from '$lib/components/Controls/Controls.svelte';
 	import { controlsConfig } from './controls';
 	import type { ControlsData } from '$lib/types/controls';
+	import Player from './player.svelte';
 
-	let sketch = spirograph;
-	$: sketch;
+	const spirograph = new Spirograph({
+		settings: {
+			w: 480,
+			h: 480,
+			fps: 60,
+			duration: 10
+		},
+
+		params: defaultParams
+	});
+
+	$: spirograph;
+
+	let isPlaying = spirograph.isPlaying;
+	$: isPlaying;
+
+	console.log(spirograph)
 
 	const handleControlsChange = (newParams: ControlsData) => {
 		const params = newParams as SketchParams;
-		sketch.setParams(params);
+		spirograph.setParams(params);
 	};
 </script>
 
@@ -21,11 +37,12 @@
 
 	<div class="playground">
 		<div class="controls">
+			<Player />
 			<Controls onChange={handleControlsChange} config={controlsConfig} />
 		</div>
 
 		<div class="preview">
-			{#if sketch}
+			{#if spirograph}
 				<P5 sketch={spirograph.render} />
 			{/if}
 		</div>

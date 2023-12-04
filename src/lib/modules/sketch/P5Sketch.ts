@@ -26,7 +26,7 @@ export class P5Sketch<T> {
 	p: p5;
 	center: Point;
 	params: T;
-	isPlaying = true;
+	isPlaying = false;
 	currentFrame = 0;
 
 	constructor({ params, settings }: SketchConstructorProps<T>) {
@@ -112,7 +112,6 @@ export class P5Sketch<T> {
 	};
 
 	init: P5SvelteSketch = (p) => {
-		this.isPlaying = true;
 		this.p = p;
 	};
 

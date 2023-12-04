@@ -73,14 +73,3 @@ export class Spirograph extends P5Sketch<Params> {
 		this.bg.clear(255, 255, 255, 255);
 	};
 }
-
-export const spirograph = new Spirograph({
-	settings: {
-		w: 480,
-		h: 480,
-		fps: 60,
-		duration: 10
-	},
-
-	params: defaultParams
-});
