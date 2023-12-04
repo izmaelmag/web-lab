@@ -99,7 +99,7 @@ export class P5Sketch<T> {
 	};
 
 	init: P5SvelteSketch = (p) => {
-		this.isPlaying = false;
+		this.isPlaying = true;
 		this.p = p;
 	};
 
