@@ -67,6 +67,19 @@ export class P5Sketch<T> {
 		return this.currentFrame / this.totalFrames;
 	}
 
+	play = () => {
+		this.isPlaying = true;
+	};
+
+	pause = () => {
+		this.isPlaying = false;
+	};
+
+	reset = () => {
+		this.isPlaying = false;
+		this.currentFrame = 0;
+	};
+
 	// Controls rendering frames loop
 	tick = () => {
 		if (this.isPlaying) {
