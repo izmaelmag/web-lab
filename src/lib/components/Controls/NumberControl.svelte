@@ -57,7 +57,6 @@
 
 <style>
 	.rangeControl {
-		margin-bottom: 16px;
 		position: relative;
 	}
 

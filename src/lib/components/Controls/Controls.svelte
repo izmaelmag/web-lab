@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { writable } from 'svelte/store';
+	import { Divider } from '@svelteuidev/core';
 	import type { AnyControl, ControlsConfig, ControlsData } from '$lib/types/controls';
 	import NumberControl from './NumberControl.svelte';
 
 	export let onChange: (params: ControlsData) => void;
-	export let title: string = 'Controls';
 	export let config: ControlsConfig;
 
 	const paramsState = writable(config.defaults);
@@ -29,15 +29,21 @@
 </script>
 
 <div class="controls">
-	<h2>{title}</h2>
-
 	<div class="nodes">
 		{#each config.groups as groupName}
-			{#each groupedNodes[groupName] as control}
-				{#if control.type === 'number'}
-					<NumberControl onChange={handleParamPatch} {control} />
-				{/if}
-			{/each}
+			<div class="nodeGroup">
+				<div class="nodeGroupTitle">
+					<Divider label={groupName} labelPosition="center" size="xs" />
+				</div>
+
+				<div class="nodeGroupControls">
+					{#each groupedNodes[groupName] as control}
+						{#if control.type === 'number'}
+							<NumberControl onChange={handleParamPatch} {control} />
+						{/if}
+					{/each}
+				</div>
+			</div>
 		{/each}
 	</div>
 </div>
@@ -48,9 +54,17 @@
 		flex-direction: column;
 	}
 
-	h2 {
-		font-size: 18px;
-		font-weight: 600;
-		margin-bottom: 8px;
+	.nodeGroupControls {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.nodeGroupTitle {
+		margin-bottom: 0;
+
+		& > div {
+			margin: 0;
+		}
 	}
 </style>

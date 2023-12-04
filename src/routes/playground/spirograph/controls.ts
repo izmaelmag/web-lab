@@ -5,7 +5,7 @@ type ParamsKey = keyof typeof defaultParams;
 
 const radiusNode: NumberControl = {
 	name: 'Radius',
-	group: 'main',
+	group: 'Controls',
 	order: 1,
 	type: 'number',
 	placeholder: 'Main Radius',
@@ -20,11 +20,11 @@ const radiusNode: NumberControl = {
 const branchesNode: NumberControl = {
 	name: 'Branches',
 	placeholder: 'Branches',
-	group: 'main',
+	group: 'Controls',
 	order: 2,
 	type: 'number',
 	min: 1,
-	max: 6,
+	max: 12,
 	step: 1,
 	defaultValue: defaultParams.branches,
 	icon: 'ColorWheel',
@@ -37,7 +37,7 @@ const nodes: Record<ParamsKey, AnyControl> = {
 };
 
 export const controlsConfig: ControlsConfig = {
-	groups: ['main'],
+	groups: ['Controls'],
 	nodes,
 	defaults: defaultParams
 };

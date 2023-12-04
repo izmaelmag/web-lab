@@ -21,7 +21,7 @@
 
 	<div class="playground">
 		<div class="controls">
-			<Controls onChange={handleControlsChange} config={controlsConfig} title="Controls" />
+			<Controls onChange={handleControlsChange} config={controlsConfig} />
 		</div>
 
 		<div class="preview">
