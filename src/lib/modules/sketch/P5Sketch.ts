@@ -80,6 +80,12 @@ export class P5Sketch<T> {
 		this.currentFrame = 0;
 	};
 
+	setFrame = (frame: number) => {
+		this.isPlaying = false;
+		this.currentFrame = frame;
+		this.draw();
+	};
+
 	// Controls rendering frames loop
 	tick = () => {
 		if (this.isPlaying) {
@@ -116,17 +122,17 @@ export class P5Sketch<T> {
 	};
 
 	// Runs at the start of frame
-	preDraw: P5SvelteSketch = () => {
+	preDraw = () => {
 		// Drawing logic
 	};
 
 	// Runs at the end of frame
-	postDraw: P5SvelteSketch = () => {
+	postDraw = () => {
 		this.tick();
 	};
 
 	// Drawing loop
-	draw: P5SvelteSketch = () => {
+	draw = () => {
 		// Drawing logic
 	};
 
@@ -147,9 +153,9 @@ export class P5Sketch<T> {
 
 		// Start drawing loop
 		p.draw = () => {
-			this.preDraw(p);
-			this.draw(p);
-			this.postDraw(p);
+			this.preDraw();
+			this.draw();
+			this.postDraw();
 		};
 
 		// React on pressed keys

@@ -50,5 +50,5 @@ export type ControlsData = Record<string, ControlValue>;
 export type ControlsConfig = {
 	groups: string[];
 	nodes: Record<string, AnyControl>;
-	defaults: ControlsData;
+	defaults?: ControlsData;
 };

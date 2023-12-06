@@ -1,11 +1,10 @@
-import type { AnyControl, ControlsConfig, NumberControl } from '$lib/types/controls';
+import { Controls } from '$lib/modules/controls/Controls';
+import type { NumberControl } from '$lib/types/controls';
 import { defaultParams } from './spirograph';
 
 enum Groups {
 	params = 'Parameters'
 }
-
-type ParamsKey = keyof typeof defaultParams;
 
 const radiusNode: NumberControl = {
 	name: 'Radius',
@@ -35,13 +34,13 @@ const branchesNode: NumberControl = {
 	key: 'branches'
 };
 
-const nodes: Record<ParamsKey, AnyControl> = {
-	radius: radiusNode,
-	branches: branchesNode
-};
-
-export const controlsConfig: ControlsConfig = {
-	groups: [Groups.params],
-	nodes,
-	defaults: defaultParams
-};
+export const controls = new Controls({
+	config: {
+		groups: [Groups.params],
+		nodes: {
+			radius: radiusNode,
+			branches: branchesNode
+		},
+		defaults: defaultParams
+	}
+});

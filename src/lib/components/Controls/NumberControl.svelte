@@ -2,6 +2,7 @@
 	import { NumberInput } from '@svelteuidev/core';
 	import type { NumberControl } from '$lib/types/controls';
 	import * as Icon from 'radix-icons-svelte';
+	import RangeSlider from '../RangeSlider.svelte';
 	export let onChange: (patch: Record<string, number>) => void;
 
 	export let control: NumberControl;
@@ -21,7 +22,7 @@
 	const ControlIcon = control.icon ? Icon[control.icon] : Icon.RulerSquare;
 </script>
 
-<div class="rangeControl">
+<div class="container">
 	<NumberInput
 		bind:value
 		on:input={patchParam}
@@ -41,22 +42,18 @@
 	/>
 
 	<div class="rangeSlider">
-		<input
+		<RangeSlider
 			bind:value
-			on:input={patchParam}
-			type="range"
+			onChange={patchParam}
 			min={control.min}
 			max={control.max}
 			step={control.step}
-			class="range"
 		/>
-
-		<div class="rangePips" />
 	</div>
 </div>
 
 <style>
-	.rangeControl {
+	.container {
 		position: relative;
 	}
 
@@ -66,55 +63,5 @@
 		right: 10px;
 		bottom: -9px;
 		height: 30px;
-	}
-
-	.range {
-		width: 100%;
-		position: relative;
-		top: -4px;
-		z-index: 10;
-		padding: 0;
-	}
-
-	input[type='range'] {
-		appearance: none;
-		background: transparent;
-	}
-
-	input[type='range']::-webkit-slider-thumb,
-	input[type='range']::-moz-range-thumb {
-		-webkit-appearance: none;
-		border: 1px solid var(--orange-500);
-		height: 12px;
-		width: 12px;
-		border-radius: 3px;
-		background: #ffffff;
-		cursor: pointer;
-	}
-
-	input[type='range']:focus {
-		outline: none;
-	}
-
-	input[type='range']::-webkit-slider-runnable-track,
-	input[type='range']::-moz-range-track {
-		height: 1px;
-		cursor: pointer;
-		background: var(--cool-gray-400);
-	}
-
-	.rangePips {
-		width: 100%;
-		height: 5px;
-		position: absolute;
-		top: 4px;
-		left: 2px;
-		background-image: linear-gradient(
-			90deg,
-			var(--cool-gray-400) 0%,
-			var(--cool-gray-400) 10%,
-			rgba(255, 255, 255, 0) 10%
-		);
-		background-size: 9px 100%;
 	}
 </style>

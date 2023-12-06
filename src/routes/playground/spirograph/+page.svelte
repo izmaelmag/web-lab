@@ -4,9 +4,12 @@
 	import Layout from '$lib/components/Layout.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Controls from '$lib/components/Controls/Controls.svelte';
-	import { controlsConfig } from './controls';
+	import { controls } from './controls';
 	import type { ControlsData } from '$lib/types/controls';
-	import Player from './player.svelte';
+	import Player from '$lib/components/Player.svelte';
+
+	let currentFrame: number;
+	let isPlaying: boolean;
 
 	const spirograph = new Spirograph({
 		settings: {
@@ -16,15 +19,13 @@
 			duration: 10
 		},
 
+		onTick: (settings) => {
+			currentFrame = settings.currentFrame;
+			isPlaying = settings.isPlaying;
+		},
+
 		params: defaultParams
 	});
-
-	$: spirograph;
-
-	let isPlaying = spirograph.isPlaying;
-	$: isPlaying;
-
-	console.log(spirograph)
 
 	const handleControlsChange = (newParams: ControlsData) => {
 		const params = newParams as SketchParams;
@@ -34,11 +35,18 @@
 
 <Layout>
 	<Header links={[{ title: 'Playground', url: '/playground' }, { title: 'Spirograph' }]} />
-
 	<div class="playground">
 		<div class="controls">
-			<Player />
-			<Controls onChange={handleControlsChange} config={controlsConfig} />
+			<Player
+				onPlay={() => spirograph.play()}
+				onPause={() => spirograph.pause()}
+				onReset={() => spirograph.reset()}
+				onChange={(currentFrame) => spirograph.setFrame(currentFrame)}
+				{currentFrame}
+				{isPlaying}
+				totalFrames={spirograph.totalFrames}
+			/>
+			<Controls onChange={handleControlsChange} config={controls.config} />
 		</div>
 
 		<div class="preview">

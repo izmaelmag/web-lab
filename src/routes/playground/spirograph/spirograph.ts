@@ -14,15 +14,24 @@ export const defaultParams: Params & ControlsData = {
 	branches: 1
 };
 
+type TickFunction = (state: { currentFrame: number; isPlaying: boolean }) => void;
+
 export class Spirograph extends P5Sketch<Params> {
 	bg: Graphics;
 	params: Params;
 	circle: Circle;
 	isPlaying = true;
 
-	constructor(props: SketchConstructorProps<Params>) {
+	onTick: TickFunction;
+
+	constructor(
+		props: SketchConstructorProps<Params> & {
+			onTick: TickFunction;
+		}
+	) {
 		super(props);
 
+		this.onTick = props.onTick;
 		this.params = props.params || defaultParams;
 		this.settings = props.settings;
 	}
@@ -67,6 +76,10 @@ export class Spirograph extends P5Sketch<Params> {
 			p.stroke('green');
 			p.line(this.center.x, this.center.y, point.x, point.y);
 		});
+
+		if (this.onTick) {
+			this.onTick({ currentFrame: this.currentFrame, isPlaying: this.isPlaying });
+		}
 	};
 
 	onLoop = () => {
