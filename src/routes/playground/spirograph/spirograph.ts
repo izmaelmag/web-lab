@@ -50,6 +50,24 @@ export class Spirograph extends P5Sketch<Params> {
 		});
 	};
 
+	drawBranch = (x: number, y: number, r: number, a: number, isFinal = false) => {
+		const { p } = this;
+		const angle = a + this.progress * (Math.PI * 2 * -2) - Math.PI / 2;
+
+		const point = pointAtAngle(x, y, r, angle);
+
+		if (this.params.showConnectors) {
+			p.stroke('green');
+			p.line(x, y, point.x, point.y);
+		}
+
+		if (!isFinal) {
+			this.drawBranch(point.x, point.y, 40, angle + this.progress * -1 * (Math.PI * 2), true);
+		}
+
+		p.circle(point.x, point.y, 3);
+	};
+
 	draw = () => {
 		const { p } = this;
 		p.background(255);
@@ -67,13 +85,15 @@ export class Spirograph extends P5Sketch<Params> {
 				angle + this.progress * (Math.PI * 2) - Math.PI / 2
 			);
 
-			points.push(point);
+			points.push({ ...point, angle });
 		}
 
 		points.forEach((point) => {
 			p.stroke(0);
 			p.fill(0);
 			p.circle(point.x, point.y, 4);
+
+			this.drawBranch(point.x, point.y, 20, point.angle);
 
 			if (this.params.showConnectors) {
 				p.stroke('green');

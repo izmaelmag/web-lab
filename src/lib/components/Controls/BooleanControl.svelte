@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { BooleanControl } from '$lib/types/controls';
-	import { Switch } from '@svelteuidev/core';
+	import { Switch, CheckboxGroup, Checkbox } from '@svelteuidev/core';
 
 	export let onChange: (patch: Record<string, boolean>) => void;
 
@@ -19,11 +19,30 @@
 	};
 </script>
 
-<Switch
-	size="sm"
-	onLabel="On"
-	offLabel="Off"
-	checked={value}
-	on:change={patchParam}
-	label={control.description}
-/>
+<div class="container">
+	<Checkbox
+		color="orange"
+		size="xs"
+		on:change={patchParam}
+		checked={value}
+		label={control.description}
+	/>
+</div>
+
+<style>
+	.container {
+		margin-top: 8px;
+
+		& .svelteui-Checkbox-label {
+			font-weight: 300;
+			color: var(--cool-gray-600);
+			user-select: none;
+		}
+
+		&:hover {
+			& .svelteui-Checkbox-label {
+				color: var(--cool-gray-900);
+			}
+		}
+	}
+</style>

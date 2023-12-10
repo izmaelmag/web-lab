@@ -3,7 +3,8 @@ import type { BooleanControl, NumberControl } from '$lib/types/controls';
 import { defaultParams } from './spirograph';
 
 enum Groups {
-	params = 'Parameters'
+	params = 'Parameters',
+	toggles = 'Toggles'
 }
 
 const radiusNode: NumberControl = {
@@ -37,7 +38,7 @@ const branchesNode: NumberControl = {
 const connectorsNode: BooleanControl = {
 	name: 'Branches',
 	description: 'Show connections',
-	group: Groups.params,
+	group: Groups.toggles,
 	order: 3,
 	type: 'boolean',
 	defaultValue: true,
@@ -46,7 +47,7 @@ const connectorsNode: BooleanControl = {
 
 export const controls = new Controls({
 	config: {
-		groups: [Groups.params],
+		groups: [Groups.params, Groups.toggles],
 		nodes: {
 			radius: radiusNode,
 			branches: branchesNode,
