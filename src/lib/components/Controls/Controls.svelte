@@ -3,6 +3,7 @@
 	import { Divider } from '@svelteuidev/core';
 	import type { AnyControl, ControlsConfig, ControlsData } from '$lib/types/controls';
 	import NumberControl from './NumberControl.svelte';
+	import BooleanControl from './BooleanControl.svelte';
 
 	export let onChange: (params: ControlsData) => void;
 	export let config: ControlsConfig;
@@ -40,6 +41,10 @@
 					{#each groupedNodes[groupName] as control}
 						{#if control.type === 'number'}
 							<NumberControl onChange={handleParamPatch} {control} />
+						{/if}
+
+						{#if control.type === 'boolean'}
+							<BooleanControl onChange={handleParamPatch} {control} />
 						{/if}
 					{/each}
 				</div>

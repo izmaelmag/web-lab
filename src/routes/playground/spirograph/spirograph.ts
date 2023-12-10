@@ -7,11 +7,13 @@ import type { Sketch } from 'p5-svelte';
 export type Params = {
 	radius: number;
 	branches: number;
+	showConnectors: boolean;
 };
 
 export const defaultParams: Params & ControlsData = {
 	radius: 50,
-	branches: 1
+	branches: 1,
+	showConnectors: true
 };
 
 type TickFunction = (state: { currentFrame: number; isPlaying: boolean }) => void;
@@ -73,8 +75,10 @@ export class Spirograph extends P5Sketch<Params> {
 			p.fill(0);
 			p.circle(point.x, point.y, 4);
 
-			p.stroke('green');
-			p.line(this.center.x, this.center.y, point.x, point.y);
+			if (this.params.showConnectors) {
+				p.stroke('green');
+				p.line(this.center.x, this.center.y, point.x, point.y);
+			}
 		});
 
 		if (this.onTick) {

@@ -3,12 +3,13 @@
 	import type { NumberControl } from '$lib/types/controls';
 	import * as Icon from 'radix-icons-svelte';
 	import RangeSlider from '../RangeSlider.svelte';
+
 	export let onChange: (patch: Record<string, number>) => void;
 
 	export let control: NumberControl;
 	$: control;
 
-	let value: number;
+	let value: number = control.defaultValue;
 	$: value;
 
 	const patchParam = () => {

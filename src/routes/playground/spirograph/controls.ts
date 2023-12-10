@@ -1,5 +1,5 @@
 import { Controls } from '$lib/modules/controls/Controls';
-import type { NumberControl } from '$lib/types/controls';
+import type { BooleanControl, NumberControl } from '$lib/types/controls';
 import { defaultParams } from './spirograph';
 
 enum Groups {
@@ -34,12 +34,23 @@ const branchesNode: NumberControl = {
 	key: 'branches'
 };
 
+const connectorsNode: BooleanControl = {
+	name: 'Branches',
+	description: 'Show connections',
+	group: Groups.params,
+	order: 3,
+	type: 'boolean',
+	defaultValue: true,
+	key: 'showConnectors'
+};
+
 export const controls = new Controls({
 	config: {
 		groups: [Groups.params],
 		nodes: {
 			radius: radiusNode,
-			branches: branchesNode
+			branches: branchesNode,
+			showConnectors: connectorsNode
 		},
 		defaults: defaultParams
 	}

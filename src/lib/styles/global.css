@@ -1,5 +1,6 @@
 :root {
 	--phone: (max-width: 480px);
+	--svelteui-fonts-standard: 'Azareth Mono', monospace;
 }
 
 body,
@@ -40,7 +41,6 @@ h6 {
 	box-sizing: border-box;
 }
 
-input.svelteui-Input-input.svelteui-Input-input.svelteui-Input-input {
+.svelteui-Input-input.svelteui-Input-input.svelteui-Input-input {
 	font-size: 11px;
-	font-family: 'Azareth Mono', monospace;
 }

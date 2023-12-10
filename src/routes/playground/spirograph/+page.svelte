@@ -29,7 +29,8 @@
 
 	const handleControlsChange = (newParams: ControlsData) => {
 		const params = newParams as SketchParams;
-		spirograph.setParams(params);
+		console.log(params);
+		spirograph.setParams({ ...defaultParams, ...params });
 	};
 </script>
 
@@ -38,6 +39,7 @@
 	<div class="playground">
 		<div class="controls">
 			<Player
+				onRecord={() => {}}
 				onPlay={() => spirograph.play()}
 				onPause={() => spirograph.pause()}
 				onReset={() => spirograph.reset()}
