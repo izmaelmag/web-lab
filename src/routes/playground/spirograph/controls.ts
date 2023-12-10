@@ -45,13 +45,24 @@ const connectorsNode: BooleanControl = {
 	key: 'showConnectors'
 };
 
+const circlesNode: BooleanControl = {
+	name: 'Circles',
+	description: 'Show circles',
+	group: Groups.toggles,
+	order: 4,
+	type: 'boolean',
+	defaultValue: true,
+	key: 'showCircles'
+};
+
 export const controls = new Controls({
 	config: {
 		groups: [Groups.params, Groups.toggles],
 		nodes: {
 			radius: radiusNode,
 			branches: branchesNode,
-			showConnectors: connectorsNode
+			showConnectors: connectorsNode,
+			showCircles: circlesNode
 		},
 		defaults: defaultParams
 	}

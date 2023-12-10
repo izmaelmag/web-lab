@@ -29,7 +29,6 @@
 
 	const handleControlsChange = (newParams: ControlsData) => {
 		const params = newParams as SketchParams;
-		console.log(params);
 		spirograph.setParams({ ...defaultParams, ...params });
 	};
 </script>

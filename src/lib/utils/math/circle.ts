@@ -2,12 +2,15 @@ import type { Angle, Point } from '$lib/types/math';
 
 export type CircleConstructorProps = {
 	c: Point;
-	r: number;
+	r: {
+		x: number;
+		y: number;
+	};
 	a?: Angle;
 };
 
 export class Circle {
-	r: number;
+	r: Point;
 	c: Point;
 
 	// Relative calculation angle of a circle
@@ -21,8 +24,8 @@ export class Circle {
 
 	pointAtAngle = (radians: Angle): Point => {
 		return {
-			x: this.c.x + Math.cos(this.a + radians) * this.r,
-			y: this.c.y + Math.sin(this.a + radians) * this.r
+			x: this.c.x + Math.cos(this.a + radians) * this.r.x,
+			y: this.c.y + Math.sin(this.a + radians) * this.r.y
 		};
 	};
 }

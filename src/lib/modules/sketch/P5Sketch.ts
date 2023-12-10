@@ -109,7 +109,7 @@ export class P5Sketch<T> {
 
 		setTimeout(() => {
 			p.loop();
-			p.saveGif('mySketch', this.totalFrames, {
+			p.saveGif('mySketch', this.totalFrames - 1, {
 				delay: 0,
 				units: 'frames',
 				silent: false

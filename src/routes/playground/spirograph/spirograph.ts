@@ -1,6 +1,7 @@
 import { P5Sketch, type SketchConstructorProps } from '$lib/modules/sketch/P5Sketch';
 import type { ControlsData } from '$lib/types/controls';
-import { Circle, pointAtAngle } from '$lib/utils/math/circle';
+import type { Point } from '$lib/types/math';
+import { Circle } from '$lib/utils/math/circle';
 import type { Graphics } from 'p5';
 import type { Sketch } from 'p5-svelte';
 
@@ -8,12 +9,25 @@ export type Params = {
 	radius: number;
 	branches: number;
 	showConnectors: boolean;
+	showCircles: boolean;
 };
 
 export const defaultParams: Params & ControlsData = {
 	radius: 50,
 	branches: 1,
-	showConnectors: true
+	showConnectors: true,
+	showCircles: true
+};
+
+type SineLevel = {
+	branches: number;
+	startAngle: number;
+	radius: {
+		x: number;
+		y: number;
+	};
+	rotationSpeed: number;
+	origin?: Point;
 };
 
 type TickFunction = (state: { currentFrame: number; isPlaying: boolean }) => void;
@@ -21,10 +35,42 @@ type TickFunction = (state: { currentFrame: number; isPlaying: boolean }) => voi
 export class Spirograph extends P5Sketch<Params> {
 	bg: Graphics;
 	params: Params;
-	circle: Circle;
 	isPlaying = true;
-
 	onTick: TickFunction;
+
+	levels: SineLevel[] = [
+		{
+			branches: 1,
+			startAngle: (Math.PI / 2) * -1,
+			radius: {
+				x: 100,
+				y: 100
+			},
+			rotationSpeed: 1,
+			origin: {
+				x: this.center.x,
+				y: this.center.y
+			}
+		},
+		{
+			branches: 6,
+			startAngle: 0,
+			radius: {
+				x: 50,
+				y: 50
+			},
+			rotationSpeed: -2
+		},
+		{
+			branches: 1,
+			startAngle: 0,
+			radius: {
+				x: 25,
+				y: 25
+			},
+			rotationSpeed: 3
+		}
+	];
 
 	constructor(
 		props: SketchConstructorProps<Params> & {
@@ -40,66 +86,51 @@ export class Spirograph extends P5Sketch<Params> {
 
 	setup: Sketch = (p) => {
 		p.createCanvas(this.size.w, this.size.h);
-
 		this.bg = p.createGraphics(this.size.w, this.size.h);
-
-		this.circle = new Circle({
-			c: this.center,
-			r: this.params.radius,
-			a: this.progress * Math.PI * 2
-		});
 	};
 
-	drawBranch = (x: number, y: number, r: number, a: number, isFinal = false) => {
-		const { p } = this;
-		const angle = a + this.progress * (Math.PI * 2 * -2) - Math.PI / 2;
+	drawLevel = (n = 0, parentAngle = Math.PI / -2, origin = this.center) => {
+		this.p.noFill();
+		const levelData = this.levels[n];
+		const angle = this.progress * Math.PI * 2 * levelData.rotationSpeed + parentAngle;
 
-		const point = pointAtAngle(x, y, r, angle);
+		const circle = new Circle({
+			c: origin,
+			r: levelData.radius,
+			a: angle
+		});
 
-		if (this.params.showConnectors) {
-			p.stroke('green');
-			p.line(x, y, point.x, point.y);
+		const angleStep = (Math.PI * 2) / levelData.branches;
+
+		if (this.params.showCircles) {
+			this.p.arc(circle.c.x, circle.c.y, circle.r.x * 2, circle.r.y * 2, 0, Math.PI * 2);
 		}
 
-		if (!isFinal) {
-			this.drawBranch(point.x, point.y, 40, angle + this.progress * -1 * (Math.PI * 2), true);
-		}
+		for (let pn = 0; pn < levelData.branches; pn++) {
+			const pointAngle = angleStep * pn;
 
-		p.circle(point.x, point.y, 3);
+			const point = circle.pointAtAngle(pointAngle);
+
+			if (n === this.levels.length - 1) {
+				this.bg.circle(point.x, point.y, 1);
+			}
+
+			if (this.levels[n + 1]) {
+				this.drawLevel(n + 1, pointAngle + angle, point);
+			}
+
+			if (this.params.showConnectors) {
+				this.p.line(circle.c.x, circle.c.y, point.x, point.y);
+			}
+		}
 	};
 
 	draw = () => {
 		const { p } = this;
+
 		p.background(255);
 		p.image(this.bg, 0, 0, this.settings.w, this.settings.h);
-
-		const points = [];
-
-		for (let i = 0; i < this.params.branches; i++) {
-			const angle = (Math.PI * 2 * i) / this.params.branches;
-
-			const point = pointAtAngle(
-				this.center.x,
-				this.center.y,
-				this.params.radius,
-				angle + this.progress * (Math.PI * 2) - Math.PI / 2
-			);
-
-			points.push({ ...point, angle });
-		}
-
-		points.forEach((point) => {
-			p.stroke(0);
-			p.fill(0);
-			p.circle(point.x, point.y, 4);
-
-			this.drawBranch(point.x, point.y, 20, point.angle);
-
-			if (this.params.showConnectors) {
-				p.stroke('green');
-				p.line(this.center.x, this.center.y, point.x, point.y);
-			}
-		});
+		this.drawLevel(0);
 
 		if (this.onTick) {
 			this.onTick({ currentFrame: this.currentFrame, isPlaying: this.isPlaying });

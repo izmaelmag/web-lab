@@ -34,8 +34,6 @@
 				age
 			});
 
-			console.log('New user created:', newUserId);
-
 			formElement.reset();
 		} catch (error) {
 			console.warn('Failed to add user');
