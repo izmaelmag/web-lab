@@ -142,6 +142,10 @@ export class P5Sketch<T> {
 		p.background(255);
 	};
 
+	preload: P5SvelteSketch = (p) => {
+		// Preload content
+	};
+
 	render: P5SvelteSketch = (p) => {
 		// Sketch starting operations
 		this.init(p);

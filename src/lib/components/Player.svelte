@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { Tooltip, Group, ActionIcon, Divider, NumberInput } from '@svelteuidev/core';
-	import { Play, Pause, TrackPrevious, Timer, Radiobutton } from 'radix-icons-svelte';
+	import { Play, Pause, TrackPrevious, Timer, Radiobutton, TrackNext } from 'radix-icons-svelte';
 	import RangeSlider from './RangeSlider.svelte';
 
 	export let currentFrame: number = 0;
 	export let totalFrames: number = 0;
 	export let isPlaying: boolean = false;
-	export let isRecording: boolean = false;
+	// export let isRecording: boolean = false;
 	export let onPlay: () => void;
 	export let onPause: () => void;
 	export let onReset: () => void;
-	export let onRecord: () => void;
+	export let onSkip: () => void;
 	export let onChange: (frame: number) => void;
 
 	$: frameTimerText = `${currentFrame
@@ -72,13 +72,8 @@
 			</Tooltip>
 
 			<Tooltip label="Record" withArrow openDelay={100}>
-				<ActionIcon
-					color="red"
-					size="sm"
-					variant={isRecording ? 'filled' : 'outline'}
-					on:click={onRecord}
-				>
-					<Radiobutton />
+				<ActionIcon color="blue" size="sm" variant="outline" on:click={onSkip}>
+					<TrackNext />
 				</ActionIcon>
 			</Tooltip>
 		</Group>
