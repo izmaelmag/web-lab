@@ -1,8 +1,13 @@
-import type { AnyControl, ControlsConfig, ControlsData } from '$lib/types/controls';
+import type {
+	AnyControl,
+	ControlNodesMap,
+	ControlsConfig,
+	ControlsData
+} from '$lib/types/controls';
 
 export class Controls {
 	params: ControlsData;
-	nodes: Record<string, AnyControl>;
+	nodes: ControlNodesMap;
 	groups: string[];
 
 	constructor({ config }: { config: ControlsConfig }) {

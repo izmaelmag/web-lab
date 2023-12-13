@@ -45,10 +45,12 @@ export interface BooleanControl extends ControlNode {
 
 export type AnyControl = StringControl | RangeControl | NumberControl | BooleanControl;
 
-export type ControlsData = Record<string, ControlValue>;
+export type ControlsData = Record<string, ControlValue | ControlValue[]>;
+
+export type ControlNodesMap = Record<string, AnyControl | AnyControl[]>;
 
 export type ControlsConfig = {
 	groups: string[];
-	nodes: Record<string, AnyControl>;
+	nodes: ControlNodesMap;
 	defaults?: ControlsData;
 };

@@ -53,22 +53,22 @@ export class Spirograph extends P5Sketch<Params> {
 			}
 		},
 		{
-			branches: 6,
+			branches: 2,
 			startAngle: 0,
 			radius: {
 				x: 50,
 				y: 50
 			},
-			rotationSpeed: -2
+			rotationSpeed: 2
 		},
 		{
 			branches: 1,
 			startAngle: 0,
 			radius: {
-				x: 25,
-				y: 25
+				x: 30,
+				y: 30
 			},
-			rotationSpeed: 3
+			rotationSpeed: 4
 		}
 	];
 
@@ -112,6 +112,8 @@ export class Spirograph extends P5Sketch<Params> {
 			const point = circle.pointAtAngle(pointAngle);
 
 			if (n === this.levels.length - 1) {
+				this.bg.fill(0)
+				this.bg.noStroke()
 				this.bg.circle(point.x, point.y, 1);
 			}
 
@@ -120,6 +122,7 @@ export class Spirograph extends P5Sketch<Params> {
 			}
 
 			if (this.params.showConnectors) {
+				this.p.stroke(120)
 				this.p.line(circle.c.x, circle.c.y, point.x, point.y);
 			}
 		}
@@ -138,6 +141,6 @@ export class Spirograph extends P5Sketch<Params> {
 	};
 
 	onLoop = () => {
-		this.bg.clear(255, 255, 255, 255);
+		// this.bg.clear(255, 255, 255, 255);
 	};
 }
