@@ -10,8 +10,9 @@
 
 	let currentFrame: number;
 	let isPlaying: boolean;
+	let isRecording: boolean;
 
-	const spirograph = new Daily1({
+	const sketch = new Daily1({
 		settings: {
 			w: 520,
 			h: 520,
@@ -22,6 +23,7 @@
 		onTick: (settings) => {
 			currentFrame = settings.currentFrame;
 			isPlaying = settings.isPlaying;
+			isRecording = settings.isRecording
 		},
 
 		params: defaultParams
@@ -29,7 +31,7 @@
 
 	const handleControlsChange = (newParams: ControlsData) => {
 		const params = newParams as SketchParams;
-		spirograph.setParams({ ...defaultParams, ...params });
+		sketch.setParams({ ...defaultParams, ...params });
 	};
 </script>
 
@@ -38,21 +40,23 @@
 	<div class="playground">
 		<div class="controls">
 			<Player
-				onSkip={() => spirograph.setFrame(spirograph.totalFrames)}
-				onPlay={() => spirograph.play()}
-				onPause={() => spirograph.pause()}
-				onReset={() => spirograph.reset()}
-				onChange={(currentFrame) => spirograph.setFrame(currentFrame)}
+				onSkip={() => sketch.setFrame(sketch.totalFrames)}
+				onPlay={() => sketch.play()}
+				onPause={() => sketch.pause()}
+				onReset={() => sketch.reset()}
+				onRecord={() => sketch.record()}
+				onChange={(currentFrame) => sketch.setFrame(currentFrame)}
 				{currentFrame}
 				{isPlaying}
-				totalFrames={spirograph.totalFrames}
+				{isRecording}
+				totalFrames={sketch.totalFrames}
 			/>
 			<Controls onChange={handleControlsChange} config={controls.config} />
 		</div>
 
 		<div class="preview">
-			{#if spirograph}
-				<P5 sketch={spirograph.render} />
+			{#if sketch}
+				<P5 sketch={sketch.render} />
 			{/if}
 		</div>
 	</div>
@@ -64,6 +68,10 @@
 		align-items: stretch;
 		gap: 8px;
 		height: 100%;
+
+		@media screen and (max-width: 640px) {
+			flex-direction: column-reverse;
+		}
 	}
 
 	.controls {
@@ -72,6 +80,14 @@
 		padding-right: 8px;
 		overflow: auto;
 		flex-shrink: 0;
+
+		@media screen and (max-width: 640px) {
+			height: 100%;
+			width: 100%;
+			min-height: 0;
+			flex-shrink: 1;
+			padding-bottom: 80px;
+		}
 	}
 
 	.preview {
@@ -82,8 +98,28 @@
 		align-items: center;
 		justify-content: center;
 
+		@media screen and (max-width: 640px) {
+			height: auto;
+			flex-shrink: 0;
+			border: none;
+			border-bottom: 1px solid var(--cool-gray-300);
+			padding-bottom: 8px;
+
+			& > div {
+				display: flex !important;
+				align-items: center;
+				justify-content: center;
+			}
+		}
+
 		& canvas {
 			border: 1px solid var(--cool-gray-300);
+
+			@media screen and (max-width: 640px) {
+				width: 50% !important;
+				height: auto !important;
+				aspect-ratio: 1 / 1;
+			}
 		}
 	}
 </style>

@@ -30,7 +30,11 @@ type SineLevel = {
 	origin?: Point;
 };
 
-type TickFunction = (state: { currentFrame: number; isPlaying: boolean }) => void;
+type TickFunction = (state: {
+	currentFrame: number;
+	isPlaying: boolean;
+	isRecording: boolean;
+}) => void;
 
 export class Spirograph extends P5Sketch<Params> {
 	bg: Graphics;
@@ -112,8 +116,8 @@ export class Spirograph extends P5Sketch<Params> {
 			const point = circle.pointAtAngle(pointAngle);
 
 			if (n === this.levels.length - 1) {
-				this.bg.fill(0)
-				this.bg.noStroke()
+				this.bg.fill(0);
+				this.bg.noStroke();
 				this.bg.circle(point.x, point.y, 1);
 			}
 
@@ -122,7 +126,7 @@ export class Spirograph extends P5Sketch<Params> {
 			}
 
 			if (this.params.showConnectors) {
-				this.p.stroke(120)
+				this.p.stroke(120);
 				this.p.line(circle.c.x, circle.c.y, point.x, point.y);
 			}
 		}
@@ -136,7 +140,11 @@ export class Spirograph extends P5Sketch<Params> {
 		this.drawLevel(0);
 
 		if (this.onTick) {
-			this.onTick({ currentFrame: this.currentFrame, isPlaying: this.isPlaying });
+			this.onTick({
+				currentFrame: this.currentFrame,
+				isPlaying: this.isPlaying,
+				isRecording: this.isRecording
+			});
 		}
 	};
 

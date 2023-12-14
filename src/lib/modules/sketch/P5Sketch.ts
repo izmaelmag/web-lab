@@ -28,6 +28,7 @@ export class P5Sketch<T> {
 	params: T;
 	isPlaying = false;
 	currentFrame = 0;
+	isRecording = false;
 
 	constructor({ params, settings }: SketchConstructorProps<T>) {
 		this.params = params;
@@ -43,8 +44,6 @@ export class P5Sketch<T> {
 			...this.params,
 			...newParams
 		};
-
-		// this.render(this.p);
 	}
 
 	setProgress(newProgress: number) {
@@ -80,6 +79,10 @@ export class P5Sketch<T> {
 		this.currentFrame = 0;
 	};
 
+	record = () => {
+		this.save()
+	}
+
 	setFrame = (frame: number) => {
 		this.isPlaying = false;
 		this.currentFrame = frame;
@@ -103,18 +106,20 @@ export class P5Sketch<T> {
 	};
 
 	// Saves drawing sequence
-	save: P5SvelteSketch = (p) => {
-		p.noLoop();
+	save = () => {
+		this.p.noLoop();
 		this.currentFrame = 0;
+		this.isRecording = true;
+		this.isPlaying = true;
 
 		setTimeout(() => {
-			p.loop();
-			p.saveGif('mySketch', this.totalFrames - 1, {
+			this.p.loop();
+			this.p.saveGif('Daily_2', this.totalFrames - 1, {
 				delay: 0,
 				units: 'frames',
 				silent: false
 			});
-		});
+		}, 0);
 	};
 
 	init: P5SvelteSketch = (p) => {
@@ -142,7 +147,7 @@ export class P5Sketch<T> {
 		p.background(255);
 	};
 
-	preload: P5SvelteSketch = (p) => {
+	preload = () => {
 		// Preload content
 	};
 
@@ -165,7 +170,7 @@ export class P5Sketch<T> {
 		// React on pressed keys
 		p.keyPressed = () => {
 			// Starts gif saving loop
-			if (p.key === 's') this.save(p);
+			if (p.key === 's') this.save();
 		};
 	};
 }

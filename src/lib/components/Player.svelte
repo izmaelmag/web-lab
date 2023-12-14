@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { Tooltip, Group, ActionIcon, Divider, NumberInput } from '@svelteuidev/core';
+	import { Tooltip, Group, ActionIcon, Divider } from '@svelteuidev/core';
 	import { Play, Pause, TrackPrevious, Timer, Radiobutton, TrackNext } from 'radix-icons-svelte';
 	import RangeSlider from './RangeSlider.svelte';
 
 	export let currentFrame: number = 0;
 	export let totalFrames: number = 0;
 	export let isPlaying: boolean = false;
-	// export let isRecording: boolean = false;
+	export let isRecording: boolean = false;
+
+	export let onRecord: () => void;
 	export let onPlay: () => void;
 	export let onPause: () => void;
 	export let onReset: () => void;
@@ -43,17 +45,36 @@
 		</div>
 
 		<Group position="center" spacing={4} noWrap>
-			<Tooltip label="Reset" withArrow openDelay={100}>
-				<ActionIcon color="blue" size="sm" variant="outline" on:click={onReset}>
+			<Tooltip label="Start" withArrow openDelay={100}>
+				<ActionIcon
+					disabled={isRecording}
+					color="blue"
+					size="sm"
+					variant="outline"
+					on:click={onReset}
+				>
 					<TrackPrevious />
+				</ActionIcon>
+			</Tooltip>
+
+			<Tooltip label="End" withArrow openDelay={100}>
+				<ActionIcon
+					disabled={isRecording}
+					color="blue"
+					size="sm"
+					variant="outline"
+					on:click={onSkip}
+				>
+					<TrackNext />
 				</ActionIcon>
 			</Tooltip>
 
 			<Tooltip label="Play" withArrow openDelay={100}>
 				<ActionIcon
+					disabled={isRecording}
 					color="green"
 					size="sm"
-					variant={isPlaying ? 'filled' : 'outline'}
+					variant={isPlaying && !isRecording ? 'filled' : 'outline'}
 					on:click={onPlay}
 				>
 					<Play />
@@ -62,6 +83,7 @@
 
 			<Tooltip label="Pause" withArrow openDelay={100}>
 				<ActionIcon
+					disabled={isRecording}
 					color="orange"
 					size="sm"
 					variant={!isPlaying ? 'filled' : 'outline'}
@@ -72,8 +94,13 @@
 			</Tooltip>
 
 			<Tooltip label="Record" withArrow openDelay={100}>
-				<ActionIcon color="blue" size="sm" variant="outline" on:click={onSkip}>
-					<TrackNext />
+				<ActionIcon
+					color="orange"
+					size="sm"
+					variant={isRecording ? 'filled' : 'outline'}
+					on:click={onRecord}
+				>
+					<Radiobutton />
 				</ActionIcon>
 			</Tooltip>
 		</Group>

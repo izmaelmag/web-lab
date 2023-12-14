@@ -20,7 +20,11 @@ export const defaultParams: Params & ControlsData = {
 	shadeIntense: 1
 };
 
-type TickFunction = (state: { currentFrame: number; isPlaying: boolean }) => void;
+type TickFunction = (state: {
+	currentFrame: number;
+	isPlaying: boolean;
+	isRecording: boolean;
+}) => void;
 
 export class Daily1 extends P5Sketch<Params> {
 	params: Params;
@@ -124,7 +128,7 @@ export class Daily1 extends P5Sketch<Params> {
 		p.background(0, 0, 0, 30);
 
 		this.drawCircles();
-		
+
 		p.stroke(120);
 		if (this.isPlaying) {
 			for (let i = 0; i < 4000; i++) {
@@ -136,7 +140,11 @@ export class Daily1 extends P5Sketch<Params> {
 		}
 
 		if (this.onTick) {
-			this.onTick({ currentFrame: this.currentFrame, isPlaying: this.isPlaying });
+			this.onTick({
+				currentFrame: this.currentFrame,
+				isPlaying: this.isPlaying,
+				isRecording: this.isRecording
+			});
 		}
 	};
 }

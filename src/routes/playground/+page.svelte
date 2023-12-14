@@ -10,6 +10,7 @@
 		<a href="/playground/spirograph">Spirograph</a>
 		<a href="/playground/loop_demo">Loop demo</a>
 		<a href="/playground/daily-1">Daily #1</a>
+		<a href="/playground/daily-2">Daily #2</a>
 	</nav>
 </Layout>
 

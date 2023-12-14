@@ -1,6 +1,6 @@
 <script lang="ts">
 	import P5 from 'p5-svelte';
-	import { Spirograph, defaultParams, type Params as SketchParams } from './spirograph';
+	import { Daily2, defaultParams, type Params as SketchParams } from './daily-2';
 	import Layout from '$lib/components/Layout.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Controls from '$lib/components/Controls/Controls.svelte';
@@ -12,11 +12,11 @@
 	let isPlaying: boolean;
 	let isRecording: boolean;
 
-	const spirograph = new Spirograph({
+	const sketch = new Daily2({
 		settings: {
-			w: 480,
-			h: 480,
-			fps: 60,
+			w: 420,
+			h: 420,
+			fps: 30,
 			duration: 10
 		},
 
@@ -31,32 +31,32 @@
 
 	const handleControlsChange = (newParams: ControlsData) => {
 		const params = newParams as SketchParams;
-		spirograph.setParams({ ...defaultParams, ...params });
+		sketch.setParams({ ...defaultParams, ...params });
 	};
 </script>
 
 <Layout>
-	<Header links={[{ title: 'Playground', url: '/playground' }, { title: 'Spirograph' }]} />
+	<Header links={[{ title: 'Playground', url: '/playground' }, { title: 'Daily #2' }]} />
 	<div class="playground">
 		<div class="controls">
 			<Player
-				onPlay={() => spirograph.play()}
-				onPause={() => spirograph.pause()}
-				onReset={() => spirograph.reset()}
-				onSkip={() => spirograph.setFrame(spirograph.totalFrames)}
-				onRecord={() => spirograph.record()}
-				onChange={(currentFrame) => spirograph.setFrame(currentFrame)}
+				onSkip={() => sketch.setFrame(sketch.totalFrames)}
+				onPlay={() => sketch.play()}
+				onPause={() => sketch.pause()}
+				onReset={() => sketch.reset()}
+				onRecord={() => sketch.record()}
+				onChange={(currentFrame) => sketch.setFrame(currentFrame)}
 				{currentFrame}
 				{isPlaying}
 				{isRecording}
-				totalFrames={spirograph.totalFrames}
+				totalFrames={sketch.totalFrames}
 			/>
 			<Controls onChange={handleControlsChange} config={controls.config} />
 		</div>
 
 		<div class="preview">
-			{#if spirograph}
-				<P5 sketch={spirograph.render} />
+			{#if sketch}
+				<P5 sketch={sketch.render} />
 			{/if}
 		</div>
 	</div>
