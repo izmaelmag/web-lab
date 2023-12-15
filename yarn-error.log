@@ -1,8 +1,8 @@
 Arguments: 
-  /Users/variant-ism/.nvm/versions/node/v18.16.0/bin/node /Users/variant-ism/.yarn/bin/yarn.js add storybook-css-modules-preset
+  /Users/variant-ism/.nvm/versions/node/v18.16.0/bin/node /Users/variant-ism/.yarn/bin/yarn.js add @types/threlte
 
 PATH: 
-  /Users/variant-ism/.bun/bin:/Users/variant-ism/.yarn/bin:/Users/variant-ism/.config/yarn/global/node_modules/.bin:/Users/variant-ism/Library/Python/3.10/bin:/Users/variant-ism/woff2:/usr/local/opt/openjdk@11/bin:/Users/variant-ism/.nvm/versions/node/v18.16.0/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/usr/local/MacGPG2/bin:/Library/TeX/texbin:/Users/variant-ism/.cargo/bin:/usr/local/bin
+  /Users/variant-ism/.bun/bin:/Users/variant-ism/.yarn/bin:/Users/variant-ism/.config/yarn/global/node_modules/.bin:/Users/variant-ism/Library/Python/3.10/bin:/Users/variant-ism/woff2:/usr/local/opt/openjdk@11/bin:/Users/variant-ism/.nvm/versions/node/v18.16.0/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/usr/local/MacGPG2/bin:/Library/TeX/texbin:/Users/variant-ism/.bun/bin:/Users/variant-ism/.yarn/bin:/Users/variant-ism/.config/yarn/global/node_modules/.bin:/Users/variant-ism/Library/Python/3.10/bin:/Users/variant-ism/woff2:/usr/local/opt/openjdk@11/bin:/Users/variant-ism/.nvm/versions/node/v18.16.0/bin:/Users/variant-ism/.cargo/bin:/usr/local/bin
 
 Yarn version: 
   1.22.19
@@ -14,10 +14,17 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/storybook-css-modules-preset: ETIMEDOUT
-      at Timeout._onTimeout (/Users/variant-ism/.yarn/lib/cli.js:141550:19)
-      at listOnTimeout (node:internal/timers:569:17)
-      at process.processTimers (node:internal/timers:512:7)
+  Error: https://registry.yarnpkg.com/@types%2fthrelte: Not found
+      at params.callback [as _callback] (/Users/variant-ism/.yarn/lib/cli.js:66145:18)
+      at self.callback (/Users/variant-ism/.yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/Users/variant-ism/.yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (/Users/variant-ism/.yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1359:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
 
 npm manifest: 
   {
@@ -78,12 +85,17 @@ npm manifest:
       "@svelteuidev/motion": "^0.15.3",
       "@svelteuidev/preprocessors": "^0.15.3",
       "@svelteuidev/prism": "^0.15.3",
+      "@threlte/core": "^7.0.11",
+      "@threlte/extras": "^8.0.9",
+      "@threlte/flex": "^1.0.0",
       "@types/dat.gui": "^0.7.12",
       "@types/p5": "^1.7.4",
       "@types/react": "^18.2.37",
       "@types/svelte-range-slider-pips": "^2.0.3",
+      "@types/three": "^0.159.0",
       "@types/uuid": "^9.0.6",
       "@uploadcare/upload-client": "^6.10.0",
+      "@vercel/speed-insights": "^1.0.1",
       "dat.gui": "^0.7.9",
       "dexie": "^4.0.1-beta.1",
       "gsap": "^3.12.2",
@@ -92,7 +104,9 @@ npm manifest:
       "p5-svelte": "^3.1.2",
       "radix-icons-svelte": "^1.2.1",
       "react": "^18.2.0",
+      "storybook-css-modules-preset": "^1.1.1",
       "svelte-range-slider-pips": "^2.2.3",
+      "three": "^0.159.0",
       "tone": "^14.7.77",
       "uuid": "^9.0.1"
     }
@@ -2646,6 +2660,28 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.3.0.tgz#0a6750b94b40e4739706d41e8efc2ccf64d2aad9"
     integrity sha512-P02xtBBa8yMaLhK8CzJCIns8rqwnF6FxhR9zs810flHOBXUYCFjLd8Io1rQrAkQRWEmW2PGdZIEdMxf/KLsqFA==
   
+  "@threlte/core@^7.0.11":
+    version "7.0.11"
+    resolved "https://registry.yarnpkg.com/@threlte/core/-/core-7.0.11.tgz#71617bd9cf963002bf4781c659a3e483a1a2f2d7"
+    integrity sha512-CmZh56yWns/U/Y0VpG8levDPdqHI57OMP43m6fTmyhraWQyNAaUBJPL5EN1UTEPaDHzbT7ea+vTVZDUeBfvxqA==
+    dependencies:
+      mitt "^3.0.1"
+  
+  "@threlte/extras@^8.0.9":
+    version "8.0.9"
+    resolved "https://registry.yarnpkg.com/@threlte/extras/-/extras-8.0.9.tgz#81c2bacf3c4f1ac1da945a9e94f7073f030495b8"
+    integrity sha512-IcMcYZotMNdnR8LgtvHXu+P5Ih0MhDSS37Lzbkglu8P172rspD4h2XDzE3rMNyPS80os1fV4mXv+g4V7gYmeIg==
+    dependencies:
+      troika-three-text "^0.47.2"
+  
+  "@threlte/flex@^1.0.0":
+    version "1.0.0"
+    resolved "https://registry.yarnpkg.com/@threlte/flex/-/flex-1.0.0.tgz#96e7c0dbc27f69cffc99cfe152f3a5499f7e9052"
+    integrity sha512-xgZFGYtiJALMC12B5Hm+iTuTFZzKqCQIuRWqR6AjU0A9Z7ZJcSLyCgR/mkioOz/2w8IyTQTU8ySmvyho6EznsQ==
+    dependencies:
+      mitt "^3.0.1"
+      yoga-layout "^2.0.0"
+  
   "@types/aria-query@^5.0.1":
     version "5.0.4"
     resolved "https://registry.yarnpkg.com/@types/aria-query/-/aria-query-5.0.4.tgz#1a31c3d378850d2778dabb6374d036dcba4ba708"
@@ -2939,12 +2975,27 @@ Lockfile:
       "@types/mime" "*"
       "@types/node" "*"
   
+  "@types/stats.js@*":
+    version "0.17.3"
+    resolved "https://registry.yarnpkg.com/@types/stats.js/-/stats.js-0.17.3.tgz#705446e12ce0fad618557dd88236f51148b7a935"
+    integrity sha512-pXNfAD3KHOdif9EQXZ9deK82HVNaXP5ZIF5RP2QG6OQFNTaY2YIetfrE9t528vEreGQvEPRDDc8muaoYeK0SxQ==
+  
   "@types/svelte-range-slider-pips@^2.0.3":
     version "2.0.3"
     resolved "https://registry.yarnpkg.com/@types/svelte-range-slider-pips/-/svelte-range-slider-pips-2.0.3.tgz#febeb2ac0092843fff3e3c5ab31ede4a2b205ba9"
     integrity sha512-MIkTyQHrDupSIDAFDlzCe/XmHafHBXqEmgR/N2nlgNk9rXc/vVyEXPtn1hGIi5yt6pPoyV5ldcHFkk1AFwhqXA==
     dependencies:
       svelte "^3.0.0"
+  
+  "@types/three@^0.159.0":
+    version "0.159.0"
+    resolved "https://registry.yarnpkg.com/@types/three/-/three-0.159.0.tgz#e1c9d2a84543c2febee5244cc5cf7d657d13aa45"
+    integrity sha512-2gybdh7HtX+rGUgslzK7QEJfzD2I0qrbUGzKk+dK0FDx49UHkNX0rqZVRzIgeFjBd1HzzhNNgwNoMacm3Wyc7w==
+    dependencies:
+      "@types/stats.js" "*"
+      "@types/webxr" "*"
+      fflate "~0.6.10"
+      meshoptimizer "~0.18.1"
   
   "@types/unist@^2.0.0":
     version "2.0.10"
@@ -2960,6 +3011,11 @@ Lockfile:
     version "9.0.6"
     resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.6.tgz#c91ae743d8344a54b2b0c691195f5ff5265f6dfb"
     integrity sha512-BT2Krtx4xaO6iwzwMFUYvWBWkV2pr37zD68Vmp1CDV196MzczBRxuEpD6Pr395HAgebC/co7hOphs53r8V7jew==
+  
+  "@types/webxr@*":
+    version "0.5.10"
+    resolved "https://registry.yarnpkg.com/@types/webxr/-/webxr-0.5.10.tgz#19c76208ec015ca3f139505e14d94d6b740f518a"
+    integrity sha512-n3u5sqXQJhf1CS68mw3Wf16FQ4cRPNBBwdYLFzq3UddiADOim1Pn3Y6PBdDilz1vOJF3ybLxJ8ZEDlLIzrOQZg==
   
   "@types/yargs-parser@*":
     version "21.0.3"
@@ -3136,6 +3192,11 @@ Lockfile:
       micromatch "^4.0.2"
       node-gyp-build "^4.2.2"
       resolve-from "^5.0.0"
+  
+  "@vercel/speed-insights@^1.0.1":
+    version "1.0.1"
+    resolved "https://registry.yarnpkg.com/@vercel/speed-insights/-/speed-insights-1.0.1.tgz#ea801f639594cbd5121d80a0ea1103e08ac5edc9"
+    integrity sha512-cm8KTTsDgS1AbWsgIEZuMoyPUjclzeqJihyLp0tnA21B/x9iTE8hu2S5zM+/DBzihuHxWL1dx9pCWk22ctMFWQ==
   
   "@vitest/expect@^0.34.2":
     version "0.34.7"
@@ -3476,6 +3537,13 @@ Lockfile:
     integrity sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==
     dependencies:
       open "^8.0.4"
+  
+  bidi-js@^1.0.2:
+    version "1.0.3"
+    resolved "https://registry.yarnpkg.com/bidi-js/-/bidi-js-1.0.3.tgz#6f8bcf3c877c4d9220ddf49b9bb6930c88f877d2"
+    integrity sha512-RKshQI1R3YQ+n9YJz2QQ147P66ELpa1FQEg20Dk8oW9t2KgLbpDLLp9aGZ7y8WHSshDknG0bknqGw5/tyCs5tw==
+    dependencies:
+      require-from-string "^2.0.2"
   
   big-integer@^1.6.44:
     version "1.6.52"
@@ -4756,6 +4824,11 @@ Lockfile:
     version "5.0.6"
     resolved "https://registry.yarnpkg.com/fetch-retry/-/fetch-retry-5.0.6.tgz#17d0bc90423405b7a88b74355bf364acd2a7fa56"
     integrity sha512-3yurQZ2hD9VISAhJJP9bpYFNQrHHBXE2JxxjY5aLEcDi46RmAzJE2OC9FAde0yis5ElW0jTTzs0zfg/Cca4XqQ==
+  
+  fflate@~0.6.10:
+    version "0.6.10"
+    resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.6.10.tgz#5f40f9659205936a2d18abf88b2e7781662b6d43"
+    integrity sha512-IQrh3lEPM93wVCEczc9SaAOvkmcoQn/G8Bo1e8ZPlY3X3bnAxWaBdvTdvM1hP62iZp0BXWDy4vTAy4fF0+Dlpg==
   
   file-entry-cache@^6.0.1:
     version "6.0.1"
@@ -6068,6 +6141,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"
     integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
   
+  meshoptimizer@~0.18.1:
+    version "0.18.1"
+    resolved "https://registry.yarnpkg.com/meshoptimizer/-/meshoptimizer-0.18.1.tgz#cdb90907f30a7b5b1190facd3b7ee6b7087797d8"
+    integrity sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==
+  
   methods@~1.1.2:
     version "1.1.2"
     resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
@@ -6163,6 +6241,11 @@ Lockfile:
     dependencies:
       minipass "^3.0.0"
       yallist "^4.0.0"
+  
+  mitt@^3.0.1:
+    version "3.0.1"
+    resolved "https://registry.yarnpkg.com/mitt/-/mitt-3.0.1.tgz#ea36cf0cc30403601ae074c8f77b7092cdab36d1"
+    integrity sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==
   
   mkdirp-classic@^0.5.2:
     version "0.5.3"
@@ -7013,6 +7096,11 @@ Lockfile:
       mdast-util-to-string "^1.0.0"
       unist-util-visit "^2.0.0"
   
+  require-from-string@^2.0.2:
+    version "2.0.2"
+    resolved "https://registry.yarnpkg.com/require-from-string/-/require-from-string-2.0.2.tgz#89a7fdd938261267318eafe14f9c32e598c36909"
+    integrity sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==
+  
   requireindex@^1.1.0:
     version "1.2.0"
     resolved "https://registry.yarnpkg.com/requireindex/-/requireindex-1.2.0.tgz#3463cdb22ee151902635aa6c9535d4de9c2ef1ef"
@@ -7285,7 +7373,7 @@ Lockfile:
   
   simplex-noise@^4.0.1:
     version "4.0.1"
-    resolved "https://registry.npmjs.org/simplex-noise/-/simplex-noise-4.0.1.tgz"
+    resolved "https://registry.yarnpkg.com/simplex-noise/-/simplex-noise-4.0.1.tgz#1573a4eaa46ce488bdf5f1e7ab3a1f798126781f"
     integrity sha512-zl/+bdSqW7HJOQ0oDbxrNYaF4F5ik0i7M6YOYmEoIJNtg16NpvWaTTM1Y7oV/7T0jFljawLgYPS81Uu2rsfo1A==
   
   sirv@^2.0.2:
@@ -7396,6 +7484,11 @@ Lockfile:
     version "2.14.2"
     resolved "https://registry.yarnpkg.com/store2/-/store2-2.14.2.tgz#56138d200f9fe5f582ad63bc2704dbc0e4a45068"
     integrity sha512-siT1RiqlfQnGqgT/YzXVUNsom9S0H1OX+dpdGN1xkyYATo4I6sep5NmsRD/40s3IIOvlCq6akxkqG82urIZW1w==
+  
+  storybook-css-modules-preset@^1.1.1:
+    version "1.1.1"
+    resolved "https://registry.yarnpkg.com/storybook-css-modules-preset/-/storybook-css-modules-preset-1.1.1.tgz#30310eab3c324cb944ea760ecd73b5341bcae6c6"
+    integrity sha512-wyINPOtB/8SvU7J92ePAhciBk4xoHuwrcqDNyGnSwilwHjmtHwbeEgZ1//JALOTwMB10zwz3WPONRkWec9LdGw==
   
   storybook@^8.0.0-alpha.1:
     version "8.0.0-alpha.1"
@@ -7691,6 +7784,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/text-table/-/text-table-0.2.0.tgz"
     integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
   
+  three@^0.159.0:
+    version "0.159.0"
+    resolved "https://registry.yarnpkg.com/three/-/three-0.159.0.tgz#6576b1210805b14f0765bac41fd0e4ec18e43b2e"
+    integrity sha512-eCmhlLGbBgucuo4VEA9IO3Qpc7dh8Bd4VKzr7WfW4+8hMcIfoAVi1ev0pJYN9PTTsCslbcKgBwr2wNZ1EvLInA==
+  
   through2@^2.0.3:
     version "2.0.5"
     resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.5.tgz#01c1e39eb31d07cb7d03a96a70823260b23132cd"
@@ -7781,6 +7879,26 @@ Lockfile:
     version "0.0.3"
     resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
     integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+  
+  troika-three-text@^0.47.2:
+    version "0.47.2"
+    resolved "https://registry.yarnpkg.com/troika-three-text/-/troika-three-text-0.47.2.tgz#fdf89059c010563bb829262b20c41f69ca79b712"
+    integrity sha512-qylT0F+U7xGs+/PEf3ujBdJMYWbn0Qci0kLqI5BJG2kW1wdg4T1XSxneypnF05DxFqJhEzuaOR9S2SjiyknMng==
+    dependencies:
+      bidi-js "^1.0.2"
+      troika-three-utils "^0.47.2"
+      troika-worker-utils "^0.47.2"
+      webgl-sdf-generator "1.1.1"
+  
+  troika-three-utils@^0.47.2:
+    version "0.47.2"
+    resolved "https://registry.yarnpkg.com/troika-three-utils/-/troika-three-utils-0.47.2.tgz#af49ca694245dce631963d5fefe4e8e1b8af9044"
+    integrity sha512-/28plhCxfKtH7MSxEGx8e3b/OXU5A0xlwl+Sbdp0H8FXUHKZDoksduEKmjQayXYtxAyuUiCRunYIv/8Vi7aiyg==
+  
+  troika-worker-utils@^0.47.2:
+    version "0.47.2"
+    resolved "https://registry.yarnpkg.com/troika-worker-utils/-/troika-worker-utils-0.47.2.tgz#e7c5de5f37d56c072b13fa8112bb844e048ff46c"
+    integrity sha512-mzss4MeyzUkYBppn4x5cdAqrhBHFEuVmMMgLMTyFV23x6GvQMyo+/R5E5Lsbrt7WSt5RfvewjcwD1DChRTA9lA==
   
   ts-dedent@^2.0.0, ts-dedent@^2.2.0:
     version "2.2.0"
@@ -8105,6 +8223,11 @@ Lockfile:
     dependencies:
       defaults "^1.0.3"
   
+  webgl-sdf-generator@1.1.1:
+    version "1.1.1"
+    resolved "https://registry.yarnpkg.com/webgl-sdf-generator/-/webgl-sdf-generator-1.1.1.tgz#3e1b422b3d87cd3cc77f2602c9db63bc0f6accbd"
+    integrity sha512-9Z0JcMTFxeE+b2x1LJTdnaT8rT8aEp7MVxkNwoycNmJWwPdzoXzMh0BjJSh/AEFP+KPYZUli814h8bJZFIZ2jA==
+  
   webidl-conversions@^3.0.0:
     version "3.0.1"
     resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
@@ -8253,3 +8376,8 @@ Lockfile:
     version "0.1.0"
     resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
     integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+  
+  yoga-layout@^2.0.0:
+    version "2.0.1"
+    resolved "https://registry.yarnpkg.com/yoga-layout/-/yoga-layout-2.0.1.tgz#4bc686abe2464f977866650ddccc1dbcf9f0d03c"
+    integrity sha512-tT/oChyDXelLo2A+UVnlW9GU7CsvFMaEnd9kVFsaiCQonFAXd3xrHhkLYu+suwwosrAEQ746xBU+HvYtm1Zs2Q==

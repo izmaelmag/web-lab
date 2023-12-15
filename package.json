@@ -56,10 +56,14 @@
     "@svelteuidev/motion": "^0.15.3",
     "@svelteuidev/preprocessors": "^0.15.3",
     "@svelteuidev/prism": "^0.15.3",
+    "@threlte/core": "^7.0.11",
+    "@threlte/extras": "^8.0.9",
+    "@threlte/flex": "^1.0.0",
     "@types/dat.gui": "^0.7.12",
     "@types/p5": "^1.7.4",
     "@types/react": "^18.2.37",
     "@types/svelte-range-slider-pips": "^2.0.3",
+    "@types/three": "^0.159.0",
     "@types/uuid": "^9.0.6",
     "@uploadcare/upload-client": "^6.10.0",
     "@vercel/speed-insights": "^1.0.1",
@@ -73,6 +77,7 @@
     "react": "^18.2.0",
     "storybook-css-modules-preset": "^1.1.1",
     "svelte-range-slider-pips": "^2.2.3",
+    "three": "^0.159.0",
     "tone": "^14.7.77",
     "uuid": "^9.0.1"
   }
