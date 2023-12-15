@@ -46,8 +46,11 @@
 			height: auto;
 			flex-shrink: 0;
 			border: none;
-			border-bottom: 1px solid var(--cool-gray-300);
 			padding-bottom: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: auto;
 
 			& > div {
 				display: flex !important;
@@ -60,7 +63,7 @@
 			border: 1px solid var(--cool-gray-300);
 
 			@media screen and (max-width: 640px) {
-				width: 50% !important;
+				width: 100% !important;
 				height: auto !important;
 				aspect-ratio: 1 / 1;
 			}
