@@ -7,6 +7,7 @@
 	import { controls } from './controls';
 	import type { ControlsData } from '$lib/types/controls';
 	import Player from '$lib/components/Player.svelte';
+	import Playground from '$lib/components/Playground.svelte';
 
 	let currentFrame: number;
 	let isPlaying: boolean;
@@ -23,7 +24,7 @@
 		onTick: (settings) => {
 			currentFrame = settings.currentFrame;
 			isPlaying = settings.isPlaying;
-			isRecording = settings.isRecording
+			isRecording = settings.isRecording;
 		},
 
 		params: defaultParams
@@ -37,8 +38,9 @@
 
 <Layout>
 	<Header links={[{ title: 'Playground', url: '/playground' }, { title: 'Daily #1' }]} />
-	<div class="playground">
-		<div class="controls">
+
+	<Playground>
+		<div slot="sidebar">
 			<Player
 				onSkip={() => sketch.setFrame(sketch.totalFrames)}
 				onPlay={() => sketch.play()}
@@ -54,72 +56,10 @@
 			<Controls onChange={handleControlsChange} config={controls.config} />
 		</div>
 
-		<div class="preview">
+		<div slot="content">
 			{#if sketch}
 				<P5 sketch={sketch.render} />
 			{/if}
 		</div>
-	</div>
+	</Playground>
 </Layout>
-
-<style>
-	.playground {
-		display: flex;
-		align-items: stretch;
-		gap: 8px;
-		height: 100%;
-
-		@media screen and (max-width: 640px) {
-			flex-direction: column-reverse;
-		}
-	}
-
-	.controls {
-		width: 300px;
-		height: 100%;
-		padding-right: 8px;
-		overflow: auto;
-		flex-shrink: 0;
-
-		@media screen and (max-width: 640px) {
-			height: 100%;
-			width: 100%;
-			min-height: 0;
-			flex-shrink: 1;
-			padding-bottom: 80px;
-		}
-	}
-
-	.preview {
-		border: 1px solid var(--cool-gray-300);
-		width: 100%;
-		min-width: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		@media screen and (max-width: 640px) {
-			height: auto;
-			flex-shrink: 0;
-			border: none;
-			border-bottom: 1px solid var(--cool-gray-300);
-			padding-bottom: 8px;
-
-			& > div {
-				display: flex !important;
-				align-items: center;
-				justify-content: center;
-			}
-		}
-
-		& canvas {
-			border: 1px solid var(--cool-gray-300);
-
-			@media screen and (max-width: 640px) {
-				width: 50% !important;
-				height: auto !important;
-				aspect-ratio: 1 / 1;
-			}
-		}
-	}
-</style>
