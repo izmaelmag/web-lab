@@ -73,6 +73,8 @@
     "jsonschema": "^1.4.1",
     "p5": "^1.8.0",
     "p5-svelte": "^3.1.2",
+    "postcss": "^8.4.32",
+    "postcss-hexrgba": "^2.1.0",
     "radix-icons-svelte": "^1.2.1",
     "react": "^18.2.0",
     "storybook-css-modules-preset": "^1.1.1",
