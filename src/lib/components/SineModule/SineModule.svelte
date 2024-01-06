@@ -78,12 +78,6 @@
 			}
 		}
 
-		& canvas {
-			position: relative;
-			z-index: 1;
-			border: none;
-		}
-
 		&::after {
 			content: '';
 			display: block;
@@ -98,6 +92,12 @@
 			opacity: 0.3;
 		}
 
+		& canvas {
+			position: relative;
+			z-index: 1;
+			border: none;
+		}
+
 		&.rounded {
 			border-radius: 12px;
 			overflow: hidden;
@@ -109,13 +109,16 @@
 
 			& canvas {
 				border-radius: 12px;
+				overflow: hidden;
 			}
 
 			& > div {
 				&::before,
 				&::after {
-					border-radius: 12px;
+					border-radius: 8px;
 				}
+
+				border-radius: 8px;
 
 				overflow: hidden;
 			}
