@@ -3,6 +3,13 @@
 	import Header from '$lib/components/Header.svelte';
 	import Playground from '$lib/components/Playground.svelte';
 	import SineModule from '$lib/components/SineModule/SineModule.svelte';
+
+	const sines = [
+		{ amplitude: 1, frequency: 1, phase: 0 },
+		{ amplitude: 1, frequency: 2, phase: 0 },
+		{ amplitude: 1, frequency: 4, phase: 0 },
+		{ amplitude: 1, frequency: 8, phase: 0 }
+	];
 </script>
 
 <Layout>
@@ -11,14 +18,11 @@
 	<Playground>
 		<div slot="content">
 			<div class="col">
-				<SineModule frequency={0.5} phase={0} />
-				<SineModule amplitude={0.5} frequency={2} phase={0} />
-				<SineModule frequency={2} phase={0.5} />
-				<SineModule scale={2} amplitude={2} frequency={4} phase={0} />
-				<SineModule scale={8} amplitude={4} frequency={8} phase={0.5} />
-				<SineModule amplitude={4} frequency={11}/>
-				<SineModule amplitude={8} frequency={6}/>
-				<SineModule scale={0.5} amplitude={8} frequency={64}/>
+				{#each sines as sine}
+					<SineModule rounded sines={[sine]} params={{ fade: false }} size={[256, 48]} />
+				{/each}
+
+				<SineModule rounded {sines} params={{ fade: false }} size={[256, 128]} />
 			</div>
 		</div>
 	</Playground>
@@ -27,7 +31,7 @@
 <style>
 	.col {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 8px;
+		grid-template-columns: repeat(1, auto);
+		gap: 4px;
 	}
 </style>
