@@ -62,11 +62,11 @@
 		& canvas {
 			border: 1px solid var(--cool-gray-300);
 
-			@media screen and (max-width: 640px) {
+			/* @media screen and (max-width: 640px) {
 				width: 100% !important;
 				height: auto !important;
 				aspect-ratio: 1 / 1;
-			}
+			} */
 		}
 	}
 </style>
