@@ -13,6 +13,7 @@ export type Params = {
 	height?: number;
 	scale?: number;
 	fade?: boolean;
+	animated?: boolean;
 };
 
 export const defaultSine: Required<SineProps> = { amplitude: 1, frequency: 1, phase: 1 };
@@ -22,16 +23,15 @@ export const defaults: Required<Params> = {
 	width: 80,
 	height: 80,
 	scale: 1,
-	fade: false
+	fade: false,
+	animated: false
 };
-
-const norm = (val: number, scale = 1) => (val % 1) * scale;
 
 const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) => {
 	const {
 		width: W,
 		height: H,
-		scale: sc,
+		animated,
 		sines,
 		fade
 	} = {
@@ -47,7 +47,6 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 
 	const maxAmp = sines.reduce((sum, { amplitude }) => (sum += amplitude || 0), 0);
 	const scale = maxAmp;
-	console.log(maxAmp);
 
 	const calcSine = (sine: SineProps = defaultSine, phi = 0) => {
 		const { frequency, phase, amplitude } = {
@@ -57,19 +56,9 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 
 		const sinePhase = (phase % 1) * p.TWO_PI;
 
-		const timing = (frame / -60) * p.TWO_PI * 1;
-
-		const sineValue =
-			amplitude *
-			((1 / maxAmp) * scale) *
-			p.sin(sinePhase + Number(phi.toFixed(4)) * frequency + timing);
-
-		// 		console.log(`
-		// Sine value: ${sineValue}
-		// Phase: ${sinePhase}
-		// Frequency: ${frequency}
-		// Angle: ${phi}
-		// 		`);
+		const timing = animated ? (frame / -60) * p.TWO_PI * frequency * 0.2 : 0;
+		const sineAmp = scale < 1 ? amplitude : amplitude * ((1 / maxAmp) * scale);
+		const sineValue = sineAmp * p.sin(sinePhase + Number(phi.toFixed(4)) * frequency + timing);
 
 		return Number(sineValue.toFixed(4));
 	};
@@ -77,18 +66,8 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 	const drawGrid = () => {
 		p.push();
 		p.stroke(0, 120, 0);
-
-		for (let n = 0; n <= scale; n++) {
-			const dist = safeZone / (scale * 2);
-			const y = midLine + dist * n;
-
-			p.line(0, y, W, y);
-			p.line(0, H - y, W, H - y);
-		}
-
 		p.line(0, midLine, W, midLine);
 		p.line(W / 2, 0, W / 2, H);
-
 		p.pop();
 	};
 
@@ -130,7 +109,7 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 
 			const sinesSum = sines.map((sine) => calcSine(sine, phi)).reduce((sum, val) => sum + val, 0);
 
-			const normSine = p.map(sinesSum, -maxAmp, maxAmp, -1, 1);
+			const normSine = maxAmp < 1 ? sinesSum : p.map(sinesSum, -maxAmp, maxAmp, -1, 1);
 
 			const ySine = normSine * intensity;
 			const y = midLine + ySine * (safeZone / 2);

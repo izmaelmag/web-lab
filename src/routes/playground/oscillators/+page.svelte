@@ -2,14 +2,12 @@
 	import Layout from '$lib/components/Layout.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Playground from '$lib/components/Playground.svelte';
-	import SineModule from '$lib/components/SineModule/SineModule.svelte';
+	import Oscillograph from '$lib/components/Oscillograph/Oscillograph.svelte';
+	import { squareSines } from '$lib/utils/squareSines';
+	import type { SineProps } from '$lib/components/Oscillograph/Sine';
+	import { onMount } from 'svelte';
 
-	const sines = [
-		{ amplitude: 1, frequency: 1, phase: 0 },
-		{ amplitude: 1, frequency: 2, phase: 0 },
-		{ amplitude: 1, frequency: 4, phase: 0 },
-		{ amplitude: 1, frequency: 8, phase: 0 }
-	];
+	const sines: SineProps[] = squareSines({ iterations: 8, baseFrequency: 1 });
 </script>
 
 <Layout>
@@ -17,21 +15,51 @@
 
 	<Playground>
 		<div slot="content">
-			<div class="col">
-				{#each sines as sine}
-					<SineModule rounded sines={[sine]} params={{ fade: false }} size={[256, 48]} />
-				{/each}
+			<div class="plate">
+				<div class="plateBar">Oscillator</div>
 
-				<SineModule rounded {sines} params={{ fade: false }} size={[256, 128]} />
+				<Oscillograph {sines} params={{ animated: true, fade: false }} size={[256, 128]} />
+
+				<!-- <div class="sines">
+					{#each sines as sine}
+						<div class="sineData">
+							Amp: {sine.amplitude?.toFixed(2)} | Fq: {sine.frequency?.toFixed(2)}
+						</div>
+					{/each}
+				</div> -->
 			</div>
 		</div>
 	</Playground>
 </Layout>
 
 <style>
-	.col {
-		display: grid;
-		grid-template-columns: repeat(1, auto);
-		gap: 4px;
+	.plate {
+		padding: 4px 4px 8px;
+		background: var(--blue-gray-200);
+		border: 0.5px solid var(--blue-gray-500);
 	}
+
+	.plateBar {
+		background: var(--blue-gray-300);
+		padding: 2px 4px;
+		font-size: 8px;
+		margin-bottom: 4px;
+		font-weight: 300;
+		color: var(--blue-gray-900);
+		font-smooth: never;
+		border: 0.5px solid var(--blue-gray-400);
+	}
+	/* 
+	.sines {
+		margin-top: 8px;
+	}
+
+	.sineData {
+		background: #fff;
+		padding: 2px;
+		border-bottom: 0.5px solid var(--blue-gray-500);
+		font-size: 8px;
+		font-weight: 300;
+		color: var(--blue-gray-800);
+	} */
 </style>

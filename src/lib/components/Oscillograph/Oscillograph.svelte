@@ -2,6 +2,7 @@
 	import P5 from 'p5-svelte';
 	import Sine, { defaults } from './Sine';
 	import type { Params, SineProps } from './Sine';
+	import { onMount } from 'svelte';
 
 	export let rounded = false;
 	export let size = [48, 48];
@@ -12,18 +13,57 @@
 		width: size[0],
 		height: size[1] || size[0]
 	};
+
+	let audioContext: AudioContext;
+	let source: AudioBufferSourceNode;
+
+	onMount(() => {
+		audioContext = new window.AudioContext();
+		const sampleRate = audioContext.sampleRate;
+		const duration = 8;
+		const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
+
+		let data = buffer.getChannelData(0);
+
+		// Get frequencies array
+		const frequencies = sines
+			.map((sine) => [(sine.frequency || 1) * 440])
+			.flat(); // Example frequencies in Hz
+
+		// Sum frequencies
+		for (let i = 0; i < data.length; i++) {
+			let sample = 0;
+			let rate = i / data.length;
+			frequencies.forEach((frequency) => {
+				sample += Math.sin(rate * Math.PI * frequency + (2 * Math.PI * frequency * i) / sampleRate);
+			});
+			data[i] = sample / frequencies.length;
+		}
+
+		// Create a buffer source node
+		source = audioContext.createBufferSource();
+		source.buffer = buffer;
+
+		// Connect to the destination and play
+		source.connect(audioContext.destination);
+	});
+
+	const handlePlay = () => {
+		if (source) {
+			source.start();
+		}
+	};
 </script>
 
-<div class="container">
-	<div class="visualizer" class:rounded style="width: {size[0]}px; height: {size[1] || size[0]}px">
-		<P5 sketch={Sine({ ...sketchSize, ...params, sines })} />
-	</div>
+<div class="oscillograph" class:rounded style="width: {size[0]}px; height: {size[1] || size[0]}px">
+	<P5 sketch={Sine({ ...sketchSize, ...params, sines })} />
 </div>
+<button class="button" on:click={handlePlay}>Play</button>
 
 <style>
-	.visualizer {
+	.oscillograph {
 		position: relative;
-		box-shadow: 0 4px 0px -2px rgba(0, 98, 36, 0.252), 0 5px 22px rgba(12, 128, 90, 0.51);
+		box-shadow: 0 6px 0px -2px rgba(0, 0, 36, 0.12);
 
 		background: #000;
 
@@ -107,21 +147,24 @@
 				border-radius: 11px;
 			}
 
-			& canvas {
-				border-radius: 12px;
-				overflow: hidden;
-			}
-
 			& > div {
+				border-radius: 8px;
+				overflow: hidden;
+
+				& canvas {
+					border-radius: 12px;
+					overflow: hidden;
+				}
+
 				&::before,
 				&::after {
 					border-radius: 8px;
 				}
-
-				border-radius: 8px;
-
-				overflow: hidden;
 			}
 		}
+	}
+
+	.button {
+		z-index: 100;
 	}
 </style>

@@ -7767,7 +7767,7 @@ toidentifier@1.0.1:
 
 tone@^14.7.77:
   version "14.7.77"
-  resolved "https://registry.npmjs.org/tone/-/tone-14.7.77.tgz"
+  resolved "https://registry.yarnpkg.com/tone/-/tone-14.7.77.tgz#12a2a9f033952ccdb552275a6384ca5d36d4b5ed"
   integrity sha512-tCfK73IkLHyzoKUvGq47gyDyxiKLFvKiVCOobynGgBB9Dl0NkxTM2p+eRJXyCYrjJwy9Y0XCMqD3uOYsYt2Fdg==
   dependencies:
     standardized-audio-context "^25.1.8"
