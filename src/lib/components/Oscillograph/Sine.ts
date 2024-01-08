@@ -5,6 +5,7 @@ export type SineProps = {
 	frequency?: number;
 	amplitude?: number;
 	phase?: number;
+	phaseSpeed?: number;
 };
 
 export type Params = {
@@ -16,7 +17,12 @@ export type Params = {
 	animated?: boolean;
 };
 
-export const defaultSine: Required<SineProps> = { amplitude: 1, frequency: 1, phase: 1 };
+export const defaultSine: Required<SineProps> = {
+	amplitude: 1,
+	frequency: 1,
+	phase: 1,
+	phaseSpeed: 1
+};
 
 export const defaults: Required<Params> = {
 	sines: [defaultSine],
@@ -49,14 +55,14 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 	const scale = maxAmp;
 
 	const calcSine = (sine: SineProps = defaultSine, phi = 0) => {
-		const { frequency, phase, amplitude } = {
+		const { frequency, phase, amplitude, phaseSpeed } = {
 			...defaultSine,
 			...sine
 		};
 
 		const sinePhase = (phase % 1) * p.TWO_PI;
 
-		const timing = animated ? (frame / -60) * p.TWO_PI * frequency * 0.2 : 0;
+		const timing = animated ? (frame / -60) * p.TWO_PI * frequency * phaseSpeed : 0;
 		const sineAmp = scale < 1 ? amplitude : amplitude * ((1 / maxAmp) * scale);
 		const sineValue = sineAmp * p.sin(sinePhase + Number(phi.toFixed(4)) * frequency + timing);
 
@@ -71,16 +77,16 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 		p.pop();
 	};
 
-	const drawFade = () => {
-		if (frame < 25) {
-			p.push();
-			p.noStroke();
-			p.fill(0, 255 - frame * 25);
-			p.rect(0, 0, W, H);
-			p.noFill();
-			p.pop();
-		}
-	};
+	// const drawFade = () => {
+	// 	if (frame < 25) {
+	// 		p.push();
+	// 		p.noStroke();
+	// 		p.fill(0, 255 - frame * 25);
+	// 		p.rect(0, 0, W, H);
+	// 		p.noFill();
+	// 		p.pop();
+	// 	}
+	// };
 
 	p.setup = () => {
 		p.createCanvas(W, H);
@@ -119,7 +125,7 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 		p.stroke(0, 255, 0);
 		p.endShape();
 
-		drawFade();
+		// drawFade();
 
 		// p.noLoop();
 

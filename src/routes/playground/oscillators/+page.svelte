@@ -7,7 +7,14 @@
 	import type { SineProps } from '$lib/components/Oscillograph/Sine';
 	import { onMount } from 'svelte';
 
-	const sines: SineProps[] = squareSines({ iterations: 8, baseFrequency: 1 });
+	const sines: SineProps[] = [
+		{
+			amplitude: 1,
+			frequency: 4,
+			phase: 0,
+			phaseSpeed: 1
+		}
+	];
 </script>
 
 <Layout>

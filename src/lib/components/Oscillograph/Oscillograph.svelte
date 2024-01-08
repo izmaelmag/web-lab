@@ -27,7 +27,7 @@
 
 		// Get frequencies array
 		const frequencies = sines
-			.map((sine) => [(sine.frequency || 1) * 440])
+			.map((sine) => [(sine.frequency || 1) * 220])
 			.flat(); // Example frequencies in Hz
 
 		// Sum frequencies
