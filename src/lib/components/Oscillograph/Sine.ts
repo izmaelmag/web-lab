@@ -64,7 +64,7 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 
 		const timing = animated ? (frame / -60) * p.TWO_PI * frequency * phaseSpeed : 0;
 		const sineAmp = scale < 1 ? amplitude : amplitude * ((1 / maxAmp) * scale);
-		const sineValue = sineAmp * p.sin(sinePhase + Number(phi.toFixed(4)) * frequency + timing + \ p.PI/2);
+		const sineValue = sineAmp * p.sin(sinePhase + Number(phi.toFixed(4)) * frequency + timing + p.PI/2);
 
 		return Number(sineValue.toFixed(4));
 	};
