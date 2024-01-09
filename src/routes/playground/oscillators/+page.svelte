@@ -7,10 +7,33 @@
 	import type { SineProps } from '$lib/components/Oscillograph/Sine';
 	import { onMount } from 'svelte';
 
+	// const sines = squareSines({ iterations: 4, baseFrequency: 4 });
+
 	const sines: SineProps[] = [
 		{
 			amplitude: 1,
-			frequency: 4,
+			frequency: 64,
+			phase: 0,
+			phaseSpeed: 1
+		},
+
+		// {
+		// 	amplitude: 1,
+		// 	frequency: 24,
+		// 	phase: 0,
+		// 	phaseSpeed: 0
+		// },
+
+		// {
+		// 	amplitude: 1,
+		// 	frequency: 2,
+		// 	phase: 1,
+		// 	phaseSpeed: 1
+		// },
+
+		{
+			amplitude: 2,
+			frequency: 0.5,
 			phase: 0,
 			phaseSpeed: 1
 		}
@@ -25,15 +48,11 @@
 			<div class="plate">
 				<div class="plateBar">Oscillator</div>
 
-				<Oscillograph {sines} params={{ animated: true, fade: false }} size={[256, 128]} />
+				<Oscillograph {sines} params={{ animated: true, fade: false }} size={[420, 128]} />
 
-				<!-- <div class="sines">
-					{#each sines as sine}
-						<div class="sineData">
-							Amp: {sine.amplitude?.toFixed(2)} | Fq: {sine.frequency?.toFixed(2)}
-						</div>
-					{/each}
-				</div> -->
+				{#each sines as sine}
+					<Oscillograph sines={[sine]} params={{ animated: true, fade: false }} size={[420, 64]} />
+				{/each}
 			</div>
 		</div>
 	</Playground>

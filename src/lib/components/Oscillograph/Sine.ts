@@ -2,10 +2,10 @@ import type p5 from 'p5';
 import type { Sketch } from 'p5-svelte';
 
 export type SineProps = {
-	frequency?: number;
-	amplitude?: number;
-	phase?: number;
-	phaseSpeed?: number;
+	frequency: number;
+	amplitude: number;
+	phase: number;
+	phaseSpeed: number;
 };
 
 export type Params = {
@@ -17,7 +17,7 @@ export type Params = {
 	animated?: boolean;
 };
 
-export const defaultSine: Required<SineProps> = {
+export const defaultSine: SineProps = {
 	amplitude: 1,
 	frequency: 1,
 	phase: 1,
@@ -64,7 +64,7 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
 
 		const timing = animated ? (frame / -60) * p.TWO_PI * frequency * phaseSpeed : 0;
 		const sineAmp = scale < 1 ? amplitude : amplitude * ((1 / maxAmp) * scale);
-		const sineValue = sineAmp * p.sin(sinePhase + Number(phi.toFixed(4)) * frequency + timing);
+		const sineValue = sineAmp * p.sin(sinePhase + Number(phi.toFixed(4)) * frequency + timing + \ p.PI/2);
 
 		return Number(sineValue.toFixed(4));
 	};

@@ -14,43 +14,76 @@
 		height: size[1] || size[0]
 	};
 
-	let audioContext: AudioContext;
+	let ctx: AudioContext;
 	let source: AudioBufferSourceNode;
+	let oscillators: OscillatorNode[] = [];
+
+	const createSineWaveWithPhase = (
+		amp: number,
+		phaseOffset: number,
+		speed: number
+	): PeriodicWave => {
+		const real = new Float32Array([0, Math.cos(phaseOffset * speed)]);
+		const imag = new Float32Array([0, Math.sin(phaseOffset * speed)]);
+
+		console.log(real, imag);
+		const periodicWave = ctx.createPeriodicWave(real, imag, { disableNormalization: false });
+		return periodicWave;
+	};
 
 	onMount(() => {
-		audioContext = new window.AudioContext();
-		const sampleRate = audioContext.sampleRate;
-		const duration = 8;
-		const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
+		ctx = new window.AudioContext();
+		// mod = ctx.createOscillator();
+		// const modGain = ctx.createGain();
 
-		let data = buffer.getChannelData(0);
+		for (let sine of sines) {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
 
-		// Get frequencies array
-		const frequencies = sines
-			.map((sine) => [(sine.frequency || 1) * 220])
-			.flat(); // Example frequencies in Hz
+			// Create a periodic wave with the desired phase offset
+			const periodicWave = createSineWaveWithPhase(sine.amplitude, sine.phase, sine.phaseSpeed);
+			osc.setPeriodicWave(periodicWave);
 
-		// Sum frequencies
-		for (let i = 0; i < data.length; i++) {
-			let sample = 0;
-			let rate = i / data.length;
-			frequencies.forEach((frequency) => {
-				sample += Math.sin(rate * Math.PI * frequency + (2 * Math.PI * frequency * i) / sampleRate);
-			});
-			data[i] = sample / frequencies.length;
+			osc.frequency.setValueAtTime(sine.frequency, ctx.currentTime);
+
+			gain.gain.setValueAtTime(sine.amplitude, ctx.currentTime);
+
+			gain.connect(ctx.destination);
+			osc.connect(gain);
+
+			oscillators.push(osc);
 		}
 
-		// Create a buffer source node
-		source = audioContext.createBufferSource();
-		source.buffer = buffer;
+		// const sampleRate = audioContext.sampleRate;
+		// const duration = 8;
+		// const buffer = audioContext.createBuffer(1, sampleRate * duration, sampleRate);
 
-		// Connect to the destination and play
-		source.connect(audioContext.destination);
+		// let data = buffer.getChannelData(0);
+
+		// // Get frequencies array
+		// const frequencies = sines.map((sine) => [(sine.frequency || 1) * 220]).flat(); // Example frequencies in Hz
+
+		// // Sum frequencies
+		// for (let i = 0; i < data.length; i++) {
+		// 	let sample = 0;
+		// 	let rate = i / data.length;
+		// 	frequencies.forEach((frequency) => {
+		// 		sample += Math.sin(rate * Math.PI * frequency + (2 * Math.PI * frequency * i) / sampleRate);
+		// 	});
+		// 	data[i] = sample / frequencies.length;
+		// }
+
+		// // Create a buffer source node
+		// source = audioContext.createBufferSource();
+		// source.buffer = buffer;
+
+		// // Connect to the destination and play
+		// source.connect(audioContext.destination);
 	});
 
 	const handlePlay = () => {
-		if (source) {
-			source.start();
+		for (let osc of oscillators) {
+			osc.start(ctx.currentTime);
 		}
 	};
 </script>
