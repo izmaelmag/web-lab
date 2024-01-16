@@ -13,6 +13,7 @@
 		<a href="/playground/daily-2">Daily #2</a>
 		<a href="/playground/daily-3">Daily #3</a>
 		<a href="/playground/oscillators">Oscillators</a>
+		<a href="/synth">Synth</a>
 	</nav>
 </Layout>
 
