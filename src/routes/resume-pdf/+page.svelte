@@ -20,6 +20,8 @@
 	};
 </script>
 
+<h1>Proof of concept</h1>
+
 <button on:click={generate} type="button">Generate</button>
 
 {#if link}

@@ -1,15 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import P5, { type Sketch } from 'p5-svelte';
-	import Circles from '$lib/sketches/Circles';
 	import Header from '$lib/components/Header.svelte';
 	import Layout from '$lib/components/Layout.svelte';
-
-	let sketch: Sketch;
-
-	onMount(() => {
-		sketch = Circles();
-	});
 </script>
 
 <Layout>
@@ -30,10 +21,6 @@
 		<a href="/playground">Playground</a>
 		<a href="/about">About<i>/</i>CV</a>
 	</nav>
-
-	<picture class="sketch">
-		<P5 {sketch} />
-	</picture>
 </Layout>
 
 <style>
