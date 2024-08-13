@@ -32,7 +32,7 @@
 		defaultValue={control.defaultValue}
 		min={control.min}
 		max={control.max}
-		ste={control.step}
+		step={control.step}
 		stepHoldDelay={200}
 		stepHoldInterval={50}
 		disabled={control.disabled}
