@@ -64,7 +64,7 @@
   }
 
   function render() {
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.viewport(0, 0, gl.canvas.width * window.devicePixelRatio, gl.canvas.height * window.devicePixelRatio);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(program);
@@ -85,16 +85,9 @@
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     requestAnimationFrame(render);
   }
-
-  function handleControlsChange(newControls: ControlsData) {
-    controls = { ...controls, ...newControls };
-  }
 </script>
 
 <div class="glsl-experiment">
-  <div class="sidebar">
-    <Controls onChange={handleControlsChange} config={controlsConfig} />
-  </div>
   <div class="content">
     <canvas bind:this={canvas} width={512} height={512}></canvas>
   </div>
