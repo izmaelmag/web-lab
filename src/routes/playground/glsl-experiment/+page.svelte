@@ -16,113 +16,95 @@
 		min: 0.1,
 		max: 2.0,
 		step: 0.1,
-		defaultValue: 0.5,
+		defaultValue: 2.0,
 		placeholder: 'Rain Speed',
-		icon: 'FastForward'
+		icon: 'Play'
 	};
 
 	const densityControl: NumberControl = {
-		name: 'Density',
+		name: 'Swirl',
 		order: 3,
 		group: 'Options',
-		key: 'u_density',
+		key: 'u_swirl',
 		type: 'number',
 		min: 5.0,
-		max: 50.0,
+		max: 150.0,
 		step: 1.0,
-		defaultValue: 20.0,
+		defaultValue: 35.0,
 		placeholder: 'Particle Density',
 		icon: 'Grid'
-	};
-
-	const brightnessControl: NumberControl = {
-		name: 'Brightness',
-		order: 4,
-		group: 'Options',
-		key: 'u_brightness',
-		type: 'number',
-		min: 0.1,
-		max: 1.0,
-		step: 0.1,
-		defaultValue: 0.4,
-		placeholder: 'Brightness',
-		icon: 'Sun'
 	};
 
 	let controlsData: ControlsData = {
 		u_time: 0,
 		u_speed: 0.5,
-		u_density: 20.0,
-		u_brightness: 0.4
+		u_swirl: 20.0,
+		u_colorShift: 0.4
 	};
 
 	const controlsConfig: ControlsConfig = {
 		groups: ['Options'],
-		nodes: { speedControl, densityControl, brightnessControl },
+		nodes: { speedControl, densityControl },
 		defaults: controlsData
 	};
 
 	let editableFragmentShader = `
-precision highp float;
+precision mediump float;
 
 uniform float u_time;
-uniform float u_speed;
-uniform float u_density;
+uniform float u_swirl;
+uniform float u_colorShift;
 uniform float u_brightness;
 
-// Function to generate a pseudo-random value
-float random(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+// Function to generate 2D Perlin-like noise
+vec2 hash(vec2 p) {
+    p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+    return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }
 
-// Function to create a smooth streak
-vec3 createStreak(vec2 uv, float seed) {
-    float speed = (random(vec2(seed, 1.0)) * 0.5 + 0.5) * u_speed;
-    float t = fract(u_time * speed + seed);
-    float length = 0.2 + random(vec2(seed, 2.0)) * 0.3;
-    
-    float fade = smoothstep(0.0, 0.1, t) * smoothstep(1.0, 0.9, t);
-    float brightness = smoothstep(length, 0.0, fract(uv.y - t)) * fade;
-    brightness = pow(brightness, 1.5); // Sharpen the streak
-    
-    vec3 color = mix(
-        vec3(0.2, 0.4, 1.0), // Light blue
-        vec3(0.8, 0.9, 1.0), // White-blue
-        random(vec2(seed, 3.0))
-    );
-    
-    // Add some pink/purple hues
-    color = mix(color, vec3(1.0, 0.3, 0.7), random(vec2(seed, 4.0)) * 0.3);
-    
-    return color * brightness * u_brightness;
+float noise(vec2 p) {
+    const float K1 = 0.366025404;
+    const float K2 = 0.211324865;
+    vec2 i = floor(p + (p.x + p.y) * K1);
+    vec2 a = p - i + (i.x + i.y) * K2;
+    vec2 o = (a.x > a.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec2 b = a - o + K2;
+    vec2 c = a - 1.0 + 2.0 * K2;
+    vec3 h = max(0.5 - vec3(dot(a, a), dot(b, b), dot(c, c)), 0.0);
+    vec3 n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
+    return dot(n, vec3(60.0));
 }
 
 void main() {
     vec2 uv = gl_FragCoord.xy / vec2(512.0, 512.0);
+    uv = uv * 2.0 - 1.0;
     
-    // Create curved bottom effect
-    float curve = 0.3 * pow(abs(uv.x - 0.5) * 2.0, 2.0);
-    uv.y += curve;
+    // Create swirling effect
+    float angle = atan(uv.y, uv.x);
+    float radius = length(uv);
+    float swirl = sin(radius * 10.0 - u_time * u_swirl * 0.2) * 0.1;
+    uv = vec2(radius * cos(angle + swirl), radius * sin(angle + swirl));
     
-    vec3 finalColor = vec3(0.0, 0.0, 0.1); // Dark blue background
+    // Generate base noise
+    float n = noise(uv * 3.0 + u_time * 0.1);
+    n += 0.5 * noise(uv * 6.0 - u_time * 0.2);
+    n += 0.25 * noise(uv * 12.0 + u_time * 0.3);
+    n = n * 0.5 + 0.5;
     
-    for (float i = 0.0; i < 100.0; i++) {
-        if (i >= u_density) break;
-        
-        float seed = random(vec2(i, 0.0));
-        float xPos = fract(seed * 1.61803); // Golden ratio for better distribution
-        3
-        vec2 streakUV = uv - vec2(xPos, 0.0);
-        finalColor += createStreak(streakUV, seed);
-    }
+    // Create color palette
+    vec3 color1 = vec3(0.0, 0.0, 0.0);
+    vec3 color2 = vec3(1.0, 0.0, 0.0);
+    vec3 color3 = vec3(0.0, 0.0, 0.0);
     
-    // Add some glow
-    finalColor += pow(finalColor, vec3(2.0)) * 0.4;
+    // Mix colors based on noise and time
+    vec3 color = mix(color1, color2, n);
+    color = mix(color, color3, sin(u_time * u_colorShift) * 0.0 + 0.5);
     
-    // Gamma correction for smoother gradients
-    finalColor = pow(finalColor, vec3(1.0 / 2.2));
+    // Add some stars
+    float stars = step(0.98, noise(uv * 50.0));
+    color += stars * vec3(1.0);
     
-    gl_FragColor = vec4(finalColor, 1.0);
+    gl_FragColor = vec4(color, 1.0);
 }
 `;
 
@@ -140,7 +122,7 @@ void main() {
 	};
 
 	let currentFrame = 0;
-	let totalFrames = 600; // 10 seconds at 60 fps
+	let totalFrames = 1800; // 10 seconds at 60 fps
 	let isPlaying = false;
 	let isRecording = false;
 
