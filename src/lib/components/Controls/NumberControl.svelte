@@ -62,7 +62,8 @@
 		width: calc(1px + 189px);
 		position: absolute;
 		right: 10px;
-		bottom: -9px;
+		bottom: 0;
+
 		height: 30px;
 	}
 </style>

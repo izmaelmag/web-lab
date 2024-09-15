@@ -124,7 +124,7 @@
 
 	.frameInputSlider {
 		width: calc(1px + 189px);
-		height: 12px;
+		height: 30px;
 	}
 
 	.player {
