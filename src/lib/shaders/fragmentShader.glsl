@@ -1,57 +1,71 @@
+#ifdef GL_ES
 precision mediump float;
+#endif
 
 uniform float u_time;
-uniform float u_swirl;
-uniform float u_colorShift;
-uniform float u_brightness;
 
-// Function to generate 2D Perlin-like noise
-vec2 hash(vec2 p) {
-    p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
-    return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+// Improved random function
+float random(vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
-float noise(vec2 p) {
-    const float K1 = 0.366025404;
-    const float K2 = 0.211324865;
-    vec2 i = floor(p + (p.x + p.y) * K1);
-    vec2 a = p - i + (i.x + i.y) * K2;
-    vec2 o = (a.x > a.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-    vec2 b = a - o + K2;
-    vec2 c = a - 1.0 + 2.0 * K2;
-    vec3 h = max(0.5 - vec3(dot(a, a), dot(b, b), dot(c, c)), 0.0);
-    vec3 n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
-    return dot(n, vec3(60.0));
+// 2D Noise function
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / vec2(512.0, 512.0);
-    uv = uv * 2.0 - 1.0;
+    vec2 st = gl_FragCoord.xy / 500.0; // Fixed scale factor
     
-    // Create swirling effect
-    float angle = atan(uv.y, uv.x);
-    float radius = length(uv);
-    float swirl = sin(radius * 10.0 - u_time * u_swirl * 0.2) * 0.1;
-    uv = vec2(radius * cos(angle + swirl), radius * sin(angle + swirl));
+    // Background gradient
+    vec3 color = mix(vec3(0.0, 0.0, 0.1), vec3(0.0, 0.2, 0.3), st.y);
     
-    // Generate base noise
-    float n = noise(uv * 3.0 + u_time * 0.1);
-    n += 0.5 * noise(uv * 6.0 - u_time * 0.2);
-    n += 0.25 * noise(uv * 12.0 + u_time * 0.3);
-    n = n * 0.5 + 0.5;
+    // Slower time for overall movement
+    float slowTime = u_time * 1.
+;
     
-    // Create color palette
-    vec3 color1 = vec3(0.0, 0.0, 0.0);
-    vec3 color2 = vec3(1.0, 0.0, 0.0);
-    vec3 color3 = vec3(0.0, 0.0, 0.0);
-    
-    // Mix colors based on noise and time
-    vec3 color = mix(color1, color2, n);
-    color = mix(color, color3, sin(u_time * u_colorShift) * 0.0 + 0.5);
-    
-    // Add some stars
-    float stars = step(0.98, noise(uv * 50.0));
-    color += stars * vec3(1.0);
+    // Add wave-like particles
+    for (int i = 0; i < 200; i++) {
+        float fi = float(i);
+        vec2 pos = vec2(
+            fract(sin(fi * 0.123) * 43758.5453),
+            fract(cos(fi * 0.456) * 43758.5453)
+        );
+        
+        // Wave-like movement
+        pos.x += 0.04 * sin(slowTime + pos.y * 10.0);
+        pos.y += 0.02 * cos(slowTime * 0.5 + pos.x * 12.0);
+        
+        // Add some noise for more natural movement
+        pos += vec2(noise(pos + slowTime * 0.2), noise(pos + slowTime * 0.3)) * 0.02;
+        
+        float size = 0.002 + 0.001 * sin(slowTime + fi);
+        
+        // Smooth fading
+        float fadeSpeed = 0.5 + random(vec2(fi)) * 2.; // Randomize fade speed per particle
+        float fade = 0.5 + 0.5 * sin(slowTime * fadeSpeed + fi);
+        
+        // Create more complex particle shape
+        float d = length(st - pos);
+        float particle = smoothstep(size, size * 0.5, d) * fade;
+        particle += smoothstep(size * 3.0, size, d) * fade * 0.3; // Add glow
+        
+        // Smooth color change from particle to particle
+        vec3 particleColor = vec3(
+            0.5 + 0.5 * sin(fi * 0.1),
+            0.5 + 0.5 * sin(fi * 0.1 + 2.0),
+            1.0
+        );
+        
+        color += particleColor * particle * (1.0 - st.y * 0.5); // Fade towards top
+    }
     
     gl_FragColor = vec4(color, 1.0);
 }
