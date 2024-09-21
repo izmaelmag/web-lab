@@ -9,6 +9,7 @@
   <nav>
     <a href="/playground/spirograph">Spirograph</a>
     <a href="/playground/loop_demo">Loop demo</a>
+    <a href="/playground/glsl-base">2D GLSL Demo</a>
     <a href="/playground/daily-1">Daily #1</a>
     <a href="/playground/daily-2">Daily #2</a>
     <a href="/playground/daily-3">Daily #3</a>
