@@ -1,53 +1,53 @@
 // Employment section =============
 export type EmploymentSection = {
-	title: string;
-	cards: EmploymentCard[];
+  title: string;
+  cards: EmploymentCard[];
 };
 
 export type EmploymentCard = {
-	title: string;
-	location: string;
-	startDate: string;
-	endDate: string;
-	description?: string;
+  title: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description?: string;
 };
 // =================================
 // =================================
 // Courses section =================
 export type CourseSection = {
-	title: string;
-	cards: CourseCard[];
+  title: string;
+  cards: CourseCard[];
 };
 
 export type CourseCard = {
-	university: string;
-	course: string;
+  university: string;
+  course: string;
 };
 // =================================
 // =================================
 // Education section ===============
 export type EducationSection = {
-	title: string;
-	cards: EducationCard[];
+  title: string;
+  cards: EducationCard[];
 };
 
 export type EducationCard = {
-	university: string;
-	degree: string;
-	location: string;
-	date: string;
+  university: string;
+  degree: string;
+  location: string;
+  date: string;
 };
 // =================================
 // =================================
 // Secondary sections ==============
 export type LanguageOrSkill = {
-	name: string;
-	level: string;
+  name: string;
+  level: string;
 };
 
 export type Link = {
-	name: string;
-	url: string;
+  name: string;
+  url: string;
 };
 
 export type Hobbies = string[];
@@ -55,28 +55,28 @@ export type Hobbies = string[];
 // =================================
 // Resume document =================
 export type ResumeData = {
-	personal: {
-		fullName: string;
-		age?: number;
-	};
+  personal: {
+    fullName: string;
+    age?: number;
+  };
 
-	contacts: {
-		email?: string;
-		phone?: string;
-		country?: string;
-		city?: string;
-	};
+  contacts: {
+    email?: string;
+    phone?: string;
+    country?: string;
+    city?: string;
+  };
 
-	position?: string;
+  position?: string;
 
-	summary?: string;
+  summary?: string;
 
-	languages: LanguageOrSkill[];
+  languages: LanguageOrSkill[];
 
-	skills: LanguageOrSkill[];
+  skills: LanguageOrSkill[];
 
-	hobbies: Hobbies;
+  hobbies: Hobbies;
 
-	employment: EmploymentSection[];
+  employment: EmploymentSection[];
 };
 // =================================

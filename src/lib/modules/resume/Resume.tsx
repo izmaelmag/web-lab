@@ -7,35 +7,35 @@ import { stream2buffer } from '../../utils/stream2buffer';
 import { BasicTemplate } from './template/basic';
 
 export class Resume {
-	resume: ResumeDocument;
-	isValid = false;
-	error = '';
-	schema = resumeSchema;
+  resume: ResumeDocument;
+  isValid = false;
+  error = '';
+  schema = resumeSchema;
 
-	constructor(resume: ResumeDocument) {
-		this.resume = resume;
+  constructor(resume: ResumeDocument) {
+    this.resume = resume;
 
-		this.validate();
-	}
+    this.validate();
+  }
 
-	validate() {
-		const { valid, errors } = validate(this.resume, this.schema);
+  validate() {
+    const { valid, errors } = validate(this.resume, this.schema);
 
-		if (valid) {
-			this.isValid = true;
-		} else {
-			this.error = errors[0].property;
-		}
+    if (valid) {
+      this.isValid = true;
+    } else {
+      this.error = errors[0].property;
+    }
 
-		return this;
-	}
+    return this;
+  }
 
-	async render() {
-		if (this.isValid) {
-			const documentStream = await ReactPDF.renderToStream(<BasicTemplate data={this.resume} />);
-			return await stream2buffer(documentStream);
-		} else {
-			throw Error(`Resume class error: ${this.error}`);
-		}
-	}
+  async render() {
+    if (this.isValid) {
+      const documentStream = await ReactPDF.renderToStream(<BasicTemplate data={this.resume} />);
+      return await stream2buffer(documentStream);
+    } else {
+      throw Error(`Resume class error: ${this.error}`);
+    }
+  }
 }

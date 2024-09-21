@@ -1,111 +1,111 @@
 {
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"type": "object",
-	"properties": {
-		"fullName": { "type": "string" },
-		"age": { "type": "number" },
-		"position": { "type": "string" },
-		"email": { "type": "string" },
-		"phone": { "type": "string" },
-		"country": { "type": "string" },
-		"city": { "type": "string" },
-		"summary": { "type": "string" },
-		"employment": {
-			"type": "array",
-			"items": { "$ref": "#/definitions/employmentSection" }
-		},
-		"languages": {
-			"type": "array",
-			"items": { "$ref": "#/definitions/languageOrSkill" }
-		},
-		"skills": {
-			"type": "array",
-			"items": { "$ref": "#/definitions/languageOrSkill" }
-		},
-		"hobbies": {
-			"type": "array",
-			"items": { "type": "string" }
-		}
-	},
-	"required": ["fullName", "employment", "languages", "skills", "hobbies"],
-	"definitions": {
-		"employmentCard": {
-			"type": "object",
-			"properties": {
-				"title": { "type": "string" },
-				"location": { "type": "string" },
-				"startDate": { "type": "string" },
-				"endDate": { "type": "string" },
-				"description": { "type": "string" }
-			},
-			"required": ["title", "location", "startDate", "endDate"]
-		},
-		"employmentSection": {
-			"type": "object",
-			"properties": {
-				"title": { "type": "string" },
-				"cards": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/employmentCard" }
-				}
-			},
-			"required": ["title", "cards"]
-		},
-		"courseCard": {
-			"type": "object",
-			"properties": {
-				"university": { "type": "string" },
-				"course": { "type": "string" }
-			},
-			"required": ["university", "course"]
-		},
-		"courseSection": {
-			"type": "object",
-			"properties": {
-				"title": { "type": "string" },
-				"cards": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/courseCard" }
-				}
-			},
-			"required": ["title", "cards"]
-		},
-		"educationCard": {
-			"type": "object",
-			"properties": {
-				"university": { "type": "string" },
-				"degree": { "type": "string" },
-				"location": { "type": "string" },
-				"date": { "type": "string" }
-			},
-			"required": ["university", "degree", "location", "date"]
-		},
-		"educationSection": {
-			"type": "object",
-			"properties": {
-				"title": { "type": "string" },
-				"cards": {
-					"type": "array",
-					"items": { "$ref": "#/definitions/educationCard" }
-				}
-			},
-			"required": ["title", "cards"]
-		},
-		"languageOrSkill": {
-			"type": "object",
-			"properties": {
-				"name": { "type": "string" },
-				"level": { "type": "string" }
-			},
-			"required": ["name", "level"]
-		},
-		"link": {
-			"type": "object",
-			"properties": {
-				"name": { "type": "string" },
-				"url": { "type": "string" }
-			},
-			"required": ["name", "url"]
-		}
-	}
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "fullName": { "type": "string" },
+    "age": { "type": "number" },
+    "position": { "type": "string" },
+    "email": { "type": "string" },
+    "phone": { "type": "string" },
+    "country": { "type": "string" },
+    "city": { "type": "string" },
+    "summary": { "type": "string" },
+    "employment": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/employmentSection" }
+    },
+    "languages": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/languageOrSkill" }
+    },
+    "skills": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/languageOrSkill" }
+    },
+    "hobbies": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["fullName", "employment", "languages", "skills", "hobbies"],
+  "definitions": {
+    "employmentCard": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "location": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["title", "location", "startDate", "endDate"]
+    },
+    "employmentSection": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "cards": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/employmentCard" }
+        }
+      },
+      "required": ["title", "cards"]
+    },
+    "courseCard": {
+      "type": "object",
+      "properties": {
+        "university": { "type": "string" },
+        "course": { "type": "string" }
+      },
+      "required": ["university", "course"]
+    },
+    "courseSection": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "cards": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/courseCard" }
+        }
+      },
+      "required": ["title", "cards"]
+    },
+    "educationCard": {
+      "type": "object",
+      "properties": {
+        "university": { "type": "string" },
+        "degree": { "type": "string" },
+        "location": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["university", "degree", "location", "date"]
+    },
+    "educationSection": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "cards": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/educationCard" }
+        }
+      },
+      "required": ["title", "cards"]
+    },
+    "languageOrSkill": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "level": { "type": "string" }
+      },
+      "required": ["name", "level"]
+    },
+    "link": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string" }
+      },
+      "required": ["name", "url"]
+    }
+  }
 }

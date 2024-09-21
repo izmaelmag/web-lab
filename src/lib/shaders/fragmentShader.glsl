@@ -27,10 +27,6 @@ void main() {
     // Background gradient
     vec3 color = mix(vec3(0.0, 0.0, 0.1), vec3(0.0, 0.2, 0.3), st.y);
     
-    // Slower time for overall movement
-    float slowTime = u_time * 1.
-;
-    
     // Add wave-like particles
     for (int i = 0; i < 200; i++) {
         float fi = float(i);
@@ -40,17 +36,17 @@ void main() {
         );
         
         // Wave-like movement
-        pos.x += 0.04 * sin(slowTime + pos.y * 10.0);
-        pos.y += 0.02 * cos(slowTime * 0.5 + pos.x * 12.0);
+        pos.x += 0.04 * sin(u_time + pos.y * 10.0);
+        pos.y += 0.02 * cos(u_time * 0.5 + pos.x * 12.0);
         
         // Add some noise for more natural movement
-        pos += vec2(noise(pos + slowTime * 0.2), noise(pos + slowTime * 0.3)) * 0.02;
+        pos += vec2(noise(pos + u_time * 0.2), noise(pos + u_time * 0.3)) * 0.02;
         
-        float size = 0.002 + 0.001 * sin(slowTime + fi);
+        float size = 0.002 + 0.001 * sin(u_time + fi);
         
         // Smooth fading
         float fadeSpeed = 0.5 + random(vec2(fi)) * 2.; // Randomize fade speed per particle
-        float fade = 0.5 + 0.5 * sin(slowTime * fadeSpeed + fi);
+        float fade = 0.5 + 0.5 * sin(u_time * fadeSpeed + fi);
         
         // Create more complex particle shape
         float d = length(st - pos);

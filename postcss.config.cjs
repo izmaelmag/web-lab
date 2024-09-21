@@ -1,5 +1,5 @@
 module.exports = {
-	plugins: {
-		['postcss-hexrgba']: {}
-	}
+  plugins: {
+    ['postcss-hexrgba']: {}
+  }
 };

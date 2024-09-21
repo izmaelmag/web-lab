@@ -1,9 +1,9 @@
 import type { Point } from '$lib/types/math';
 
 export class CirclePoint {
-	center: Point;
+  center: Point;
 
-	constructor({ center }: { center: Point }) {
-		this.center = center;
-	}
+  constructor({ center }: { center: Point }) {
+    this.center = center;
+  }
 }
