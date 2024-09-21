@@ -6,7 +6,7 @@
   import GLSLExperiment from '$lib/components/GLSLExperiment.svelte';
   import Controls from '$lib/components/Controls/Controls.svelte';
   import type { ControlsConfig, ControlsData } from '$lib/types/controls';
-  import shader from '$lib/shaders/magic-sparkles.glsl?raw';
+  import shader from '$lib/shaders/color-wheel.glsl?raw';
 
   let controlsData: ControlsData = {};
 
