@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import type { ControlsData } from '$lib/types/controls';
   import createShader from '$lib/utils/glsl/createShader';
   import setupPositionBuffer from '$lib/utils/glsl/setupPositionBuffer';
@@ -14,8 +14,12 @@
   let canvas: HTMLCanvasElement;
   let gl: WebGLRenderingContext;
   let program: WebGLProgram;
+  let animationFrameId: number;
+  let startTime: number;
+  let u_time = 0;
 
-  // Define a simple vertex shader
+  const dispatch = createEventDispatcher();
+
   const vertexShader = `
     attribute vec4 a_position;
     void main() {
@@ -25,51 +29,55 @@
 
   onMount(() => {
     try {
-      // Initialize WebGL context
-      gl = canvas.getContext('webgl')!;
+      gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })!;
       if (!gl) throw new Error('WebGL not supported');
 
-      // Create and set up the WebGL program
       program = createProgram(gl, vertexShader, fragmentShader);
       if (!program) throw new Error('Failed to create WebGL program');
 
-      // Set up the position buffer
       setupPositionBuffer(gl, program);
 
-      // Start the render loop
-      render();
+      startTime = performance.now();
+      requestAnimationFrame(render);
+
+      dispatch('mount', { update, destroy });
     } catch (error) {
       console.error(error);
-      return;
     }
   });
 
-  // Main render function
-  function render() {
-    // Set the viewport
-    gl.viewport(
-      0,
-      0,
-      gl.canvas.width * window.devicePixelRatio,
-      gl.canvas.height * window.devicePixelRatio
-    );
+  function render(now: number) {
+    if (!gl || !program) return;
 
-    // Clear the canvas
+    u_time = (now - startTime) / 1000; // Convert to seconds
+
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // Use the program
     gl.useProgram(program);
 
-    // Set uniform values based on controls
-    setUniforms(gl, program, controls);
+    setUniforms(gl, program, { ...controls, u_time });
 
-    // Draw the rectangle
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-    // Request the next frame
-    requestAnimationFrame(render);
+    animationFrameId = requestAnimationFrame(render);
   }
+
+  export function update(newControls: ControlsData) {
+    controls = { ...newControls };
+  }
+
+  function destroy() {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+    }
+    if (gl) {
+      gl.deleteProgram(program);
+    }
+  }
+
+  onDestroy(destroy);
 </script>
 
 <canvas bind:this={canvas} {width} {height}></canvas>
