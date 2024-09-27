@@ -32,6 +32,7 @@
   main {
     font-family: 'Azeret Mono', monospace;
     max-height: -webkit-fill-available;
-    background: var(--blue-gray-100);
+    background: #000;
+    color: #fff;
   }
 </style>
