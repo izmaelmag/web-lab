@@ -18,8 +18,7 @@
   </div>
 
   <nav class="links">
-    <a href="/playground">Playground</a>
-    <a href="/about">About<i>/</i>CV</a>
+    <a href="/draft">Drafts</a>
   </nav>
 </Layout>
 
