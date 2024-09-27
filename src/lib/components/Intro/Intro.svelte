@@ -16,28 +16,28 @@
 
     <div class="name">
       <span>
-        <JumpText text="I" offset={0.5} delay={0.8} />
+        <JumpText text="I" offset={0.5} delay={0.5} />
       </span>
       <div>
-        <JumpText text="zmael" delay={1.2} />
+        <JumpText text="zmael" delay={1.15} />
       </div>
       <span>
-        <JumpText text="M" offset={0.5} delay={0.9} />
+        <JumpText text="M" offset={0.5} delay={0.5} />
       </span>
       <div>
-        <JumpText text="ag" delay={1.6} />
+        <JumpText text="ag" delay={1.4} />
       </div>
     </div>
 
     <div class="subtitle">
-      <JumpText text="crafting" offset={1} duration={0.35} stagger={0.05} direction="down" />
+      <JumpText text="crafting" offset={1} duration={0.5} stagger={0.05} direction="down" />
       <WigglyText text="moving pixels" delay={0.25} />
       <JumpText
         text="with code"
         offset={1}
         duration={0.35}
         stagger={0.05}
-        delay={1.25}
+        delay={1}
         direction="down"
       />
     </div>
@@ -59,7 +59,7 @@
     border-radius: 50%;
     border: 4px solid var(--brand-orange);
     overflow: hidden;
-    animation: zoomIn 0.7s cubic-bezier(1, 0.55, 0.3, 1) both;
+    animation: zoomIn 0.5s cubic-bezier(1, 0.55, 0.3, 1) both;
   }
 
   .photo img {
@@ -82,10 +82,10 @@
   .greeting {
     font-size: 20px;
     opacity: 0.8;
-    font-weight: 650;
+    font-weight: 500;
     letter-spacing: 0.02em;
     color: var(--brand-orange);
-    transform: translate(67px, 34px);
+    transform: translate(59px, 31px);
   }
 
   .name {
@@ -104,18 +104,19 @@
     &:nth-child(1) {
       position: relative;
       right: -6px;
+
       text-shadow:
-        0 -6px 0 #000,
-        0 6px 0 #000;
+        0 8px 0 #000,
+        0 -8px 0 #000;
     }
   }
 
   .subtitle {
     font-size: 16px;
-    margin-top: -4px;
+    margin-top: -6px;
     margin-left: 18px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    font-weight: 300;
+    letter-spacing: 0.03em;
   }
 
   /* Photo jump up animation */
