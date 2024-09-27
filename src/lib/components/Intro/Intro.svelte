@@ -53,7 +53,8 @@
     align-items: flex-end;
 
     @media (max-width: 640px) {
-      top: 0;
+      top: -8px;
+      left: 8px;
       transform: scale(0.6);
       transform-origin: left top;
       /* align-items: center; */
@@ -93,7 +94,7 @@
 
     @media (max-width: 640px) {
       left: 12px;
-      top: 26px;
+      top: 22px;
     }
   }
 
