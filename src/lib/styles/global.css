@@ -15,7 +15,16 @@ main {
   margin: 0;
   background: var(--neutral-1);
   font-family: monospace;
-  overscroll-behavior: none;
+}
+
+html:before {
+  content: '';
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0px;
+  bottom: 0px;
+  background-color: #000;
 }
 
 main {
