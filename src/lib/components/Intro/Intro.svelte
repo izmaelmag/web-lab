@@ -141,11 +141,12 @@
     letter-spacing: 0.03em;
 
     @media (max-width: 640px) {
-      font-size: 22px;
+      font-size: 20px;
       margin-left: 0px;
       margin-top: 0px;
       width: 140vw;
-      transform: translate(0px, 10px);
+      font-weight: 450;
+      transform: translate(0px, 6px);
     }
   }
 
