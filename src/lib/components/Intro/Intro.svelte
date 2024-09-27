@@ -51,6 +51,13 @@
     top: 16px;
     left: 16px;
     align-items: flex-end;
+
+    @media (max-width: 640px) {
+      top: 0;
+      transform: scale(0.6);
+      transform-origin: left top;
+      /* align-items: center; */
+    }
   }
 
   .photo {
@@ -60,6 +67,12 @@
     border: 4px solid var(--brand-orange);
     overflow: hidden;
     animation: zoomIn 0.5s cubic-bezier(1, 0.55, 0.3, 1) both;
+
+    @media (max-width: 640px) {
+      width: 120px;
+      height: 120px;
+      border-width: 2px;
+    }
   }
 
   .photo img {
@@ -77,6 +90,11 @@
     left: -32px;
     line-height: 1;
     padding-bottom: 16px;
+
+    @media (max-width: 640px) {
+      left: 12px;
+      top: 26px;
+    }
   }
 
   .greeting {
@@ -86,6 +104,10 @@
     letter-spacing: 0.02em;
     color: var(--brand-orange);
     transform: translate(59px, 31px);
+
+    @media (max-width: 640px) {
+      font-size: 22px;
+    }
   }
 
   .name {
@@ -117,6 +139,14 @@
     margin-left: 18px;
     font-weight: 300;
     letter-spacing: 0.03em;
+
+    @media (max-width: 640px) {
+      font-size: 22px;
+      margin-left: 0px;
+      margin-top: 0px;
+      width: 140vw;
+      transform: translate(0px, 10px);
+    }
   }
 
   /* Photo jump up animation */
