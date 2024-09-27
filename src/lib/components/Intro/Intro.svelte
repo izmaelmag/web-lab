@@ -48,22 +48,26 @@
   .intro {
     display: flex;
     position: absolute;
-    bottom: 0;
-    left: 0;
+    top: 16px;
+    left: 16px;
     align-items: flex-end;
   }
 
   .photo {
-    width: 240px;
-    height: 240px;
-    animation: photoJump 1s cubic-bezier(1, 0.55, 0.3, 1) both;
-    transform-origin: left bottom;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 4px solid var(--brand-orange);
+    overflow: hidden;
+    animation: zoomIn 0.7s cubic-bezier(1, 0.55, 0.3, 1) both;
   }
 
   .photo img {
     width: 100%;
     height: 100%;
     flex: 1 1;
+    animation: photoJump 0.8s 0.2s cubic-bezier(1, 0.55, 0.3, 1) both;
+    transform-origin: left bottom;
   }
 
   .text {
@@ -89,17 +93,27 @@
     color: var(--brand-orange);
     display: flex;
     align-items: baseline;
+    margin-left: -8px;
   }
 
   .name span {
     font-size: 96px;
     color: #fff;
+    text-shadow: -2px 0 0 2px #000;
+
+    &:nth-child(1) {
+      position: relative;
+      right: -6px;
+      text-shadow:
+        0 -6px 0 #000,
+        0 6px 0 #000;
+    }
   }
 
   .subtitle {
-    font-size: 18px;
+    font-size: 16px;
     margin-top: -4px;
-    margin-left: 6px;
+    margin-left: 18px;
     font-weight: 500;
     letter-spacing: 0.02em;
   }
@@ -111,6 +125,17 @@
     }
     100% {
       transform: translateY(0) rotate(0deg);
+    }
+  }
+
+  @keyframes zoomIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 </style>

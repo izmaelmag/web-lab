@@ -15,6 +15,7 @@ main {
   margin: 0;
   background: var(--neutral-1);
   font-family: monospace;
+  overscroll-behavior: none;
 }
 
 main {

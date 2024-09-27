@@ -4,7 +4,6 @@
   import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
   import '$lib/styles/fonts.css';
-  import '$lib/styles/colors.css';
   import '$lib/styles/global.css';
   import { onMount } from 'svelte';
 
