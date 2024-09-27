@@ -107,6 +107,7 @@
 
     @media (max-width: 640px) {
       font-size: 22px;
+      transform: translate(59px, 33px);
     }
   }
 
