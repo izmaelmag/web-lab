@@ -16,5 +16,11 @@ export default defineConfig({
   },
   ssr: {
     noExternal: ['three']
+  },
+  // Serve static bundle during development
+  server: {
+    fs: {
+      allow: ['static/glsl/**']
+    }
   }
 });

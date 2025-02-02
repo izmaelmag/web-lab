@@ -1,6 +1,7 @@
 :root {
   --phone: (max-width: 480px);
   --svelteui-fonts-standard: 'Azareth Mono', monospace;
+  --jump-animation: cubic-bezier(0.37, 1.69, 0.17, 0.8);
 }
 
 body,

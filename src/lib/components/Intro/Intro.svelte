@@ -47,10 +47,9 @@
 <style>
   .intro {
     display: flex;
-    position: absolute;
-    top: 16px;
-    left: 16px;
     align-items: flex-end;
+    transform: scale(0.8);
+    transform-origin: center top;
 
     @media (max-width: 640px) {
       top: -8px;

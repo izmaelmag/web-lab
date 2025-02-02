@@ -1,12 +1,19 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   export let text: string = '';
-  export let delay: number = 2;
+  export let delay: number = 0.5;
   export let stagger: number = 0.01;
   export let baseDurationX: number = 5; // Base duration for X-axis animation in seconds
   export let baseDurationY: number = 5; // Base duration for Y-axis animation in seconds
   export let baseAmplitudeX: number = 1; // Base amplitude for X-axis in pixels
   export let baseAmplitudeY: number = 3; // Base amplitude for Y-axis in pixels
   export let randomness: number = 0.1; // Degree of randomness (0 to 1), reduced for smoother movement
+
+  let mounted = false;
+
+  onMount(() => {
+    mounted = true;
+  });
 
   /**
    * Generates a random factor based on the provided randomness degree.
@@ -22,7 +29,7 @@
    * @param {number} index - The index of the character.
    * @returns {string} - The inline CSS styles.
    */
-  const getStyleX = (index: number) => {
+  $: styleX = (index: number) => {
     const duration = baseDurationX * getRandomFactor();
     const amplitude = baseAmplitudeX * getRandomFactor();
     const animationDelay = delay + index * stagger;
@@ -30,6 +37,7 @@
       animation-delay: ${animationDelay}s;
       animation-duration: ${duration}s;
       --amplitudeX: ${amplitude}px;
+      transition: animation-duration 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     `;
   };
 
@@ -38,7 +46,7 @@
    * @param {number} index - The index of the character.
    * @returns {string} - The inline CSS styles.
    */
-  const getStyleY = (index: number) => {
+  $: styleY = (index: number) => {
     const duration = baseDurationY * getRandomFactor();
     const amplitude = baseAmplitudeY * getRandomFactor();
     const animationDelay = delay + index * stagger + durationYPhaseShift(duration);
@@ -46,6 +54,7 @@
       animation-delay: ${animationDelay}s;
       animation-duration: ${duration}s;
       --amplitudeY: ${amplitude}px;
+      transition: animation-duration 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     `;
   };
 
@@ -57,12 +66,16 @@
   const durationYPhaseShift = (duration: number) => {
     return duration / 4;
   };
+
+  const getFadeInStyle = () => {
+    return `animation-delay: ${delay}s;`;
+  };
 </script>
 
-<span class="wiggly-text">
+<span class="wiggly-text {mounted ? 'mounted' : ''}" style={getFadeInStyle()}>
   {#each text.split('') as char, index}
-    <span class="wiggle-x" style={getStyleX(index)}>
-      <span class="wiggle-y" style={getStyleY(index)}>
+    <span class="wiggle-x" style={styleX(index)}>
+      <span class="wiggle-y" style={styleY(index)}>
         {@html char === ' ' ? '\u00A0' : char}
       </span>
     </span>
@@ -72,7 +85,7 @@
 <style>
   .wiggly-text {
     display: inline-block;
-    animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 1s ease-in-out both;
   }
 
   .wiggle-x {
