@@ -67,6 +67,7 @@
     border: 4px solid var(--brand-orange);
     overflow: hidden;
     animation: zoomIn 0.5s cubic-bezier(1, 0.55, 0.3, 1) both;
+    flex-shrink: 0;
 
     @media (max-width: 640px) {
       width: 120px;

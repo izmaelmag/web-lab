@@ -1,8 +1,11 @@
 <script lang="ts">
   import { tweened } from 'svelte/motion';
-  import { cubicOut, cubicInOut } from 'svelte/easing';
+  import { cubicInOut } from 'svelte/easing';
   import JumpText from '../JumpText.svelte';
   import WigglyText from '../WigglyText.svelte';
+
+  let innerWidth: number;
+  $: isPhone = innerWidth <= 640;
 
   export let index: number = 0;
 
@@ -50,6 +53,8 @@
   }
 </script>
 
+<svelte:window bind:innerWidth />
+
 <a
   href={link.ready ? link.href : ''}
   on:mouseenter={() => (isHovered = true)}
@@ -75,11 +80,11 @@
   </h2>
   <p>
     <WigglyText
-      randomness={0.4}
-      baseAmplitudeX={$ampX}
-      baseAmplitudeY={$ampY}
-      baseDurationX={$durationX}
-      baseDurationY={$durationY}
+      randomness={isPhone ? 0.05 : 0.4}
+      baseAmplitudeX={isPhone ? 1 : $ampX}
+      baseAmplitudeY={isPhone ? 1 : $ampY}
+      baseDurationX={isPhone ? 5 : $durationX}
+      baseDurationY={isPhone ? 5 : $durationY}
       text={link.description}
       delay={0.5 + index * 0.15}
     />

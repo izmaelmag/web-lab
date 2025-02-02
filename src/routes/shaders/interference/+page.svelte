@@ -1,7 +1,3 @@
-<script lang="ts">
-  import { onMount } from 'svelte';
-</script>
-
 <iframe
   src="/glsl/interference/index.html"
   title="interference"
