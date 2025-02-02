@@ -55,7 +55,7 @@
       top: -8px;
       left: 8px;
       transform: scale(0.6);
-      transform-origin: left top;
+      transform-origin: center top;
       /* align-items: center; */
     }
   }
