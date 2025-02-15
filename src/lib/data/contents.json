@@ -2,9 +2,17 @@
   "contents": [
     {
       "id": "shaders",
+      "slug": "nebula",
       "title": "Nebula",
       "description": "Colorful pearlescent cloud",
       "href": "/shaders/nebula"
+    },
+    {
+      "id": "shaders",
+      "slug": "interference",
+      "title": "Interference",
+      "description": "Tweakable interference patterns",
+      "href": "/shaders/interference"
     }
   ]
 }

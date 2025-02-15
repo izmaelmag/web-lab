@@ -29,7 +29,7 @@
       <WigglyText text={description} delay={0} stagger={0.025} randomness={0.02} />
     </p>
 
-    <nav>
+    <nav class="content-list">
       <slot />
     </nav>
   </div>
@@ -39,6 +39,13 @@
   .inner-page {
     background: #000;
     padding-top: 8px;
+  }
+
+  .content-list {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(360px, 1fr));
+    gap: 32px;
   }
 
   .compact-intro {

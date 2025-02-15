@@ -12,13 +12,6 @@
       "title": "Generative Arts",
       "description": "100% math-fueled",
       "href": "/generative-arts/",
-      "ready": true
-    },
-    {
-      "id": "diecast",
-      "title": "My Diecast",
-      "description": "Hot Wheels, Matchbox and others",
-      "href": "/diecast",
       "ready": false
     },
     {
@@ -26,6 +19,13 @@
       "title": "Blog",
       "description": "Random thoughts",
       "href": "/blog",
+      "ready": false
+    },
+    {
+      "id": "diecast",
+      "title": "My Diecast",
+      "description": "Hot Wheels, Matchbox and others",
+      "href": "/diecast",
       "ready": false
     }
   ]
