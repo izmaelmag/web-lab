@@ -1,62 +1,92 @@
 <script lang="ts">
   import JumpText from '$lib/components/JumpText.svelte';
-  import Layout from '$lib/components/Layout.svelte';
   import WigglyText from '$lib/components/WigglyText.svelte';
+
+  export let isCompact: boolean = false;
+  export let isHomeLink: boolean = false;
 </script>
 
-<div class="intro">
-  <div class="photo">
-    <img src="/dark.webp" alt="logo" />
-  </div>
-
-  <div class="text">
-    <div class="greeting">
-      <JumpText text="Hello there!" offset={1.5} stagger={0.05} direction="up" />
-    </div>
-
-    <div class="name">
-      <span>
-        <JumpText text="I" offset={0.5} delay={0.5} />
-      </span>
-      <div>
-        <JumpText text="zmael" delay={1.15} />
+{#if isHomeLink}
+  <button
+    on:click={() => (window.location.href = '/')}
+    class="intro-button"
+    class:compact={isCompact}
+    title="Home"
+  >
+    <div class="intro">
+      <div class="photo">
+        <img src="/dark.webp" alt="logo" />
       </div>
-      <span>
-        <JumpText text="M" offset={0.5} delay={0.5} />
-      </span>
-      <div>
-        <JumpText text="ag" delay={1.4} />
-      </div>
+
+      {#if isCompact}
+        <div class="compact-text">
+          <JumpText text="IzmaelMag" delay={0} stagger={0.025} duration={0.5} rotationScale={0.1} />
+        </div>
+      {/if}
+    </div>
+  </button>
+{:else}
+  <div class="intro" class:compact={isCompact}>
+    <div class="photo">
+      <img src="/dark.webp" alt="logo" />
     </div>
 
-    <div class="subtitle">
-      <JumpText text="crafting" offset={1} duration={0.5} stagger={0.05} direction="down" />
-      <WigglyText text="moving pixels" delay={0.25} />
-      <JumpText
-        text="with code"
-        offset={1}
-        duration={0.35}
-        stagger={0.05}
-        delay={1}
-        direction="down"
-      />
-    </div>
+    {#if isCompact}
+      <div class="compact-text">
+        <JumpText text="IzmaelMag" delay={0} offset={0.5} />
+      </div>
+    {/if}
+
+    {#if !isCompact}
+      <div class="text">
+        <div class="greeting">
+          <JumpText text="Hello there!" offset={1.5} stagger={0.05} direction="up" />
+        </div>
+
+        <div class="name">
+          <span>
+            <JumpText text="I" offset={0.5} delay={0.5} />
+          </span>
+          <div>
+            <JumpText text="zmael" delay={1.15} />
+          </div>
+          <span>
+            <JumpText text="M" offset={0.5} delay={0.5} />
+          </span>
+          <div>
+            <JumpText text="ag" delay={1.4} />
+          </div>
+        </div>
+
+        <div class="subtitle">
+          <JumpText text="crafting" offset={1} duration={0.5} stagger={0.05} direction="down" />
+          <WigglyText text="moving pixels" delay={0.25} />
+          <JumpText
+            text="with code"
+            offset={1}
+            duration={0.35}
+            stagger={0.05}
+            delay={1}
+            direction="down"
+          />
+        </div>
+      </div>
+    {/if}
   </div>
-</div>
+{/if}
 
 <style>
   .intro {
     display: flex;
     align-items: flex-end;
-    transform: scale(0.8);
-    transform-origin: left top;
+    transform: scale(1);
+    transform-origin: center top;
 
     @media (max-width: 640px) {
       top: -8px;
       left: 8px;
       transform: scale(0.6);
       transform-origin: center top;
-      /* align-items: center; */
     }
   }
 
@@ -171,5 +201,41 @@
       opacity: 1;
       transform: scale(1);
     }
+  }
+
+  .compact {
+    transform: scale(1);
+
+    & .photo {
+      width: 48px;
+      height: 48px;
+      border-width: 1px;
+    }
+
+    & .compact-text {
+      font-size: 22px;
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 4px;
+      margin-left: 8px;
+      transition: color 0.3s ease;
+    }
+
+    &:hover .compact-text {
+      color: var(--brand-orange);
+    }
+  }
+
+  button.intro-button {
+    transform: scale(1);
+    all: unset;
+    cursor: pointer;
+    display: block;
+    transform: scale(1);
+  }
+
+  button.intro-button:focus-visible {
+    outline: 2px solid var(--brand-orange);
+    outline-offset: 4px;
   }
 </style>

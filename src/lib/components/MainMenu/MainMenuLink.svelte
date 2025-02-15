@@ -46,7 +46,7 @@
       durationX.set(5);
       durationY.set(5);
     } else {
-      ampX.set(3);
+      ampX.set(6);
       ampY.set(2);
       durationX.set(10);
       durationY.set(10);
@@ -64,7 +64,7 @@
 >
   <h2>
     {#if link.ready}
-      <JumpText text={link.title} stagger={0.01} delay={0.5 + index * 0.15} />
+      <JumpText text={link.title} stagger={0.05} delay={0.5 + index * 0.15} />
     {/if}
 
     {#if !link.ready}
@@ -115,10 +115,6 @@
 
 <style>
   a {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0px;
     text-decoration: none;
     position: relative;
   }
@@ -131,8 +127,9 @@
     line-height: 1;
     transform: scale(1, 1);
     transition: transform 0.5s var(--jump-animation);
-    transform-origin: left bottom;
+    transform-origin: center bottom;
     opacity: 0.2;
+    text-align: center;
   }
 
   p {
@@ -141,6 +138,7 @@
     font-weight: 300;
     color: #fff;
     opacity: 0.2;
+    text-align: center;
   }
 
   .wip {
@@ -154,14 +152,14 @@
     opacity: 1;
     position: absolute;
     top: 50%;
-    left: 0;
-    transform: translateY(-50%);
+    left: 50%;
+    transform: translate(-50%, -50%);
     animation: wipFall 0.4s var(--jump-animation) both;
-    transform-origin: left center;
+    transform-origin: center center;
+    text-align: center;
   }
 
   .ready {
-    transition: opacity 0.2s ease-in-out;
     cursor: pointer;
 
     &:hover {
@@ -187,7 +185,7 @@
     0% {
       opacity: 0;
       scale: 2;
-      rotate: -30deg;
+      rotate: -5deg;
     }
     100% {
       opacity: 1;
@@ -199,8 +197,8 @@
   .wip-wrapper {
     position: absolute;
     top: 50%;
-    left: 0;
-    transform: translateY(-50%);
+    left: 50%;
+    transform: translate(-50%, -50%);
     transform-origin: center center;
     padding: 0;
     background: none;

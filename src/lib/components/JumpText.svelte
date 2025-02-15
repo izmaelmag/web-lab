@@ -6,6 +6,7 @@
   export let stagger: number = 0.1;
   export let offset: number = 0.5;
   export let direction: 'up' | 'down' = 'down';
+  export let rotationScale: number = 1;
 
   let mounted = false;
 
@@ -23,6 +24,7 @@
     return `
       animation-delay: ${delay + index * stagger}s;
       animation-duration: ${duration}s;
+      --rotation-scale: ${rotationScale};
     `;
   };
 </script>
@@ -59,7 +61,8 @@
   @keyframes jump {
     0% {
       opacity: 0;
-      transform: translate3d(0, var(--offset), 0) scale(0.8) rotate(-20deg);
+      transform: translate3d(0, var(--offset), 0) scale(0.8)
+        rotate(calc(var(--rotation-scale) * -60deg));
     }
     100% {
       opacity: 1;
