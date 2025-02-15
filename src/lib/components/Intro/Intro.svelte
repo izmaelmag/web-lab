@@ -49,7 +49,7 @@
     display: flex;
     align-items: flex-end;
     transform: scale(0.8);
-    transform-origin: center top;
+    transform-origin: left top;
 
     @media (max-width: 640px) {
       top: -8px;

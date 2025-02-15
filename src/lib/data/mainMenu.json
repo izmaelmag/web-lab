@@ -1,24 +1,28 @@
 {
   "links": [
     {
-      "title": "SLIM SHADY",
-      "description": "Tweakable GLSL shaders",
+      "id": "shaders",
+      "title": "Shaders Zone",
+      "description": "Animated GLSL visuals",
       "href": "/shaders/",
       "ready": true
     },
     {
-      "title": "S.R.E.F",
-      "description": "Collection of cool midjourney styles",
-      "href": "/sref",
-      "ready": false
+      "id": "generative-arts",
+      "title": "Generative Arts",
+      "description": "100% math-fueled",
+      "href": "/generative-arts/",
+      "ready": true
     },
     {
+      "id": "diecast",
       "title": "My Diecast",
       "description": "Hot Wheels, Matchbox and others",
       "href": "/diecast",
       "ready": false
     },
     {
+      "id": "blog",
       "title": "Blog",
       "description": "Random thoughts",
       "href": "/blog",
