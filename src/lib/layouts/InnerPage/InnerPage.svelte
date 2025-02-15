@@ -26,7 +26,7 @@
     </h1>
 
     <p>
-      <WigglyText text={description} delay={0} stagger={0.025} randomness={0.05} />
+      <WigglyText text={description} delay={0} stagger={0.025} randomness={0.02} />
     </p>
 
     <nav>

@@ -20,7 +20,7 @@
 
       {#if isCompact}
         <div class="compact-text">
-          <JumpText text="IzmaelMag" delay={0} stagger={0.025} duration={0.5} rotationScale={0.1} />
+          <JumpText text="Home" delay={0} stagger={0.025} duration={0.5} rotationScale={0.1} />
         </div>
       {/if}
     </div>
