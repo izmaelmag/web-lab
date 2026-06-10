@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mandelbrot Explorer — perturbation GLSL</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { height:100%; overflow:hidden; background:#04050a;
+    font:11px/1.4 ui-monospace,"SF Mono",Menlo,monospace; }
+  canvas { display:block; width:100vw; height:100vh; touch-action:none; }
+
+  .hud {
+    position:fixed; top:calc(env(safe-area-inset-top,0px) + 10px); left:0; right:0;
+    padding:4px 18px; display:flex; justify-content:space-between;
+    color:rgba(190,205,255,.55); letter-spacing:.08em; pointer-events:none;
+    mix-blend-mode:screen; z-index:21;
+  }
+  .hud b { color:rgba(235,240,255,.85); font-weight:600; }
+
+  .progress {
+    position:fixed; top:0; left:0; right:0; height:2px; z-index:20;
+    background:rgba(120,140,255,.08); opacity:0; transition:opacity .3s;
+  }
+  .progress.on { opacity:1; }
+  .progress i {
+    display:block; height:100%; width:0%;
+    background:linear-gradient(90deg,#4a63d6,#9db1ff);
+    box-shadow:0 0 8px rgba(125,150,255,.9);
+  }
+  .progressLabel {
+    position:fixed; top:calc(env(safe-area-inset-top,0px) + 30px); left:0; right:0;
+    text-align:center; color:rgba(190,205,255,.7); letter-spacing:.1em;
+    pointer-events:none; opacity:0; transition:opacity .3s; z-index:20;
+  }
+  .progressLabel.on { opacity:1; }
+
+  /* ---------- ASCII button style ---------- */
+  .ascii {
+    background:none; border:none; cursor:pointer;
+    color:rgba(195,208,255,.75);
+    font:11px ui-monospace,"SF Mono",Menlo,monospace; letter-spacing:.08em;
+    padding:7px 4px; white-space:nowrap;
+    text-shadow:0 1px 6px rgba(0,0,0,.9);
+  }
+  .ascii::before { content:'[ '; color:rgba(140,158,230,.5); }
+  .ascii::after  { content:' ]'; color:rgba(140,158,230,.5); }
+  .ascii:hover   { color:#fff; }
+  .ascii:active, .ascii.active {
+    color:#fff; text-shadow:0 0 10px rgba(150,175,255,.9);
+  }
+  .ascii.active::before { content:'[ > '; }
+
+  .panel {
+    position:fixed; left:0; right:0;
+    bottom:calc(env(safe-area-inset-bottom,0px) + 8px);
+    padding:0 14px; z-index:22; /* above the frame dimming */
+  }
+  .chips {
+    display:block; line-height:2;
+    color:rgba(140,158,230,.45); /* the commas */
+    letter-spacing:.06em;
+    text-shadow:0 1px 6px rgba(0,0,0,.9);
+  }
+  .poi {
+    cursor:pointer; color:rgba(208,219,255,.8); white-space:nowrap;
+  }
+  .poi:hover { color:#fff; }
+  .poi.active {
+    color:#fff;
+    text-shadow:0 0 10px rgba(160,185,255,1), 0 1px 6px rgba(0,0,0,.9);
+  }
+
+  @media (min-width: 768px) {
+    .panel {
+      left:18px; right:auto; top:calc(env(safe-area-inset-top,0px) + 48px);
+      bottom:auto; width:180px; padding:0;
+    }
+  }
+
+  .toast {
+    position:fixed; left:50%; top:calc(env(safe-area-inset-top,0px) + 56px);
+    transform:translateX(-50%);
+    padding:9px 16px; z-index:40;
+    background:rgba(6,8,16,.9); border:1px solid rgba(150,168,235,.35);
+    color:#e8edff; letter-spacing:.12em;
+    opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .toast.on { opacity:1; }
+
+  .shareBox {
+    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+    display:none; flex-direction:column; gap:10px; z-index:45;
+    width:min(86vw, 420px); padding:14px;
+    background:rgba(6,8,16,.95); border:1px solid rgba(150,168,235,.35);
+  }
+  .shareBox.open { display:flex; }
+  .shareBox label { color:rgba(200,212,250,.8); letter-spacing:.12em; }
+  .shareBox input {
+    width:100%; padding:10px;
+    background:rgba(20,26,48,.6); border:1px solid rgba(120,140,255,.25);
+    color:#e8edff; font:11px ui-monospace,monospace;
+  }
+  .shareBox .row { display:flex; justify-content:flex-end; }
+
+  .zoomMenu {
+    position:fixed; display:none; flex-direction:column; gap:2px;
+    padding:6px 10px; z-index:30;
+    background:rgba(6,8,16,.88); border:1px solid rgba(150,168,235,.3);
+    transform:translate(-50%,-115%);
+  }
+  .zoomMenu.open { display:flex; }
+  .marker {
+    position:fixed; width:16px; height:16px;
+    border:1px solid rgba(235,240,255,.9); transform:translate(-50%,-50%) rotate(45deg);
+    pointer-events:none; display:none; z-index:29;
+    box-shadow:0 0 10px rgba(125,150,255,.7);
+  }
+
+  /* ---------- permanent focus frame ---------- */
+  .poiFrame {
+    position:fixed; left:50%; top:50%;
+    width:min(64vw,64vh); height:min(64vw,64vh);
+    transform:translate(-50%,-50%);
+    border:1px solid rgba(205,215,255,.55);
+    box-shadow:0 0 0 200vmax rgba(3,4,8,.8);
+    pointer-events:none; z-index:18;
+  }
+  .poiFrame::before, .poiFrame::after {
+    content:''; position:absolute; width:10px; height:10px;
+    border:1.5px solid rgba(235,240,255,.9);
+  }
+  .poiFrame::before { left:-1px; top:-1px; border-right:none; border-bottom:none; }
+  .poiFrame::after  { right:-1px; bottom:-1px; border-left:none; border-top:none; }
+
+  .frameHint {
+    position:absolute; left:-1px; bottom:calc(100% + 8px);
+    color:rgba(200,212,250,.8); letter-spacing:.1em;
+    text-shadow:0 1px 6px rgba(0,0,0,.95);
+  }
+  @media (pointer: coarse), (max-width: 767px) { .frameHint { display:none; } }
+
+  .frameZooms {
+    position:absolute; right:-5px; bottom:calc(100% + 1px);
+    display:flex; pointer-events:auto;
+  }
+  .frameShare {
+    position:absolute; right:-5px; bottom:calc(100% + 1px);
+    transform:translateX(calc(-100% - 60px));
+    pointer-events:auto;
+  }
+
+  @media (pointer: coarse), (max-width: 767px) {
+    /* share moves to the top-left corner of the frame */
+    .frameShare {
+      right:auto; left:-5px; transform:none;
+      bottom:calc(100% + 5px);
+    }
+    /* bigger, bordered +/- for finger targets */
+    .frameZooms { gap:8px; bottom:calc(100% + 5px); right:-1px; }
+    .frameZooms .ascii {
+      border:1px solid rgba(150,168,235,.4);
+      background:rgba(6,8,16,.7);
+      min-width:46px; min-height:40px;
+      font-size:17px; padding:6px 14px;
+    }
+    .frameZooms .ascii::before, .frameZooms .ascii::after { content:''; }
+  }
+
+  .poiName {
+    position:absolute; left:0; right:0; top:calc(100% + 10px);
+    text-align:center; color:rgba(245,248,255,.95);
+    letter-spacing:.16em; text-shadow:0 1px 6px rgba(0,0,0,.95);
+  }
+  .poiCoords {
+    position:absolute; left:0; right:0; top:calc(100% + 28px);
+    text-align:center; color:rgba(220,229,255,.85);
+    font-size:10px; letter-spacing:.1em;
+    text-shadow:0 1px 6px rgba(0,0,0,.95); white-space:nowrap;
+  }
+  .poiDesc {
+    position:absolute; left:50%; top:calc(100% + 46px);
+    transform:translateX(-50%);
+    width:min(78vw, 460px);
+    text-align:center; color:rgba(206,215,245,.88);
+    font-size:11px; line-height:1.55; letter-spacing:.02em;
+    text-shadow:0 1px 8px rgba(0,0,0,.95);
+  }
+  .err {
+    position:fixed; inset:0; display:none; place-items:center; z-index:50;
+    background:#04050a; color:#ffb0a0; padding:30px; text-align:center;
+  }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="err" id="err"></div>
+
+<div class="progress" id="progress"><i id="progressBar"></i></div>
+<div class="progressLabel" id="progressLabel"></div>
+
+<div class="hud">
+  <span><b>MANDELBROT / PERTURBATION</b></span>
+  <span><span id="iterLabel"></span> &middot; <span id="zoomLabel"></span></span>
+</div>
+
+<div class="zoomMenu" id="zoomMenu">
+  <button class="ascii" id="zoomIn">ZOOM IN &times;6</button>
+  <button class="ascii" id="zoomOut">ZOOM OUT &divide;6</button>
+</div>
+<div class="marker" id="marker"></div>
+<div class="toast" id="toast">LINK COPIED</div>
+
+<div class="shareBox" id="shareBox">
+  <label>SHARE THIS VIEW</label>
+  <input id="shareInput" readonly spellcheck="false">
+  <div class="row"><button class="ascii" id="shareClose">CLOSE</button></div>
+</div>
+
+<div class="poiFrame" id="poiFrame">
+  <div class="frameHint">&larr; &uarr; &darr; &rarr; PAN &middot; + &minus; ZOOM</div>
+  <div class="frameShare">
+    <button class="ascii" id="shareBtn">SHARE</button>
+  </div>
+  <div class="frameZooms">
+    <button class="ascii" id="frameZoomOut">&minus;</button>
+    <button class="ascii" id="frameZoomIn">+</button>
+  </div>
+  <div class="poiName" id="poiName"></div>
+  <div class="poiCoords" id="poiCoords"></div>
+  <div class="poiDesc" id="poiDesc"></div>
+</div>
+
+<div class="panel">
+  <div class="chips" id="chips"></div>
+</div>
+
+<script>
+const canvas = document.getElementById('gl');
+const gl = canvas.getContext('webgl', { antialias:false, alpha:false });
+
+const floatExt = gl.getExtension('OES_texture_float');
+if (!floatExt){
+  const e = document.getElementById('err');
+  e.style.display = 'grid';
+  e.textContent = 'OES_texture_float is not available — the perturbation renderer needs a float texture for the reference orbit.';
+  throw new Error('no float textures');
+}
+
+const MAXIT = 2048;
+const TEXW  = 2048;
+const LOWRES = 0.3;   // backdrop resolution factor
+
+const VERT = `
+attribute vec2 a; varying vec2 v;
+void main(){ v = a*.5+.5; gl_Position = vec4(a,0.,1.); }
+`;
+
+const FRAG = `
+precision highp float;
+varying vec2 v;
+uniform vec2  u_res;
+uniform float u_time;
+uniform float u_zoom;
+uniform float u_iter;
+uniform float u_aa;
+uniform sampler2D u_orbit;
+uniform float u_orbitN;
+
+vec2 Z(float m){
+  return texture2D(u_orbit, vec2((m + .5)/${TEXW}.0, .5)).xy;
+}
+
+vec3 palette(float t){
+  return .5 + .5*cos(6.28318*(vec3(1., .94, .86)*t + vec3(.12,.34,.61)));
+}
+
+vec3 shade(float n, float it, vec2 uv){
+  vec3 bg = vec3(.008,.011,.028);
+  if (n < 0.) return mix(bg, vec3(.012,.02,.05), .5+.5*sin(uv.y*2.));
+  float t = sqrt(n/it);
+  vec3 col = palette(n*.012 + u_time*.018);
+  vec3 o = mix(bg, col, pow(t, .8));
+  o += col * .25 * pow(1.-abs(2.*fract(n*.05)-1.), 4.);
+  return o;
+}
+
+vec3 render(vec2 fc){
+  vec2 uv = (fc*2. - u_res)/u_res.y;
+  vec2 dc = uv / u_zoom;
+
+  vec2 dz = vec2(0.);
+  float m = 0.;
+  float n = -1.;
+  float m2 = 0.;
+
+  for (int i = 0; i < ${MAXIT}; i++){
+    if (float(i) >= u_iter) break;
+    vec2 Zm = Z(m);
+    vec2 z = Zm + dz;
+    float z2 = dot(z, z);
+    if (z2 > 4096.) { n = float(i); m2 = z2; break; }
+    if (z2 < dot(dz, dz) || m >= u_orbitN - 1.) {
+      dz = z; m = 0.; Zm = vec2(0.);
+    }
+    dz = vec2(
+      2.*(Zm.x*dz.x - Zm.y*dz.y) + (dz.x*dz.x - dz.y*dz.y),
+      2.*(Zm.x*dz.y + Zm.y*dz.x) + 2.*dz.x*dz.y
+    ) + dc;
+    m += 1.;
+  }
+
+  if (n >= 0.) n = n + 1. - log2(.5*log(m2));
+  return shade(n, u_iter, uv);
+}
+
+void main(){
+  vec3 acc = vec3(0.);
+  float cnt = 0.;
+  for (int s = 0; s < 4; s++){
+    if (float(s) >= u_aa) break;
+    vec2 off = u_aa > 1.5
+      ? vec2(float(s/2), float(s - (s/2)*2)) * .5 - .25
+      : vec2(0.);
+    acc += render(gl_FragCoord.xy + off);
+    cnt += 1.;
+  }
+  vec3 o = acc / cnt;
+  float g = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898,78.233)))*43758.5453);
+  o += (g-.5)*.012;
+  gl_FragColor = vec4(pow(o, vec3(.4545)), 1.);
+}
+`;
+
+const BLIT_FRAG = `
+precision mediump float;
+varying vec2 v;
+uniform sampler2D u_tex;
+void main(){ gl_FragColor = texture2D(u_tex, v); }
+`;
+
+function compile(t, src){
+  const sh = gl.createShader(t);
+  gl.shaderSource(sh, src); gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh));
+  return sh;
+}
+function makeProgram(vs, fs){
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+
+const progMain = makeProgram(VERT, FRAG);
+const progBlit = makeProgram(VERT, BLIT_FRAG);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+function bindQuad(prog){
+  const loc = gl.getAttribLocation(prog, 'a');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+}
+
+const U = {};
+for (const n of ['u_res','u_time','u_zoom','u_iter','u_aa','u_orbit','u_orbitN'])
+  U[n] = gl.getUniformLocation(progMain, n);
+const U_tex = gl.getUniformLocation(progBlit, 'u_tex');
+
+/* ---------- reference orbit ---------- */
+const orbitData = new Float32Array(TEXW * 4);
+const orbitTex = gl.createTexture();
+gl.activeTexture(gl.TEXTURE1);
+gl.bindTexture(gl.TEXTURE_2D, orbitTex);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+let orbitN = 0, orbitCx = NaN, orbitCy = NaN, orbitIt = 0;
+
+function computeOrbit(cx, cy, maxN){
+  let x = 0, y = 0;
+  let n = 0;
+  for (; n < maxN; n++){
+    orbitData[n*4]   = x;
+    orbitData[n*4+1] = y;
+    const x2 = x*x, y2 = y*y;
+    if (x2 + y2 > 1e10) { n++; break; }
+    const nx = x2 - y2 + cx;
+    y = 2*x*y + cy;
+    x = nx;
+  }
+  orbitN = n;
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, orbitTex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, TEXW, 1, 0, gl.RGBA, gl.FLOAT, orbitData);
+}
+
+function ensureOrbit(iters){
+  if (cam.x !== orbitCx || cam.y !== orbitCy || iters > orbitIt){
+    computeOrbit(cam.x, cam.y, Math.min(TEXW, iters));
+    orbitCx = cam.x; orbitCy = cam.y; orbitIt = iters;
+  }
+}
+
+/* ---------- render targets ---------- */
+function makeTarget(w, h){
+  const tex = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  const f = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  return { fbo:f, tex, w, h };
+}
+let hi = null, low = null;
+
+function resize(){
+  const dpr = Math.min(devicePixelRatio||1, 2);
+  canvas.width  = Math.round(innerWidth*dpr);
+  canvas.height = Math.round(innerHeight*dpr);
+  gl.viewport(0,0,canvas.width,canvas.height);
+  hi  = makeTarget(canvas.width, canvas.height);
+  low = makeTarget(Math.max(64, Math.round(canvas.width*LOWRES)),
+                   Math.max(64, Math.round(canvas.height*LOWRES)));
+  invalidateRefine();
+}
+addEventListener('resize', resize);
+
+/* the hi-res window in device pixels (matches the CSS frame) */
+function frameRect(){
+  const dpr = canvas.width / innerWidth;
+  const s = Math.round(Math.min(innerWidth, innerHeight) * 0.64 * dpr);
+  return {
+    x: Math.round((canvas.width - s)/2),
+    y: Math.round((canvas.height - s)/2),
+    s
+  };
+}
+
+/* ---------- camera ---------- */
+const cam    = { x:-0.6, y:0.0, zoom:0.38 };
+const target = { x:-0.6, y:0.0, zoom:0.38 };
+const MAXZOOM = 1e13, MINZOOM = 0.18;
+
+function liveIters(zoom){
+  const lz = Math.log10(Math.max(zoom,1));
+  return Math.min(MAXIT, Math.max(120, Math.round(120 + 70*Math.pow(lz, 1.45))));
+}
+
+/* ---------- points of interest ---------- */
+const POIS = [
+  { name:'Overview', x:-0.6, y:0.0, zoom:0.38,
+    desc:'The cardioid with its bulbs is a map of all quadratic dynamics: every point c defines its own Julia set. The boundary is so intricate that its fractal dimension equals 2 (Shishikura\u2019s theorem).' },
+  { name:'Seahorse Valley', x:-0.7463, y:0.1102, zoom:220,
+    desc:'The cleft between the cardioid and the main disk, lined with spiral \u201cseahorses\u201d. The name stuck after Peitgen and Richter\u2019s \u201cThe Beauty of Fractals\u201d (1986) made this spot iconic.' },
+  { name:'Seahorse Tail', x:-0.74364779, y:0.13182518, zoom:8e6,
+    desc:'Inside the seahorse\u2019s tail \u2014 copies of the very same tail. Self-similarity made visible: the structure reproduces itself at every level of magnification.' },
+  { name:'Seahorse \u00d710\u2079', x:-0.74364388703, y:0.13182590421, zoom:1.2e9,
+    desc:'Neighborhood of a Misiurewicz point: by Tan Lei\u2019s theorem the set is asymptotically self-similar here \u2014 the spiral repeats almost unchanged with every step of zoom.' },
+  { name:'Elephant Valley', x:0.2925, y:0.0149, zoom:180,
+    desc:'The eastern cleft of the cardioid, where shapes line up like elephants marching in single file. A clean example of a valley\u2019s look being dictated by the period of the nearest component.' },
+  { name:'Double Spiral', x:-0.745428, y:0.113009, zoom:3e4,
+    desc:'Two interlocked spirals \u2014 another classic frame from \u201cThe Beauty of Fractals\u201d. The spiraling is a trace of complex multiplication: orbits rotate and contract at the same time.' },
+  { name:'Misiurewicz Spiral', x:-0.77568377, y:0.13646737, zoom:4e3,
+    desc:'A Misiurewicz point: the orbit of c is pre-periodic \u2014 after a run-up it lands in a cycle. Near such points the Mandelbrot and Julia sets are locally almost indistinguishable.' },
+  { name:'Feigenbaum Cascade', x:-1.4011552, y:0.0, zoom:1.5e3,
+    desc:'The accumulation point of the period-doubling cascade: the bulbs shrink geometrically with the universal constant \u03b4 \u2248 4.669. The same constant governs the onset of chaos in any system with a quadratic maximum \u2014 from dripping faucets to populations.' },
+  { name:'Needle Tip', x:-1.9408, y:0.0, zoom:600,
+    desc:'The antenna stretches toward c = \u22122 \u2014 the set\u2019s farthest point on the real axis, where the dynamics is fully chaotic. Miniature copies of the whole set are strung along the needle.' },
+  { name:'Mini-Mandelbrot', x:-1.7549, y:0.0, zoom:55,
+    desc:'A period-3 copy of the entire set. Douady and Hubbard proved such copies are dense \u2014 they exist at every depth, everywhere along the boundary, all joined by infinitely thin filaments: the set is connected.' },
+  { name:'Minibrot \u00d710\u00b9\u2070', x:-1.74999841099374, y:0.0, zoom:2e10,
+    desc:'A copy of the set at depth \u00d710\u00b9\u2070. The self-similarity is \u201cquasi\u201d: the copy is not exact \u2014 its halo of filaments is denser and depends on location. A good stress test: before perturbation rendering this point was unreachable.' },
+  { name:'Triple Spiral', x:-0.0886, y:0.6543, zoom:1.6e3,
+    desc:'A valley with three interlocked arms near the period-3 bulb \u2014 the number of rays in such rosettes reads off the period of the nearest component. Arithmetic you can see.' },
+  { name:'Lightning', x:-1.25066, y:0.02012, zoom:1.2e4,
+    desc:'Branching dendrites: nearly one-dimensional filaments with no interior. Here the boundary is neither a \u201cline\u201d nor a \u201cregion\u201d but something in between, branching like a discharge.' },
+  { name:'Julia Island', x:-1.768778833, y:-0.001738996, zoom:3.5e5,
+    desc:'An embedded Julia set: near this point the Mandelbrot set looks like the Julia set of the corresponding c. The location was made famous by deep-zoom videos on YouTube.' },
+];
+
+let fly = null;
+let flyQueue = [];
+const poiFrame  = document.getElementById('poiFrame');
+const poiName   = document.getElementById('poiName');
+const poiCoords = document.getElementById('poiCoords');
+const poiDesc   = document.getElementById('poiDesc');
+let currentPoi = null;
+
+function fmtCoord(v, zoom){
+  const digits = Math.min(14, Math.max(4, Math.ceil(Math.log10(Math.max(zoom,1))) + 2));
+  return v.toFixed(digits);
+}
+
+function showPoiInfo(p){
+  currentPoi = p;
+  poiName.textContent = p.name.toUpperCase();
+  poiDesc.textContent = p.desc || '';
+}
+function clearPoiInfo(){
+  currentPoi = null;
+  poiName.textContent = '';
+  poiDesc.textContent = '';
+  [...chips.querySelectorAll('.poi')].forEach(c => c.classList.remove('active'));
+}
+
+function startLeg(dest){
+  fly = {
+    x0:cam.x, y0:cam.y, z0:cam.zoom,
+    x1:dest.x, y1:dest.y, z1:dest.zoom,
+    t:0,
+    dur: Math.min(6, 0.7 + 0.4*Math.abs(Math.log10(dest.zoom/cam.zoom))),
+    poi: dest.poi || null
+  };
+}
+
+function flyTo(p, poi, direct){
+  hideMenu(); clearPoiInfo(); invalidateRefine();
+  flyQueue = [];
+  const home = POIS[0];
+  const atHome = cam.zoom < home.zoom * 4;
+  if (poi && !direct && !atHome && (p.x !== home.x || p.zoom !== home.zoom)){
+    flyQueue.push({ x:home.x, y:home.y, zoom:home.zoom, poi:null });
+  }
+  flyQueue.push({ x:p.x, y:p.y, zoom:p.zoom, poi: poi || null });
+  startLeg(flyQueue.shift());
+}
+const easeFly = t => t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+
+function stepFly(dt){
+  if (!fly) return;
+  fly.t += dt/fly.dur;
+  if (fly.t >= 1){
+    cam.x=target.x=fly.x1; cam.y=target.y=fly.y1; cam.zoom=target.zoom=fly.z1;
+    if (fly.poi) showPoiInfo(fly.poi);
+    fly = null;
+    if (flyQueue.length) startLeg(flyQueue.shift());
+    return;
+  }
+  const e = easeFly(fly.t);
+  const z = Math.exp(Math.log(fly.z0) + (Math.log(fly.z1)-Math.log(fly.z0))*e);
+  const zoomRatio = fly.z1/fly.z0;
+  if (Math.abs(Math.log(zoomRatio)) < 1e-6){
+    cam.x = target.x = fly.x0 + (fly.x1-fly.x0)*e;
+    cam.y = target.y = fly.y0 + (fly.y1-fly.y0)*e;
+  } else if (zoomRatio > 1){
+    const r1 = fly.z0/fly.z1;
+    const s = (fly.z0/z - r1) / (1 - r1);
+    cam.x = target.x = fly.x1 + (fly.x0-fly.x1)*s;
+    cam.y = target.y = fly.y1 + (fly.y0-fly.y1)*s;
+  } else {
+    const r0 = fly.z1/fly.z0;
+    const s = (fly.z1/z - r0) / (1 - r0);
+    cam.x = target.x = fly.x0 + (fly.x1-fly.x0)*s;
+    cam.y = target.y = fly.y0 + (fly.y1-fly.y0)*s;
+  }
+  cam.zoom = target.zoom = z;
+}
+
+/* ---------- background refinement (inside the frame only) ---------- */
+const RTILES = 6;
+let refine = { active:false, ready:false, tile:0, iter:0 };
+const progressEl = document.getElementById('progress');
+const progressBar = document.getElementById('progressBar');
+const progressLabel = document.getElementById('progressLabel');
+let idleTime = 0;
+
+function invalidateRefine(){
+  refine.active = false; refine.ready = false; refine.tile = 0;
+  idleTime = 0;
+  progressEl.classList.remove('on'); progressLabel.classList.remove('on');
+}
+
+function startRefine(){
+  refine.active = true; refine.ready = false; refine.tile = 0;
+  refine.iter = Math.min(MAXIT, Math.round(liveIters(cam.zoom) * 2.2));
+  progressEl.classList.add('on'); progressLabel.classList.add('on');
+}
+
+function setMainUniforms(time, iters, aa, resW, resH){
+  ensureOrbit(iters);
+  gl.uniform2f(U.u_res, resW, resH);
+  gl.uniform1f(U.u_time, time);
+  gl.uniform1f(U.u_zoom, cam.zoom);
+  gl.uniform1f(U.u_iter, iters);
+  gl.uniform1f(U.u_aa, aa || 1);
+  gl.uniform1i(U.u_orbit, 1);
+  gl.uniform1f(U.u_orbitN, orbitN);
+}
+
+function stepRefine(time){
+  if (!refine.active || refine.ready) return;
+  const fr = frameRect();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, hi.fbo);
+  gl.viewport(0,0,canvas.width,canvas.height);
+  gl.useProgram(progMain); bindQuad(progMain);
+  setMainUniforms(time, refine.iter, 4, canvas.width, canvas.height);
+  gl.enable(gl.SCISSOR_TEST);
+  const tw = Math.ceil(fr.s/RTILES), th = Math.ceil(fr.s/RTILES);
+  const total = RTILES*RTILES;
+  if (refine.tile < total){
+    const tx = refine.tile % RTILES, ty = (refine.tile / RTILES)|0;
+    gl.scissor(fr.x + tx*tw, fr.y + ty*th, tw, th);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    refine.tile++;
+  }
+  gl.disable(gl.SCISSOR_TEST);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+  const pct = Math.round(100*refine.tile/total);
+  progressBar.style.width = pct + '%';
+  progressLabel.textContent = 'REFINING ' + pct + '% \u00b7 ' + refine.iter + ' ITER \u00b7 AA\u00d74';
+  if (refine.tile >= total){
+    refine.ready = true; refine.active = false;
+    progressEl.classList.remove('on'); progressLabel.classList.remove('on');
+  }
+}
+
+/* ---------- navigation: drag / pinch / tap / keys ---------- */
+const pointers = new Map();
+let pinchDist = 0, downInfo = null;
+const zoomMenu = document.getElementById('zoomMenu');
+const marker = document.getElementById('marker');
+let tapPoint = null;
+
+function screenToFractal(cx, cy){
+  const dpr = canvas.width / innerWidth;
+  const fx = cx*dpr, fy = canvas.height - cy*dpr;
+  const ux = (fx*2 - canvas.width) / canvas.height;
+  const uy = (fy*2 - canvas.height) / canvas.height;
+  return { x: ux/cam.zoom + cam.x, y: uy/cam.zoom + cam.y };
+}
+function hideMenu(){ zoomMenu.classList.remove('open'); marker.style.display='none'; tapPoint=null; }
+
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+  downInfo = { x:e.clientX, y:e.clientY, t:performance.now(), moved:false };
+  if (pointers.size === 2){
+    const [a,b] = [...pointers.values()];
+    pinchDist = Math.hypot(a.x-b.x, a.y-b.y);
+    downInfo = null;
+    clearPoiInfo();
+  }
+  fly = null; flyQueue = [];
+});
+
+canvas.addEventListener('pointermove', e => {
+  if (!pointers.has(e.pointerId)) return;
+  const prev = pointers.get(e.pointerId);
+  const cur = { x:e.clientX, y:e.clientY };
+  if (downInfo && Math.hypot(cur.x-downInfo.x, cur.y-downInfo.y) > 8){
+    downInfo.moved = true; hideMenu(); clearPoiInfo();
+  }
+  if (pointers.size === 1){
+    const kk = 2/(innerHeight*cam.zoom);
+    target.x += -(cur.x-prev.x)*kk;
+    target.y +=  (cur.y-prev.y)*kk;
+    invalidateRefine();
+  } else if (pointers.size === 2){
+    pointers.set(e.pointerId, cur);
+    const [a,b] = [...pointers.values()];
+    const d = Math.hypot(a.x-b.x, a.y-b.y);
+    if (pinchDist > 0){
+      target.zoom = Math.min(MAXZOOM, Math.max(MINZOOM, target.zoom*d/pinchDist));
+      invalidateRefine();
+    }
+    pinchDist = d;
+    return;
+  }
+  pointers.set(e.pointerId, cur);
+});
+
+function endPointer(e){
+  if (downInfo && !downInfo.moved && performance.now()-downInfo.t < 350 && pointers.size === 1){
+    tapPoint = screenToFractal(e.clientX, e.clientY);
+    zoomMenu.style.left = e.clientX + 'px';
+    zoomMenu.style.top  = e.clientY + 'px';
+    zoomMenu.classList.add('open');
+    marker.style.left = e.clientX + 'px';
+    marker.style.top  = e.clientY + 'px';
+    marker.style.display = 'block';
+  }
+  pointers.delete(e.pointerId);
+  pinchDist = 0; downInfo = null;
+}
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); pinchDist=0; downInfo=null; });
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  target.zoom = Math.min(MAXZOOM, Math.max(MINZOOM, target.zoom*Math.exp(-e.deltaY*.0015)));
+  invalidateRefine(); clearPoiInfo();
+}, { passive:false });
+
+/* arrow keys: pan by a fraction of the frame; +/- zoom */
+addEventListener('keydown', e => {
+  const stepP = 0.18/cam.zoom;
+  let used = true;
+  switch (e.key){
+    case 'ArrowLeft':  target.x -= stepP; break;
+    case 'ArrowRight': target.x += stepP; break;
+    case 'ArrowUp':    target.y += stepP; break;
+    case 'ArrowDown':  target.y -= stepP; break;
+    case '+': case '=': target.zoom = Math.min(MAXZOOM, target.zoom*1.6); break;
+    case '-': case '_': target.zoom = Math.max(MINZOOM, target.zoom/1.6); break;
+    default: used = false;
+  }
+  if (used){
+    e.preventDefault();
+    fly = null; flyQueue = [];
+    invalidateRefine(); clearPoiInfo(); hideMenu();
+  }
+});
+
+document.getElementById('zoomIn').addEventListener('click', () => {
+  if (tapPoint) flyTo({ x:tapPoint.x, y:tapPoint.y, zoom:Math.min(MAXZOOM, cam.zoom*6) });
+  hideMenu();
+});
+document.getElementById('zoomOut').addEventListener('click', () => {
+  if (tapPoint) flyTo({ x:tapPoint.x, y:tapPoint.y, zoom:Math.max(MINZOOM, cam.zoom/6) });
+  hideMenu();
+});
+
+/* ---------- frame controls ---------- */
+function frameZoom(factor){
+  const z = Math.min(MAXZOOM, Math.max(MINZOOM, cam.zoom*factor));
+  const p = { name: currentPoi ? currentPoi.name : 'Custom view',
+              desc: currentPoi ? currentPoi.desc : '',
+              x: cam.x, y: cam.y, zoom: z };
+  flyTo(p, p, true);
+}
+document.getElementById('frameZoomIn').addEventListener('click', () => frameZoom(4));
+document.getElementById('frameZoomOut').addEventListener('click', () => frameZoom(1/4));
+
+/* ---------- share ---------- */
+const toast = document.getElementById('toast');
+let toastTimer = null;
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('on'), 1800);
+}
+
+const shareBtn = document.getElementById('shareBtn');
+const shareBox = document.getElementById('shareBox');
+const shareInput = document.getElementById('shareInput');
+document.getElementById('shareClose').addEventListener('click', () => shareBox.classList.remove('open'));
+shareInput.addEventListener('focus', () => shareInput.select());
+
+function buildShareText(){
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('re', cam.x.toPrecision(15));
+    url.searchParams.set('im', cam.y.toPrecision(15));
+    url.searchParams.set('z',  cam.zoom.toExponential(3));
+    return url.toString();
+  } catch (err){
+    return 're=' + cam.x.toPrecision(15) + '&im=' + cam.y.toPrecision(15) + '&z=' + cam.zoom.toExponential(3);
+  }
+}
+
+function showShareFallback(text){
+  // sandboxed iframes (like Claude artifacts) block the clipboard API,
+  // so we show the link for manual copy
+  shareInput.value = text;
+  shareBox.classList.add('open');
+  shareInput.focus();
+  shareInput.select();
+}
+
+function legacyCopy(text){
+  // execCommand path: works in some sandboxes where clipboard API doesn't
+  shareInput.value = text;
+  shareBox.classList.add('open');
+  shareInput.focus();
+  shareInput.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  if (ok){
+    shareBox.classList.remove('open');
+    showToast('LINK COPIED');
+  }
+  // if it failed, the box is already open for manual copy
+}
+
+shareBtn.addEventListener('click', () => {
+  const text = buildShareText();
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('LINK COPIED'))
+      .catch(() => legacyCopy(text));
+  } else {
+    legacyCopy(text);
+  }
+});
+
+function applySharedView(){
+  try {
+    const q = new URLSearchParams(location.search);
+    if (!q.has('re') || !q.has('im') || !q.has('z')) return;
+    const x = parseFloat(q.get('re')), y = parseFloat(q.get('im')), z = parseFloat(q.get('z'));
+    if (!isFinite(x) || !isFinite(y) || !isFinite(z)) return;
+    setTimeout(() => {
+      flyTo({ x, y, zoom: Math.min(MAXZOOM, Math.max(MINZOOM, z)) },
+            { name:'Shared view', desc:'A view someone shared via link.', x, y, zoom:z },
+            true);
+    }, 500);
+  } catch (err) { /* sandboxed iframe without query access */ }
+}
+
+/* ---------- POI list: plain inline text, commas, no layout shift ---------- */
+const chips = document.getElementById('chips');
+POIS.forEach((p, i) => {
+  const s = document.createElement('span');
+  s.className = 'poi';
+  s.textContent = p.name.toUpperCase();
+  s.addEventListener('click', () => {
+    [...chips.querySelectorAll('.poi')].forEach(c => c.classList.remove('active'));
+    s.classList.add('active');
+    flyTo(p, p);
+  });
+  chips.appendChild(s);
+  if (i < POIS.length - 1) chips.appendChild(document.createTextNode(', '));
+});
+
+/* ---------- HUD ---------- */
+const iterLabel = document.getElementById('iterLabel');
+const zoomLabel = document.getElementById('zoomLabel');
+
+function fmtZoom(z){
+  if (z < 10) return '\u00d7' + z.toFixed(2);
+  if (z < 1e6) return '\u00d7' + Math.round(z).toLocaleString('en');
+  return '\u00d710^' + Math.log10(z).toFixed(1);
+}
+
+/* ---------- main loop ---------- */
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const t0 = performance.now();
+let last = t0;
+resize();
+applySharedView();
+
+function frame(now){
+  const t = reduceMotion ? 0 : (now-t0)/1000;
+  const dt = Math.min(.05, (now-last)/1000); last = now;
+
+  stepFly(dt);
+
+  if (!fly){
+    const px = Math.abs(target.x-cam.x)*cam.zoom + Math.abs(target.y-cam.y)*cam.zoom;
+    cam.x += (target.x-cam.x)*.14;
+    cam.y += (target.y-cam.y)*.14;
+    cam.zoom += (target.zoom-cam.zoom)*.14;
+    const moving = px > 1e-4 || Math.abs(target.zoom/cam.zoom - 1) > 1e-3 || pointers.size > 0;
+    if (moving) { idleTime = 0; refine.ready = false; refine.active = false; }
+    else idleTime += dt;
+    if (idleTime > .5 && !refine.active && !refine.ready) startRefine();
+  } else {
+    idleTime = 0;
+  }
+
+  const iters = liveIters(cam.zoom);
+  const fr = frameRect();
+
+  /* 1. low-res backdrop for the dimmed area */
+  gl.bindFramebuffer(gl.FRAMEBUFFER, low.fbo);
+  gl.viewport(0, 0, low.w, low.h);
+  gl.useProgram(progMain); bindQuad(progMain);
+  setMainUniforms(t, Math.max(100, Math.round(iters*0.55)), 1, low.w, low.h);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.useProgram(progBlit); bindQuad(progBlit);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, low.tex);
+  gl.uniform1i(U_tex, 0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  /* 2. full-quality rendering only inside the frame */
+  gl.enable(gl.SCISSOR_TEST);
+  gl.scissor(fr.x, fr.y, fr.s, fr.s);
+  if (refine.ready){
+    gl.useProgram(progBlit); bindQuad(progBlit);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, hi.tex);
+    gl.uniform1i(U_tex, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  } else {
+    gl.useProgram(progMain); bindQuad(progMain);
+    setMainUniforms(t, iters, 1, canvas.width, canvas.height);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  gl.disable(gl.SCISSOR_TEST);
+
+  if (!refine.ready) stepRefine(t);
+
+  /* live coordinates under the frame */
+  poiCoords.textContent = 'RE ' + fmtCoord(cam.x, cam.zoom)
+    + ' \u00b7 IM ' + fmtCoord(cam.y, cam.zoom)
+    + ' \u00b7 ' + fmtZoom(cam.zoom);
+
+  iterLabel.textContent = (refine.ready ? refine.iter : iters) + ' iter';
+  zoomLabel.textContent = fmtZoom(cam.zoom);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
