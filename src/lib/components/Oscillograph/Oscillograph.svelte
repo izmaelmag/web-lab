@@ -15,7 +15,6 @@
   };
 
   let ctx: AudioContext;
-  let source: AudioBufferSourceNode;
   let oscillators: OscillatorNode[] = [];
 
   const createSineWaveWithPhase = (
@@ -113,42 +112,42 @@
       z-index: 10;
     }
 
-    & > div {
+    :global(& > div) {
       line-height: 0;
       position: relative;
       z-index: 1;
+    }
 
-      &::before {
-        content: '';
-        display: block;
-        position: absolute;
-        width: calc(100% - 8px);
-        height: calc(100% - 8px);
-        top: 4px;
-        left: 4px;
-        background: linear-gradient(to bottom, #00ffb3 0%, rgba(255 255 255 / 0%) 25%);
-        mask-image: radial-gradient(
-          ellipse at 50% 50%,
-          rgb(255 255 255 / 0%) 0%,
-          rgba(255 255 255 / 100%) 100%
-        );
-        box-shadow: 0 -20px 12px 4px rgba(0 0 0 / 100%) inset;
-        z-index: 10;
-        opacity: 0.4;
-      }
+    :global(& > div)::before {
+      content: '';
+      display: block;
+      position: absolute;
+      width: calc(100% - 8px);
+      height: calc(100% - 8px);
+      top: 4px;
+      left: 4px;
+      background: linear-gradient(to bottom, #00ffb3 0%, rgba(255 255 255 / 0%) 25%);
+      mask-image: radial-gradient(
+        ellipse at 50% 50%,
+        rgb(255 255 255 / 0%) 0%,
+        rgba(255 255 255 / 100%) 100%
+      );
+      box-shadow: 0 -20px 12px 4px rgba(0 0 0 / 100%) inset;
+      z-index: 10;
+      opacity: 0.4;
+    }
 
-      &::after {
-        content: '';
-        display: block;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        box-shadow: 0 -9px 12px 2px rgb(0, 0, 0) inset;
-        z-index: 20;
-        opacity: 0.7;
-      }
+    :global(& > div)::after {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      box-shadow: 0 -9px 12px 2px rgb(0, 0, 0) inset;
+      z-index: 20;
+      opacity: 0.7;
     }
 
     &::after {
@@ -165,7 +164,7 @@
       opacity: 0.3;
     }
 
-    & canvas {
+    :global(& canvas) {
       position: relative;
       z-index: 1;
       border: none;
@@ -180,19 +179,19 @@
         border-radius: 11px;
       }
 
-      & > div {
+      :global(& > div) {
         border-radius: 8px;
         overflow: hidden;
+      }
 
-        & canvas {
-          border-radius: 12px;
-          overflow: hidden;
-        }
+      :global(& canvas) {
+        border-radius: 12px;
+        overflow: hidden;
+      }
 
-        &::before,
-        &::after {
-          border-radius: 8px;
-        }
+      :global(& > div)::before,
+      :global(& > div)::after {
+        border-radius: 8px;
       }
     }
   }

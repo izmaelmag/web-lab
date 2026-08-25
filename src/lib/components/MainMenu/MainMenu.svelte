@@ -1,6 +1,5 @@
 <script lang="ts">
   import { links } from '$lib/data/mainMenu.json';
-  import { contents } from '$lib/data/contents.json';
   import MainMenuLink from './MainMenuLink.svelte';
 </script>
 

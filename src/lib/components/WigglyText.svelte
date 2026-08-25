@@ -29,7 +29,7 @@
    * @param {number} index - The index of the character.
    * @returns {string} - The inline CSS styles.
    */
-  $: styleX = (index: number) => {
+  const styleX = (index: number) => {
     const duration = baseDurationX * getRandomFactor();
     const amplitude = baseAmplitudeX * getRandomFactor();
     const animationDelay = delay + index * stagger;
@@ -46,7 +46,7 @@
    * @param {number} index - The index of the character.
    * @returns {string} - The inline CSS styles.
    */
-  $: styleY = (index: number) => {
+  const styleY = (index: number) => {
     const duration = baseDurationY * getRandomFactor();
     const amplitude = baseAmplitudeY * getRandomFactor();
     const animationDelay = delay + index * stagger + durationYPhaseShift(duration);

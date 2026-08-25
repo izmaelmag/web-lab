@@ -6,15 +6,9 @@ export default defineConfig({
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}']
   },
-  css: {
-    postcss: {
-      map: true
-    }
-  },
   ssr: {
     noExternal: ['three']
   },
-  // Serve static bundle during development
   server: {
     fs: {
       allow: ['static/glsl/**']

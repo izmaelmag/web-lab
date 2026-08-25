@@ -1,16 +1,29 @@
 <script lang="ts">
-  export let onClick: () => void;
-  export let theme: 'gray' | 'white' | 'black' = 'gray';
-  export let isInline: boolean = false;
+  import type { Snippet } from 'svelte';
+
+  let {
+    onClick,
+    theme = 'gray',
+    isInline = false,
+    children
+  }: {
+    onClick: () => void;
+    theme?: 'gray' | 'white' | 'black';
+    isInline?: boolean;
+    children: Snippet;
+  } = $props();
 </script>
 
 <button
   type="button"
   class={['button', theme].join(' ')}
   class:inline={isInline}
-  on:click|preventDefault={onClick}
+  onclick={(e) => {
+    e.preventDefault();
+    onClick();
+  }}
 >
-  <slot />
+  {@render children()}
 </button>
 
 <style>

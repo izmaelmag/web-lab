@@ -40,7 +40,7 @@
   <Header links={[{ title: 'Playground', url: '/draft' }, { title: 'Daily #1' }]} />
 
   <Playground>
-    <div slot="sidebar">
+    {#snippet sidebar()}
       <Player
         onSkip={() => sketch.setFrame(sketch.totalFrames)}
         onPlay={() => sketch.play()}
@@ -54,12 +54,12 @@
         totalFrames={sketch.totalFrames}
       />
       <Controls onChange={handleControlsChange} config={controls.config} />
-    </div>
+    {/snippet}
 
-    <div slot="content">
+    {#snippet content()}
       {#if sketch}
         <P5 sketch={sketch.render} />
       {/if}
-    </div>
+    {/snippet}
   </Playground>
 </Layout>

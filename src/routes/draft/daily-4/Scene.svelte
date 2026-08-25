@@ -2,14 +2,13 @@
   import { T, useTask } from '@threlte/core';
   import type { PerspectiveCamera } from 'three';
   import { createNoise4D } from 'simplex-noise';
-  import { CornerBottomLeft } from 'radix-icons-svelte';
 
   interface Cube {
     position: [number, number, number];
     noiseValue: number;
   }
 
-  let rotation = 0;
+  let rotation = $state(0);
 
   useTask((delta) => {
     rotation += delta;
@@ -27,16 +26,16 @@
     }
   }
 
-  const handleCameraCreate = ({ ref }: { ref: PerspectiveCamera }) => {
+  const handleCameraCreate = (ref: PerspectiveCamera) => {
     ref.lookAt(0, 0, 0);
   };
 </script>
 
-<T.PerspectiveCamera makeDefault position={[10, 10, 10]} on:create={handleCameraCreate} />
+<T.PerspectiveCamera makeDefault position={[10, 10, 10]} oncreate={handleCameraCreate} />
 
 <T.DirectionalLight position={[0, 10, 10]} />
 
-{#each cubes as cube, index}
+{#each cubes as cube}
   <T.Mesh position={cube.position} scale={1}>
     <T.BoxGeometry
       args={[
@@ -45,6 +44,6 @@
         cube.noiseValue * Math.sin(rotation)
       ]}
     />
-    <T.MeshStandardMaterial color={'black'} />
+    <T.MeshStandardMaterial color="black" />
   </T.Mesh>
 {/each}

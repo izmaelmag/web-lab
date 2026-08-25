@@ -1,4 +1,4 @@
-import Dexie, { type Table } from 'dexie';
+import Dexie, { type EntityTable } from 'dexie';
 
 export interface User {
   id?: number;
@@ -8,7 +8,7 @@ export interface User {
 }
 
 export class TypedDexie extends Dexie {
-  users!: Table<User>;
+  users!: EntityTable<User, 'id'>;
 
   constructor() {
     super('testDatabase');

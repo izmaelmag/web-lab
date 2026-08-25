@@ -1,16 +1,16 @@
 export enum Note {
-  'C' = 'C',
+  C = 'C',
   'C#' = 'C#',
-  'D' = 'D',
+  D = 'D',
   'D#' = 'D#',
-  'E' = 'E',
-  'F' = 'F',
+  E = 'E',
+  F = 'F',
   'F#' = 'F#',
-  'G' = 'G',
+  G = 'G',
   'G#' = 'G#',
-  'A' = 'A',
+  A = 'A',
   'A#' = 'A#',
-  'B' = 'B'
+  B = 'B'
 }
 
 export type NoteData = {

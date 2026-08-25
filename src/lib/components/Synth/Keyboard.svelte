@@ -1,7 +1,7 @@
 <script lang="ts">
   // Imports
   import { writable } from 'svelte/store';
-  import type { Note, NoteData } from '$lib/types/synth';
+  import type { NoteData } from '$lib/types/synth';
   import { notes } from './notes';
 
   // Props
@@ -10,8 +10,7 @@
 
   // State management
   const activeNotes = writable<NoteData[]>([]);
-  let isPressed: boolean = false;
-  $: isPressed;
+  let isPressed = false;
 
   activeNotes.subscribe((keys) => {
     const keySet = Array.from(new Set(keys));
@@ -87,6 +86,7 @@
           on:touchend={handleKeyRelease(note)}
           on:mouseleave={handleKeyLeave(note)}
           class="button"
+          class:active={$activeNotes.some((n) => n.note === note.note && n.pitch === pitch)}
         >
           <div class="noteName">
             {note.name}{pitch}
@@ -124,6 +124,7 @@
           on:touchend={handleKeyRelease(note)}
           on:mouseleave={handleKeyLeave(note)}
           class="button"
+          class:active={$activeNotes.some((n) => n.note === note.note && n.pitch === pitch + 1)}
         >
           <div class="noteName">
             {note.name}{pitch + 1}

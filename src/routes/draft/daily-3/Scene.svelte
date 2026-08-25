@@ -1,19 +1,16 @@
 <script lang="ts">
   import { T, useTask } from '@threlte/core';
   import { interactivity } from '@threlte/extras';
-  import { spring } from 'svelte/motion';
   import type { PerspectiveCamera } from 'three';
-  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
   interactivity();
-  const scale = spring(1);
-  let rotation = 0;
+  let rotation = $state(0);
 
   useTask((delta) => {
     rotation += delta;
   });
 
-  const handleCameraCreate = ({ ref }: { ref: PerspectiveCamera }) => {
+  const handleCameraCreate = (ref: PerspectiveCamera) => {
     ref.lookAt(0, 0, 0);
   };
 
@@ -26,7 +23,7 @@
   }
 </script>
 
-<T.PerspectiveCamera makeDefault position={[5, 5, 5]} on:create={handleCameraCreate} />
+<T.PerspectiveCamera makeDefault position={[5, 5, 5]} oncreate={handleCameraCreate} />
 
 <T.DirectionalLight position={[0, 10, 10]} />
 

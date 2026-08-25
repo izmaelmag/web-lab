@@ -19,7 +19,7 @@
     defaults: controlsData
   };
 
-  let glslExperiment: GLSLExperiment;
+  let glslExperiment: { update: (newControls: ControlsData) => void; destroy: () => void };
 
   const handleControlsChange = (newData: ControlsData) => {
     controlsData = { ...controlsData, ...newData };
@@ -41,8 +41,11 @@
     }
   });
 
-  const handleGLSLExperimentMount = (event: CustomEvent) => {
-    glslExperiment = event.detail;
+  const handleGLSLExperimentMount = (api: {
+    update: (newControls: ControlsData) => void;
+    destroy: () => void;
+  }) => {
+    glslExperiment = api;
   };
 </script>
 
@@ -50,21 +53,21 @@
   <Header links={[{ title: 'Playground', url: '/draft' }, { title: 'GLSL Base' }]} />
 
   <Playground>
-    <div slot="sidebar">
-      <textarea bind:value={editableFragmentShader} rows="30" cols="40" />
-      <button on:click={applyShaderChanges}>Apply Changes</button>
+    {#snippet sidebar()}
+      <textarea bind:value={editableFragmentShader} rows="30" cols="40"></textarea>
+      <button onclick={applyShaderChanges}>Apply Changes</button>
       <Controls onChange={handleControlsChange} config={controlsConfig} />
-    </div>
+    {/snippet}
 
-    <div slot="content">
+    {#snippet content()}
       {#key glslExperimentKey}
         <GLSLExperiment
           controls={controlsData}
           fragmentShader={editableFragmentShader}
-          on:mount={handleGLSLExperimentMount}
+          onmount={handleGLSLExperimentMount}
         />
       {/key}
-    </div>
+    {/snippet}
   </Playground>
 </Layout>
 

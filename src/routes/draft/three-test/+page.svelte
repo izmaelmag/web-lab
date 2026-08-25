@@ -22,7 +22,7 @@
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
     // Load the texture and set it as the scene's background
@@ -87,9 +87,9 @@
 <Layout>
   <Header links={[{ url: '/draft', title: 'Playground' }, { title: 'Three test' }]} />
   <Playground>
-    <div slot="content">
-      <div class="container" bind:this={container} />
-    </div>
+    {#snippet content()}
+      <div class="container" bind:this={container}></div>
+    {/snippet}
   </Playground>
 </Layout>
 

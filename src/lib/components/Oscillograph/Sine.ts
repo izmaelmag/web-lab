@@ -51,7 +51,7 @@ const Sine: (p: Params) => Sketch = (inputParams: Partial<Params>) => (p: p5) =>
   const safeZone = H * 0.75;
   const midLine = H / 2;
 
-  const maxAmp = sines.reduce((sum, { amplitude }) => (sum += amplitude || 0), 0);
+  const maxAmp = sines.reduce((sum, { amplitude }) => sum + (amplitude || 0), 0);
   const scale = maxAmp;
 
   const calcSine = (sine: SineProps = defaultSine, phi = 0) => {

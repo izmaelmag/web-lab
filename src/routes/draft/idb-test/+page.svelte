@@ -14,9 +14,9 @@
     }
   };
 
-  const addUser: svelte.JSX.EventHandler<Event, HTMLFormElement> = async (e) => {
+  const addUser = async (e: SubmitEvent) => {
     try {
-      const formElement = e.currentTarget;
+      const formElement = e.currentTarget as HTMLFormElement | null;
 
       if (!formElement) throw new Error('Form element is null');
 
@@ -28,7 +28,7 @@
 
       if (!name || !surname || !age) throw new Error('Empty fields');
 
-      const newUserId = await db.users.add({
+      await db.users.add({
         name,
         surname,
         age
@@ -47,7 +47,13 @@
   <meta name="description" content="Dexie db test" />
 </svelte:head>
 
-<form class="form" on:submit|preventDefault={addUser}>
+<form
+  class="form"
+  onsubmit={(e) => {
+    e.preventDefault();
+    addUser(e);
+  }}
+>
   <input name="name" placeholder="Name" value="" type="text" />
   <input name="surname" placeholder="Surname" value="" type="text" />
   <input name="age" placeholder="age" value="" type="number" />
@@ -58,7 +64,7 @@
   {#each $users as user (user.id)}
     <div class="line">
       <h3>{user.name} {user.surname}, {user.age}y.o.</h3>
-      <button type="button" on:click={() => deleteUser(user.id)}>Delete</button>
+      <button type="button" onclick={() => deleteUser(user.id)}>Delete</button>
     </div>
   {/each}
 {/if}

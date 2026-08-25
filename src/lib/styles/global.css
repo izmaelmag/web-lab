@@ -1,6 +1,6 @@
 :root {
   --phone: (max-width: 480px);
-  --svelteui-fonts-standard: 'Azareth Mono', monospace;
+  --font-body: 'Azeret Mono', monospace;
   --jump-animation: cubic-bezier(0.37, 1.69, 0.17, 0.8);
 }
 
@@ -33,7 +33,7 @@ main {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  font-family: var(--svelteui-fonts-standard);
+  font-family: var(--font-body);
   gap: 16px;
 }
 
@@ -50,8 +50,4 @@ h6 {
 
 * {
   box-sizing: border-box;
-}
-
-.svelteui-Input-input.svelteui-Input-input.svelteui-Input-input {
-  font-size: 11px;
 }

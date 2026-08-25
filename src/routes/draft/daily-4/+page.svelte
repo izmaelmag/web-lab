@@ -10,12 +10,20 @@
   <Header links={[{ title: 'Playground', url: '/draft' }, { title: 'Daily #4' }]} />
 
   <Playground>
-    <!-- <div slot="sidebar">sidebar</div> -->
-
-    <div slot="content">
-      <Canvas size={{ width: 640, height: 640 }}>
-        <Scene />
-      </Canvas>
-    </div>
+    {#snippet content()}
+      <div class="scene">
+        <Canvas>
+          <Scene />
+        </Canvas>
+      </div>
+    {/snippet}
   </Playground>
 </Layout>
+
+<style>
+  .scene {
+    width: 640px;
+    height: 640px;
+    max-width: 100%;
+  }
+</style>
