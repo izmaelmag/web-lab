@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
   import '../app.css';
-  import { SvelteUIProvider } from '@svelteuidev/core';
   import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
-
   import '$lib/styles/fonts.css';
   import '$lib/styles/global.css';
-  import { onMount } from 'svelte';
+  import { onMount, type Snippet } from 'svelte';
+
+  let { children }: { children: Snippet } = $props();
 
   onMount(() => {
     injectSpeedInsights();
@@ -14,18 +14,16 @@
 
 <svelte:head>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link
     href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@100..900&amp;display=swap"
     rel="stylesheet"
   />
 </svelte:head>
 
-<SvelteUIProvider>
-  <main class="app">
-    <slot></slot>
-  </main>
-</SvelteUIProvider>
+<main class="app">
+  {@render children()}
+</main>
 
 <style>
   main {

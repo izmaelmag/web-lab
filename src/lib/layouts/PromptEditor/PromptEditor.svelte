@@ -7,7 +7,6 @@
   import Button from '$lib/components/Button.svelte';
 
   export let prompt: Prompt;
-  $: prompt;
 
   $: parts = liveQuery(
     async () => await promptsDB.parts.filter((part) => part.promptId === prompt.id).toArray()

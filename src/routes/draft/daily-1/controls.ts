@@ -1,5 +1,5 @@
 import { Controls } from '$lib/modules/controls/Controls';
-import type { BooleanControl, NumberControl } from '$lib/types/controls';
+import type { NumberControl } from '$lib/types/controls';
 import { defaultParams } from './daily-1';
 
 const amplitude: NumberControl = {

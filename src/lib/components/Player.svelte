@@ -1,27 +1,43 @@
 <script lang="ts">
-  import { Tooltip, Group, ActionIcon, Divider } from '@svelteuidev/core';
-  import { Play, Pause, TrackPrevious, Timer, Radiobutton, TrackNext } from 'radix-icons-svelte';
+  import Pause from 'svelte-radix/Pause.svelte';
+  import Play from 'svelte-radix/Play.svelte';
+  import Radiobutton from 'svelte-radix/Radiobutton.svelte';
+  import Timer from 'svelte-radix/Timer.svelte';
+  import TrackNext from 'svelte-radix/TrackNext.svelte';
+  import TrackPrevious from 'svelte-radix/TrackPrevious.svelte';
   import RangeSlider from './RangeSlider.svelte';
-
-  export let currentFrame: number = 0;
-  export let totalFrames: number = 0;
-  export let isPlaying: boolean = false;
-  export let isRecording: boolean = false;
+  import ActionButton from './ui/ActionButton.svelte';
+  import Divider from './ui/Divider.svelte';
 
   type ActionHandler = () => void;
 
-  export let onRecord: ActionHandler | undefined = undefined;
-  export let onPlay: ActionHandler;
-  export let onPause: ActionHandler;
-  export let onReset: ActionHandler;
-  export let onSkip: ActionHandler;
-  export let onChange: (frame: number) => void;
+  let {
+    currentFrame = $bindable(0),
+    totalFrames = 0,
+    isPlaying = false,
+    isRecording = false,
+    onRecord,
+    onPlay,
+    onPause,
+    onReset,
+    onSkip,
+    onChange
+  }: {
+    currentFrame?: number;
+    totalFrames?: number;
+    isPlaying?: boolean;
+    isRecording?: boolean;
+    onRecord?: ActionHandler;
+    onPlay: ActionHandler;
+    onPause: ActionHandler;
+    onReset: ActionHandler;
+    onSkip: ActionHandler;
+    onChange: (frame: number) => void;
+  } = $props();
 
-  $: frameTimerText = `${currentFrame
-    .toString()
-    .padStart(totalFrames.toString().length, '0')}/${totalFrames}`;
-
-  $: currentFrame;
+  const frameTimerText = $derived(
+    `${currentFrame.toString().padStart(totalFrames.toString().length, '0')}/${totalFrames}`
+  );
 
   const handleFrameInput = () => {
     onChange(currentFrame);
@@ -29,11 +45,11 @@
 </script>
 
 <div class="player">
-  <Divider class="divider" label={`Player – ${frameTimerText}`} labelPosition="center" />
+  <Divider label={`Player – ${frameTimerText}`} />
 
   <div class="frameInput">
     <div class="icon">
-      <Timer />
+      <Timer size="14" />
     </div>
 
     <div class="frameInputSlider">
@@ -46,68 +62,41 @@
       />
     </div>
 
-    <Group position="center" spacing={4} noWrap>
-      <Tooltip label="Start" withArrow openDelay={100}>
-        <ActionIcon
-          disabled={isRecording}
-          color="blue"
-          size="sm"
-          variant="outline"
-          on:click={onReset}
-        >
-          <TrackPrevious />
-        </ActionIcon>
-      </Tooltip>
+    <div class="actions">
+      <ActionButton label="Start" disabled={isRecording} color="blue" onclick={onReset}>
+        <TrackPrevious size="14" />
+      </ActionButton>
 
-      <Tooltip label="End" withArrow openDelay={100}>
-        <ActionIcon
-          disabled={isRecording}
-          color="blue"
-          size="sm"
-          variant="outline"
-          on:click={onSkip}
-        >
-          <TrackNext />
-        </ActionIcon>
-      </Tooltip>
+      <ActionButton label="End" disabled={isRecording} color="blue" onclick={onSkip}>
+        <TrackNext size="14" />
+      </ActionButton>
 
-      <Tooltip label="Play" withArrow openDelay={100}>
-        <ActionIcon
-          disabled={isRecording}
-          color="green"
-          size="sm"
-          variant={isPlaying && !isRecording ? 'filled' : 'outline'}
-          on:click={onPlay}
-        >
-          <Play />
-        </ActionIcon>
-      </Tooltip>
+      <ActionButton
+        label="Play"
+        disabled={isRecording}
+        color="green"
+        filled={isPlaying && !isRecording}
+        onclick={onPlay}
+      >
+        <Play size="14" />
+      </ActionButton>
 
-      <Tooltip label="Pause" withArrow openDelay={100}>
-        <ActionIcon
-          disabled={isRecording}
-          color="orange"
-          size="sm"
-          variant={!isPlaying ? 'filled' : 'outline'}
-          on:click={onPause}
-        >
-          <Pause />
-        </ActionIcon>
-      </Tooltip>
+      <ActionButton
+        label="Pause"
+        disabled={isRecording}
+        color="orange"
+        filled={!isPlaying}
+        onclick={onPause}
+      >
+        <Pause size="14" />
+      </ActionButton>
 
       {#if onRecord}
-        <Tooltip label="Record" withArrow openDelay={100}>
-          <ActionIcon
-            color="orange"
-            size="sm"
-            variant={isRecording ? 'filled' : 'outline'}
-            on:click={onRecord}
-          >
-            <Radiobutton />
-          </ActionIcon>
-        </Tooltip>
+        <ActionButton label="Record" color="orange" filled={isRecording} onclick={onRecord}>
+          <Radiobutton size="14" />
+        </ActionButton>
       {/if}
-    </Group>
+    </div>
   </div>
 </div>
 
@@ -131,8 +120,14 @@
     height: 30px;
   }
 
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+
   .player {
-    --svelteui-fonts-standard: 'Azareth Mono', monospace;
-    --svelteui-fontSizes-xs: 10px;
+    font-family: var(--font-body);
   }
 </style>

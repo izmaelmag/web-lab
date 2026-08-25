@@ -1,6 +1,3 @@
-<script lang="ts" context="module">
-</script>
-
 <script lang="ts">
   import type { PromptPart } from '$lib/database/prompts';
 
@@ -8,30 +5,24 @@
   export let onChange: (part: PromptPart) => void;
   export let onDelete: (id: PromptPart['id']) => void;
 
-  $: pp = part;
-
   const handleTextChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    pp.text = target.value.trim();
-
-    onChange(pp);
+    onChange({ ...part, text: target.value.trim() });
   };
 
   const handleWeightChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    pp.weight = Number(target.value.trim());
-
-    onChange(pp);
+    onChange({ ...part, weight: Number(target.value.trim()) });
   };
 
   const handleDelete = () => {
-    onDelete(pp.id);
+    onDelete(part.id);
   };
 </script>
 
 <div class="promptPart">
   <div class="fieldContainer">
-    <input on:input={handleTextChange} class="input text" type="text" value={pp.text} />
+    <input on:input={handleTextChange} class="input text" type="text" value={part.text} />
     <button class="delete" on:click={handleDelete}>❌</button>
   </div>
 
@@ -42,12 +33,12 @@
       type="range"
       min={-30}
       max={30}
-      value={pp.weight}
-      class:number-positive={pp.weight >= 0}
+      value={part.weight}
+      class:number-positive={part.weight >= 0}
     />
 
-    <div class="rangeNumber" class:number-positive={pp.weight >= 0}>
-      {pp.weight}
+    <div class="rangeNumber" class:number-positive={part.weight >= 0}>
+      {part.weight}
     </div>
   </div>
 </div>

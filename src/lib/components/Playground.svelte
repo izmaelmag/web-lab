@@ -1,8 +1,18 @@
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  let { sidebar, content }: { sidebar?: Snippet; content?: Snippet } = $props();
+</script>
+
 <div class="playground">
-  <slot name="sidebar" class="controls" />
+  {#if sidebar}
+    <div class="controls">
+      {@render sidebar()}
+    </div>
+  {/if}
 
   <div class="preview">
-    <slot name="content" />
+    {@render content?.()}
   </div>
 </div>
 
@@ -51,22 +61,16 @@
       align-items: center;
       justify-content: center;
       margin: auto;
-
-      & > div {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-      }
     }
 
-    & canvas {
-      border: 1px solid var(--cool-gray-300);
-
-      /* @media screen and (max-width: 640px) {
-				width: 100% !important;
-				height: auto !important;
-				aspect-ratio: 1 / 1;
-			} */
+    :global(& > div) {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
     }
+  }
+
+  .preview :global(canvas) {
+    border: 1px solid var(--cool-gray-300);
   }
 </style>

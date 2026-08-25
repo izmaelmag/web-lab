@@ -1,14 +1,16 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import type { BooleanControl } from '$lib/types/controls';
-  import { Switch, CheckboxGroup, Checkbox } from '@svelteuidev/core';
 
-  export let onChange: (patch: Record<string, boolean>) => void;
+  let {
+    onChange,
+    control
+  }: {
+    onChange: (patch: Record<string, boolean>) => void;
+    control: BooleanControl;
+  } = $props();
 
-  export let control: BooleanControl;
-  $: control;
-
-  let value: boolean = control.defaultValue;
-  $: value;
+  let value = $state(untrack(() => control.defaultValue));
 
   const patchParam = () => {
     value = !value;
@@ -20,29 +22,39 @@
 </script>
 
 <div class="container">
-  <Checkbox
-    color="orange"
-    size="xs"
-    on:change={patchParam}
-    checked={value}
-    label={control.description}
-  />
+  <label class="checkbox">
+    <input type="checkbox" checked={value} onchange={patchParam} />
+    <span class="label">{control.description}</span>
+  </label>
 </div>
 
 <style>
   .container {
     margin-top: 8px;
+  }
 
-    & .svelteui-Checkbox-label {
-      font-weight: 300;
-      color: var(--cool-gray-600);
-      user-select: none;
-    }
+  .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
 
-    &:hover {
-      & .svelteui-Checkbox-label {
-        color: var(--cool-gray-900);
-      }
-    }
+  .checkbox input {
+    accent-color: var(--brand-orange, #ff9913);
+    width: 12px;
+    height: 12px;
+    margin: 0;
+  }
+
+  .label {
+    font-weight: 300;
+    font-size: 12px;
+    color: var(--cool-gray-600);
+    user-select: none;
+  }
+
+  .checkbox:hover .label {
+    color: var(--cool-gray-900);
   }
 </style>

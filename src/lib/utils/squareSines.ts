@@ -13,7 +13,7 @@ export const squareSines = ({ iterations = 6, baseFrequency = 4 }: Params): Sine
     const amplitude = 1 / harmonic;
     const frequency = baseFrequency * harmonic;
 
-    output.push({ amplitude, frequency, phase: 0 });
+    output.push({ amplitude, frequency, phase: 0, phaseSpeed: 0 });
   }
 
   return output;

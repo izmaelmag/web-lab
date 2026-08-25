@@ -1,6 +1,6 @@
 import { P5Sketch, type SketchConstructorProps } from '$lib/modules/sketch/P5Sketch';
 import type { ControlsData } from '$lib/types/controls';
-import type { Graphics, Image } from 'p5';
+import type { Image } from 'p5';
 import type { NoiseFunction4D } from 'simplex-noise';
 import { createNoise4D } from 'simplex-noise';
 

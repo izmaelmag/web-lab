@@ -1,26 +1,24 @@
 <script lang="ts">
-  export let value: number = 0;
-  export let min: number = 0;
-  export let max: number = 100;
-  export let step: number = 1;
-  export let onChange: (newValue: number) => void;
+  let {
+    value = $bindable(0),
+    min = 0,
+    max = 100,
+    step = 1,
+    onChange
+  }: {
+    value?: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    onChange: (newValue: number) => void;
+  } = $props();
 
-  $: value;
-  $: pipsCount = Math.min(20, Math.max(2, max - min + 1));
-  $: pipsArray = Array.from({ length: pipsCount }, (_, i) => i);
-  $: pipStep = (max - min) / (pipsCount - 1);
+  const pipsCount = $derived(Math.min(20, Math.max(2, max - min + 1)));
+  const pipsArray = $derived(Array.from({ length: pipsCount }, (_, i) => i));
 </script>
 
 <div class="container">
-  <input
-    type="range"
-    bind:value
-    on:input={() => onChange(value)}
-    {min}
-    {max}
-    {step}
-    class="range"
-  />
+  <input type="range" bind:value oninput={() => onChange(value)} {min} {max} {step} class="range" />
 
   <div class="rangePips">
     {#each pipsArray as pip}

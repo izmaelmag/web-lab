@@ -39,7 +39,7 @@
 <Layout>
   <Header links={[{ title: 'Playground', url: '/draft' }, { title: 'Spirograph' }]} />
   <Playground>
-    <div slot="sidebar">
+    {#snippet sidebar()}
       <Player
         onPlay={() => spirograph.play()}
         onPause={() => spirograph.pause()}
@@ -53,12 +53,12 @@
         totalFrames={spirograph.totalFrames}
       />
       <Controls onChange={handleControlsChange} config={controls.config} />
-    </div>
+    {/snippet}
 
-    <div slot="content">
+    {#snippet content()}
       {#if spirograph}
         <P5 sketch={spirograph.render} />
       {/if}
-    </div>
+    {/snippet}
   </Playground>
 </Layout>

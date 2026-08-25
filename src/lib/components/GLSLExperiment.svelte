@@ -1,15 +1,23 @@
 <script lang="ts">
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { onMount, onDestroy, untrack } from 'svelte';
   import type { ControlsData } from '$lib/types/controls';
-  import createShader from '$lib/utils/glsl/createShader';
   import setupPositionBuffer from '$lib/utils/glsl/setupPositionBuffer';
   import setUniforms from '$lib/utils/glsl/setUniforms';
   import createProgram from '$lib/utils/glsl/createProgram';
 
-  export let controls: ControlsData;
-  export let fragmentShader: string;
-  export let width = 512;
-  export let height = 512;
+  let {
+    controls,
+    fragmentShader,
+    width = 512,
+    height = 512,
+    onmount
+  }: {
+    controls: ControlsData;
+    fragmentShader: string;
+    width?: number;
+    height?: number;
+    onmount?: (api: { update: (newControls: ControlsData) => void; destroy: () => void }) => void;
+  } = $props();
 
   let canvas: HTMLCanvasElement;
   let gl: WebGLRenderingContext;
@@ -17,8 +25,7 @@
   let animationFrameId: number;
   let startTime: number;
   let u_time = 0;
-
-  const dispatch = createEventDispatcher();
+  let currentControls = $state<ControlsData>(untrack(() => ({ ...controls })));
 
   const vertexShader = `
     attribute vec4 a_position;
@@ -40,7 +47,7 @@
       startTime = performance.now();
       requestAnimationFrame(render);
 
-      dispatch('mount', { update, destroy });
+      onmount?.({ update, destroy });
     } catch (error) {
       console.error(error);
     }
@@ -57,15 +64,15 @@
 
     gl.useProgram(program);
 
-    setUniforms(gl, program, { ...controls, u_time });
+    setUniforms(gl, program, { ...currentControls, u_time });
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     animationFrameId = requestAnimationFrame(render);
   }
 
-  export function update(newControls: ControlsData) {
-    controls = { ...newControls };
+  function update(newControls: ControlsData) {
+    currentControls = { ...newControls };
   }
 
   function destroy() {

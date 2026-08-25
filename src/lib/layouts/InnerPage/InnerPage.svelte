@@ -2,9 +2,17 @@
   import Intro from '$lib/components/Intro/Intro.svelte';
   import JumpText from '$lib/components/JumpText.svelte';
   import WigglyText from '$lib/components/WigglyText.svelte';
+  import type { Snippet } from 'svelte';
 
-  export let title: string;
-  export let description: string;
+  let {
+    title,
+    description,
+    children
+  }: {
+    title: string;
+    description: string;
+    children?: Snippet;
+  } = $props();
 </script>
 
 <div class="inner-page">
@@ -30,7 +38,7 @@
     </p>
 
     <nav class="content-list">
-      <slot />
+      {@render children?.()}
     </nav>
   </div>
 </div>

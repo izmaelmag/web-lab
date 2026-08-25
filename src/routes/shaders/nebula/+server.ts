@@ -3,7 +3,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async () => {
   const filePath = path.join(process.cwd(), 'static', 'glsl', 'interference', 'index.js');
 
   try {
@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ url }) => {
         'Content-Type': 'application/javascript'
       }
     });
-  } catch (e) {
+  } catch {
     throw error(404, 'File not found');
   }
 };
