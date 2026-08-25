@@ -1,0 +1,9 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  // SvelteKit plugin already treats src/routes/**/+page, +server, +layout as entries.
+  "ignoreExportsUsedInFile": true,
+  "ignoreFiles": [
+    // Served as static assets (HTML <script src>), not ESM imports
+    "static/**"
+  ]
+}
