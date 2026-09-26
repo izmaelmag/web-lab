@@ -482,7 +482,14 @@
 
     .name {
       grid-row: 3;
-      font-size: clamp(56px, 19vw, 132px);
+      display: flex;
+      align-items: baseline;
+      flex-wrap: nowrap;
+      font-size: 15vw;
+    }
+
+    .word + .word {
+      padding-left: 0.08em;
     }
 
     .lede {
