@@ -8,6 +8,13 @@
       "ready": true
     },
     {
+      "id": "codepen",
+      "title": "CodePen Archive",
+      "description": "Old pens, rebuilt from source",
+      "href": "/experiments",
+      "ready": true
+    },
+    {
       "id": "shaders",
       "title": "Shaders Zone",
       "description": "Animated GLSL visuals",
