@@ -15,13 +15,11 @@
     mounted = true;
   });
 
-  /**
-   * Generates a random factor based on the provided randomness degree.
-   * Ensures that randomness does not exceed specified bounds for smoothness.
-   * @returns {number} - A random multiplier between (1 - randomness) and (1 + randomness).
-   */
-  const getRandomFactor = () => {
-    return 1 + (Math.random() * 2 - 1) * randomness;
+  // Stable per-letter variation: changing the hover amplitude must not roll
+  // new timings and make the letters twitch on every tweened store update.
+  const getRandomFactor = (index: number, salt: number, variance: number) => {
+    const hash = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43758.5453;
+    return 1 + ((hash - Math.floor(hash)) * 2 - 1) * variance;
   };
 
   /**
@@ -29,10 +27,17 @@
    * @param {number} index - The index of the character.
    * @returns {string} - The inline CSS styles.
    */
-  const styleX = (index: number) => {
-    const duration = baseDurationX * getRandomFactor();
-    const amplitude = baseAmplitudeX * getRandomFactor();
-    const animationDelay = delay + index * stagger;
+  const styleX = (
+    index: number,
+    baseDuration: number,
+    baseAmplitude: number,
+    startDelay: number,
+    letterStagger: number,
+    variance: number
+  ) => {
+    const duration = baseDuration * getRandomFactor(index, 1, variance);
+    const amplitude = baseAmplitude * getRandomFactor(index, 2, variance);
+    const animationDelay = startDelay + index * letterStagger;
     return `
       animation-delay: ${animationDelay}s;
       animation-duration: ${duration}s;
@@ -46,10 +51,17 @@
    * @param {number} index - The index of the character.
    * @returns {string} - The inline CSS styles.
    */
-  const styleY = (index: number) => {
-    const duration = baseDurationY * getRandomFactor();
-    const amplitude = baseAmplitudeY * getRandomFactor();
-    const animationDelay = delay + index * stagger + durationYPhaseShift(duration);
+  const styleY = (
+    index: number,
+    baseDuration: number,
+    baseAmplitude: number,
+    startDelay: number,
+    letterStagger: number,
+    variance: number
+  ) => {
+    const duration = baseDuration * getRandomFactor(index, 3, variance);
+    const amplitude = baseAmplitude * getRandomFactor(index, 4, variance);
+    const animationDelay = startDelay + index * letterStagger + durationYPhaseShift(duration);
     return `
       animation-delay: ${animationDelay}s;
       animation-duration: ${duration}s;
@@ -74,8 +86,14 @@
 
 <span class="wiggly-text {mounted ? 'mounted' : ''}" style={getFadeInStyle()}>
   {#each text.split('') as char, index}
-    <span class="wiggle-x" style={styleX(index)}>
-      <span class="wiggle-y" style={styleY(index)}>
+    <span
+      class="wiggle-x"
+      style={styleX(index, baseDurationX, baseAmplitudeX, delay, stagger, randomness)}
+    >
+      <span
+        class="wiggle-y"
+        style={styleY(index, baseDurationY, baseAmplitudeY, delay, stagger, randomness)}
+      >
         {@html char === ' ' ? '\u00A0' : char}
       </span>
     </span>

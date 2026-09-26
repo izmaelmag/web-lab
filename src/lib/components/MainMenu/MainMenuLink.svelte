@@ -18,23 +18,15 @@
 
   let isHovered = false;
   let isWiggling = false;
+  const DURATION_X = 20;
+  const DURATION_Y = 24;
 
-  const ampX = tweened(4, {
+  const ampX = tweened(1.4, {
     duration: 200,
     easing: cubicInOut
   });
 
-  const ampY = tweened(4, {
-    duration: 200,
-    easing: cubicInOut
-  });
-
-  const durationX = tweened(1, {
-    duration: 200,
-    easing: cubicInOut
-  });
-
-  const durationY = tweened(1, {
+  const ampY = tweened(0.9, {
     duration: 200,
     easing: cubicInOut
   });
@@ -43,13 +35,9 @@
     if (isHovered && link.ready) {
       ampX.set(0);
       ampY.set(0);
-      durationX.set(5);
-      durationY.set(5);
     } else {
-      ampX.set(6);
-      ampY.set(2);
-      durationX.set(10);
-      durationY.set(10);
+      ampX.set(1.4);
+      ampY.set(0.9);
     }
   }
 </script>
@@ -72,8 +60,8 @@
         randomness={0.4}
         baseAmplitudeX={$ampX}
         baseAmplitudeY={$ampY}
-        baseDurationX={$durationX}
-        baseDurationY={$durationY}
+        baseDurationX={DURATION_X}
+        baseDurationY={DURATION_Y}
         text={link.title}
         delay={0.5 + index * 0.15}
       />
@@ -81,11 +69,11 @@
   </h2>
   <p>
     <WigglyText
-      randomness={isPhone ? 0.05 : 0.1}
-      baseAmplitudeX={isPhone ? 1 : $ampX}
-      baseAmplitudeY={isPhone ? 1 : $ampY}
-      baseDurationX={isPhone ? 5 : $durationX}
-      baseDurationY={isPhone ? 5 : $durationY}
+      randomness={isPhone ? 0.05 : 0.08}
+      baseAmplitudeX={isPhone ? 0.9 : $ampX}
+      baseAmplitudeY={isPhone ? 0.7 : $ampY}
+      baseDurationX={DURATION_X}
+      baseDurationY={DURATION_Y}
       text={link.description}
       delay={0.5 + index * 0.15}
     />

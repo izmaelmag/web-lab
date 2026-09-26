@@ -272,6 +272,7 @@
         .add('.project', { y: [24, 0], opacity: [0, 1], duration: 520, delay: stagger(80) }, 160)
         .add('.formula', { opacity: [0, 1], x: [-12, 0], duration: 480 }, 420);
 
+      entrance.init();
       if (reduced) entrance.seek(entrance.duration);
       else entrance.seek(0);
 

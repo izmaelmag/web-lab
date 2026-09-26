@@ -177,6 +177,7 @@
           500
         );
 
+      entrance.init();
       if (reduced) {
         entrance.seek(entrance.duration);
         render();

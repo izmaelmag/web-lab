@@ -28,6 +28,7 @@
         )
         .add('.outro', { opacity: [0, 1], duration: 400, ease: 'linear' }, 600);
 
+      entrance.init();
       if (prefersReducedMotion()) {
         entrance.seek(entrance.duration);
         return;

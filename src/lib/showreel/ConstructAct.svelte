@@ -138,6 +138,7 @@
         )
         .add('.cue', { y: [12, 0], opacity: [0, 1], duration: 500, ease: jump }, '-=200');
 
+      timeline.init();
       if (prefersReducedMotion()) {
         timeline.seek(timeline.duration);
       } else {
