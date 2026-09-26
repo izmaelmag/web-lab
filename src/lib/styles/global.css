@@ -26,6 +26,8 @@ html:before {
   top: 0px;
   bottom: 0px;
   background-color: #000;
+  z-index: -1;
+  pointer-events: none;
 }
 
 main {
