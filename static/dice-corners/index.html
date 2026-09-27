@@ -863,8 +863,8 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+          "three": "./vendor/three/three.module.min.js",
+          "three/addons/": "./vendor/three/addons/"
         }
       }
     </script>
@@ -1056,8 +1056,8 @@
           <h2 class="logo" id="fallback-title">The table is dark</h2>
           <p id="fallback-text">
             Dice Corners draws its board with WebGL 2, which this browser could not start. Try a
-            current browser with hardware acceleration enabled, or check your connection — the 3D
-            engine loads from a CDN.
+            current browser with hardware acceleration enabled, close other graphics-heavy tabs,
+            then reload the page.
           </p>
         </div>
       </section>
