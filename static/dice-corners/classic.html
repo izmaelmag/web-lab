@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Dice Corners</title>
+<style>
+  :root{
+    --p1-accent:#4A9EFF;
+    --p2-accent:#FF6B4A;
+    --ivory:#F5F0E8;
+    --charcoal:#2A2A2A;
+    --ink:#13110d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;width:100%;overflow:hidden;background:#0d130f;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ivory);
+    /* deep felt-table backdrop so board edges read as intentional */
+    background:
+      radial-gradient(120% 120% at 50% 18%, #1c2a20 0%, #111a14 45%, #080c09 100%);
+  }
+  canvas{display:block;}
+  #main-canvas{position:fixed;inset:0;z-index:0;}
+
+  /* ---------- HUD layer ---------- */
+  #ui-layer{position:fixed;inset:0;z-index:100;pointer-events:none;}
+  .panel{pointer-events:none;}
+  .clickable{pointer-events:auto;}
+
+  /* player nameplates */
+  .nameplate{
+    position:fixed;top:18px;display:flex;align-items:center;gap:10px;
+    padding:10px 16px;border-radius:14px;
+    background:rgba(10,14,11,0.55);backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.08);
+    transition:transform .35s ease, box-shadow .35s ease, opacity .35s ease;
+    transform-origin:center;
+  }
+  #plate-p1{left:18px;}
+  #plate-p2{right:18px;}
+  .nameplate .swatch{width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.4);}
+  .nameplate .pname{font-weight:600;letter-spacing:.02em;font-size:15px;}
+  .nameplate .ptag{font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:.12em;}
+  .nameplate.active{box-shadow:0 0 0 2px currentColor, 0 8px 30px rgba(0,0,0,.45);transform:scale(1.06);}
+  #plate-p1.active{color:var(--p1-accent);}
+  #plate-p2.active{color:var(--p2-accent);}
+  .nameplate.dim{opacity:.5;}
+
+  /* top-center cluster: turn counter + die preview side by side */
+  #top-center{
+    position:fixed;top:16px;left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:14px;
+  }
+  #turn-counter{
+    text-align:center;background:rgba(10,14,11,0.5);backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:8px 18px;
+  }
+  #turn-counter .tlabel{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.55;}
+  #turn-counter .tnum{font-family:Georgia,"Times New Roman",serif;font-size:22px;font-weight:600;line-height:1;}
+
+  /* active-turn cluster bottom-center */
+  #active-cluster{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;
+  }
+  #step-counter{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:54px;font-weight:700;line-height:1;
+    text-shadow:0 4px 18px rgba(0,0,0,.6);
+  }
+  #step-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;margin-top:-4px;margin-bottom:4px;}
+  #preview-wrap{
+    position:relative;width:92px;height:92px;border-radius:14px;
+    background:rgba(8,11,9,0.5);backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.08);overflow:hidden;
+    opacity:0;transition:opacity .3s ease;
+  }
+  #preview-wrap.show{opacity:1;}
+  #preview-canvas{width:92px;height:92px;cursor:grab;}
+  #preview-canvas:active{cursor:grabbing;}
+  #preview-hint{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:8px;opacity:.4;letter-spacing:.06em;pointer-events:none;}
+
+  .udr-row{display:flex;gap:10px;margin-top:2px;}
+  .udr-btn{
+    pointer-events:auto;cursor:pointer;border:none;outline:none;
+    font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.04em;
+    padding:9px 16px;border-radius:12px;color:var(--ivory);
+    background:rgba(20,26,21,0.8);border:1px solid rgba(255,255,255,0.12);
+    transition:transform .12s ease, background .2s ease, opacity .2s ease;
+  }
+  .udr-btn:hover:not(:disabled){background:rgba(40,52,42,0.9);transform:translateY(-1px);}
+  .udr-btn:active:not(:disabled){transform:translateY(1px);}
+  .udr-btn:disabled{opacity:.3;cursor:default;}
+
+  #stuck-hint{
+    position:fixed;bottom:200px;left:50%;transform:translateX(-50%);
+    background:rgba(60,30,20,0.85);border:1px solid rgba(255,107,74,.5);
+    color:#ffd9cc;padding:8px 16px;border-radius:10px;font-size:13px;
+    opacity:0;pointer-events:none;
+  }
+
+  /* full-screen overlays */
+  .overlay{
+    position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    background:radial-gradient(120% 120% at 50% 40%, rgba(8,12,9,.78), rgba(4,6,5,.94));
+    backdrop-filter:blur(3px);
+  }
+  .overlay.hidden{display:none;}
+
+  #pregame .title{
+    font-family:Georgia,serif;font-size:clamp(40px,9vw,86px);font-weight:700;
+    letter-spacing:.01em;line-height:.95;
+    background:linear-gradient(180deg,#fff,#cdbfa6);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  #pregame .sub{margin-top:14px;font-size:15px;opacity:.7;max-width:440px;line-height:1.5;}
+  #pregame .roll-result{margin:26px 0;font-size:18px;min-height:26px;opacity:.9;}
+  .big-btn{
+    pointer-events:auto;cursor:pointer;margin-top:8px;font-family:inherit;
+    font-size:17px;font-weight:600;letter-spacing:.04em;padding:14px 38px;border-radius:16px;
+    color:var(--ink);background:linear-gradient(180deg,#fbf6ec,#e4d8c0);border:none;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .12s ease;
+  }
+  .big-btn:hover{transform:translateY(-2px);}
+  .big-btn:active{transform:translateY(1px);}
+
+  /* turn transition card */
+  #turn-card{
+    position:fixed;inset:0;z-index:190;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;opacity:0;
+  }
+  #turn-card .card{
+    padding:34px 60px;border-radius:24px;background:rgba(8,12,9,.7);backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 80px rgba(0,0,0,.6);
+  }
+  #turn-card .who{font-family:Georgia,serif;font-size:clamp(30px,6vw,56px);font-weight:700;line-height:1;}
+  #turn-card .sub{margin-top:8px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;}
+
+  /* win screen */
+  #winscreen .wtitle{font-family:Georgia,serif;font-size:clamp(34px,8vw,76px);font-weight:700;}
+  #winscreen .wsub{margin-top:10px;font-size:16px;opacity:.7;margin-bottom:28px;}
+  .confetti{position:fixed;top:-20px;width:10px;height:16px;border-radius:2px;z-index:201;pointer-events:none;}
+
+  @media (max-width:520px){
+    .nameplate .pname{font-size:13px;}
+    .nameplate{padding:8px 12px;}
+    #step-counter{font-size:44px;}
+    #top-center{gap:10px;top:12px;}
+    #preview-wrap,#preview-canvas{width:78px;height:78px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .nameplate{transition:none;}
+  }
+</style>
+</head>
+<body>
+  <canvas id="main-canvas"></canvas>
+
+  <div id="ui-layer">
+    <div id="plate-p1" class="nameplate panel">
+      <div class="swatch" style="background:#F5F0E8;"></div>
+      <div><div class="pname">White</div><div class="ptag">Player 1</div></div>
+    </div>
+    <div id="plate-p2" class="nameplate panel">
+      <div><div class="pname" style="text-align:right;">Black</div><div class="ptag" style="text-align:right;">Player 2</div></div>
+      <div class="swatch" style="background:#2A2A2A;"></div>
+    </div>
+
+    <div id="top-center" class="panel">
+      <div id="turn-counter">
+        <div class="tlabel">Turn</div>
+        <div class="tnum" id="turn-num">1</div>
+      </div>
+      <div id="preview-wrap">
+        <canvas id="preview-canvas"></canvas>
+        <div id="preview-hint">drag to inspect</div>
+      </div>
+    </div>
+
+    <div id="active-cluster" class="panel">
+      <div id="step-counter">3</div>
+      <div id="step-label">steps left</div>
+      <div class="udr-row">
+        <button id="btn-undo" class="udr-btn" disabled>↶ Undo</button>
+        <button id="btn-redo" class="udr-btn" disabled>Redo ↷</button>
+      </div>
+    </div>
+
+    <div id="stuck-hint">Path blocked — Undo to backtrack, then continue.</div>
+  </div>
+
+  <div id="turn-card"><div class="card"><div class="who" id="turn-card-who">Player 1</div><div class="sub">your move</div></div></div>
+
+  <div id="pregame" class="overlay">
+    <div class="title">DICE&nbsp;CORNERS</div>
+    <div class="sub">Move all nine of your dice into the opponent's home corner. Each die rolls a real die — every step changes the number on top.</div>
+    <div class="roll-result" id="roll-result"></div>
+    <button id="btn-start" class="big-btn clickable">Roll for first move</button>
+  </div>
+
+  <div id="winscreen" class="overlay hidden">
+    <div class="wtitle" id="win-title">White wins</div>
+    <div class="wsub" id="win-sub">All nine dice reached the far corner.</div>
+    <button id="btn-again" class="big-btn clickable">Play again</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script type="importmap">
+  {
+    "imports":{
+      "three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  /* =========================================================================
+     CONFIG — every tunable lives here, no magic numbers inline.
+     ========================================================================= */
+  const CONFIG = {
+    BOARD_SIZE: 9,
+    CELL_SIZE: 1,
+    DIE_SIZE: 0.85,
+    DIE_CHAMFER: 0.07,
+    ROLL_DURATION: 0.26,       // seconds per single-cell roll
+    CAMERA_TRANSITION: 0.8,    // seconds for the 180° flip
+    CAM_DIST: 8.6,             // camera z-offset behind a player's edge
+    CAM_HEIGHT: 10.5,          // camera height
+    CAM_MIN: 7,                // zoom-in limit (distance to target)
+    CAM_MAX: 22,               // zoom-out limit
+    BONUS_LIFT: 1.25,          // how high a die floats on the center bonus tile
+    COLORS: {
+      P1_BODY: '#F5F0E8', P1_PIPS: '#1A1A1A',
+      P2_BODY: '#2A2A2A', P2_PIPS: '#F5F0E8',
+      HIGHLIGHT: { 1:'#4A9EFF', 2:'#FF6B4A' },
+      TILE_LIGHT: '#cdb79a', TILE_DARK: '#8a7657',
+      TRAIL: '#ffffff',
+      CENTER: '#f4c95d',       // bonus tile gold
+    },
+    SPRING: 'spring(1, 80, 10, 0)',
+  };
+  const DIE_Y = CONFIG.DIE_SIZE / 2;   // die center height so it rests on the board (Y=0 top)
+  const HALF_PI = Math.PI / 2;
+
+  /* =========================================================================
+     GRID & DIRECTIONS
+     Internal cell coords: col 0..8 (A..I), row 0..8 (row index, 0 = board row 1).
+     World mapping: x = col, z = (SIZE-1 - row).  Row 0 (P1 near edge) is high Z
+     (toward the start camera); row 8 (P2 near edge) is low Z.
+     ========================================================================= */
+  const SIZE = CONFIG.BOARD_SIZE;
+  const UP = new THREE.Vector3(0, 1, 0);
+  const CENTER_CELL = { col: (SIZE-1)/2 | 0, row: (SIZE-1)/2 | 0 }; // {4,4} on 9x9
+
+  function cellToWorld(col, row) {
+    return new THREE.Vector3(col * CONFIG.CELL_SIZE, DIE_Y, (SIZE - 1 - row) * CONFIG.CELL_SIZE);
+  }
+  function tileToWorld(col, row) {
+    return new THREE.Vector3(col * CONFIG.CELL_SIZE, 0, (SIZE - 1 - row) * CONFIG.CELL_SIZE);
+  }
+  const key = (c, r) => c + ',' + r;
+  const CENTER_KEY = (SIZE % 2 === 1) ? key(CENTER_CELL.col, CENTER_CELL.row) : null;
+  const inBounds = (c, r) => c >= 0 && c < SIZE && r >= 0 && r < SIZE;
+  const cellLabel = (c, r) => String.fromCharCode(65 + c) + (r + 1);
+
+  // Movement direction -> grid delta + ground unit vector.
+  // worldDir is the horizontal direction the die travels; the spin axis is
+  // derived as UP × worldDir, guaranteeing always a +90° turn (see rollDie).
+  const DIRECTIONS = {
+    NORTH: { dc: 0, dr:  1, world: new THREE.Vector3( 0, 0, -1) },
+    SOUTH: { dc: 0, dr: -1, world: new THREE.Vector3( 0, 0,  1) },
+    EAST:  { dc: 1, dr:  0, world: new THREE.Vector3( 1, 0,  0) },
+    WEST:  { dc:-1, dr:  0, world: new THREE.Vector3(-1, 0,  0) },
+  };
+  const OPPOSITE = { NORTH:'SOUTH', SOUTH:'NORTH', EAST:'WEST', WEST:'EAST' };
+  function axisFor(direction) {
+    // axis = UP × worldDir  (normalized horizontal spin axis)
+    return new THREE.Vector3().crossVectors(UP, DIRECTIONS[direction].world).normalize();
+  }
+
+  /* =========================================================================
+     ★ CRITICAL: DIE ROTATION — pure function ★
+     Axis-angle, incremental, world-space premultiply. ALWAYS +PI/2.
+     Direction lives in the AXIS, never in the angle sign. Normalize to kill drift.
+     Correctness invariants (verified by runSelfTests):
+       NORTH×4 == identity ; NORTH·SOUTH == identity ; EAST·WEST == identity
+     ========================================================================= */
+  function rollDie(quaternion, direction) {
+    const axis = axisFor(direction);
+    const angle = HALF_PI;                                  // always +90°, never negative/270°
+    const delta = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+    // world-space rotation premultiplies the current orientation
+    return delta.multiply(quaternion).normalize();
+  }
+
+  // Local face normals (die-space) -> painted pip value. This single layout IS
+  // the Western standard; any rotation of it stays Western-consistent.
+  const LOCAL_FACE = {
+    1: new THREE.Vector3(0, 1, 0),   // TOP
+    6: new THREE.Vector3(0,-1, 0),   // BOTTOM
+    2: new THREE.Vector3(0, 0, 1),   // SOUTH / front (toward P1 near edge)
+    5: new THREE.Vector3(0, 0,-1),   // NORTH / back
+    3: new THREE.Vector3(1, 0, 0),   // EAST / right
+    4: new THREE.Vector3(-1,0, 0),   // WEST / left
+  };
+  // Derive the top value GEOMETRICALLY from the quaternion — never a counter.
+  function topFaceValue(quaternion) {
+    let best = 1, bestDot = -Infinity;
+    const v = new THREE.Vector3();
+    for (const val in LOCAL_FACE) {
+      v.copy(LOCAL_FACE[val]).applyQuaternion(quaternion);
+      if (v.y > bestDot) { bestDot = v.y; best = +val; }
+    }
+    return best;
+  }
+
+  // Initial orientations, built only from rollDie() so they are provably valid.
+  const IDENTITY = new THREE.Quaternion();
+  function initialQuat(topValue, player) {
+    let q;
+    if (topValue === 1) q = IDENTITY.clone();
+    else if (topValue === 2) q = rollDie(IDENTITY.clone(), 'NORTH'); // front(2) rolls up
+    else if (topValue === 3) q = rollDie(IDENTITY.clone(), 'WEST');  // right(3) rolls up
+    else if (topValue === 4) q = rollDie(IDENTITY.clone(), 'EAST');  // left(4) rolls up
+    else if (topValue === 5) q = rollDie(IDENTITY.clone(), 'SOUTH'); // back(5) rolls up
+    else if (topValue === 6) q = rollDie(rollDie(IDENTITY.clone(), 'NORTH'), 'NORTH'); // bottom(6) rolls up
+    else q = IDENTITY.clone();
+    if (player === 2) {
+      // P2 dice face their own near edge: 180° about world Y (preserves top face).
+      const flip = new THREE.Quaternion().setFromAxisAngle(UP, Math.PI);
+      q = flip.multiply(q).normalize();
+    }
+    return q;
+  }
+
+  /* =========================================================================
+     BFS reachable zone — pure function.
+     Returns Map<cellKey,{dist,prev}> for cells reachable within `steps`,
+     never entering or crossing an occupied cell.
+     ========================================================================= */
+  function getReachableCells(start, steps, occupied) {
+    const result = new Map();
+    const startK = key(start.col, start.row);
+    result.set(startK, { dist: 0, prev: null, col: start.col, row: start.row });
+    let frontier = [{ col: start.col, row: start.row, dist: 0 }];
+    while (frontier.length) {
+      const next = [];
+      for (const cell of frontier) {
+        if (cell.dist >= steps) continue;
+        for (const d in DIRECTIONS) {
+          const nc = cell.col + DIRECTIONS[d].dc;
+          const nr = cell.row + DIRECTIONS[d].dr;
+          if (!inBounds(nc, nr)) continue;
+          const k = key(nc, nr);
+          if (occupied.has(k)) continue;       // cannot enter or cross
+          if (result.has(k)) continue;
+          result.set(k, { dist: cell.dist + 1, prev: key(cell.col, cell.row), col: nc, row: nr });
+          next.push({ col: nc, row: nr, dist: cell.dist + 1 });
+        }
+      }
+      frontier = next;
+    }
+    result.delete(startK); // the origin is not a "move target"
+    return result;
+  }
+
+  /* =========================================================================
+     PROCEDURAL AUDIO (Web Audio API, no files)
+     ========================================================================= */
+  const AudioFX = (() => {
+    let ctx = null;
+    const ensure = () => { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); return ctx; };
+    function tone(freq, dur, type='sine', gain=0.18, when=0) {
+      const c = ensure(); const t = c.currentTime + when;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = type; o.frequency.value = freq;
+      g.gain.setValueAtTime(gain, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur);
+    }
+    function noise(dur, gain=0.12) {
+      const c = ensure();
+      const buf = c.createBuffer(1, c.sampleRate * dur, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * (1 - i/data.length);
+      const src = c.createBufferSource(); src.buffer = buf;
+      const filt = c.createBiquadFilter(); filt.type='bandpass'; filt.frequency.value=900;
+      const g = c.createGain(); g.gain.value = gain;
+      src.connect(filt); filt.connect(g); g.connect(c.destination); src.start();
+    }
+    return {
+      resume(){ try{ ensure().resume(); }catch(e){} },
+      clack(){ tone(180, 0.09, 'sine', 0.22); tone(90, 0.12, 'triangle', 0.12); },
+      whoosh(){ noise(0.4, 0.10); },
+      chime(){ tone(523.25,0.5,'sine',0.12); tone(659.25,0.5,'sine',0.10,0.02); },
+      fanfare(){ [523.25,659.25,783.99].forEach((f,i)=>tone(f,0.4,'triangle',0.16,i*0.12)); },
+      bonus(){ [659.25,783.99,1046.5,1318.5].forEach((f,i)=>tone(f,0.45,'sine',0.13,i*0.07)); noise(0.25,0.05); },
+    };
+  })();
+
+  /* =========================================================================
+     THREE.JS SCENE
+     ========================================================================= */
+  const canvas = document.getElementById('main-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x0a0f0b, 18, 38);
+
+  const center = new THREE.Vector3((SIZE-1)/2, 0, (SIZE-1)/2); // 4,0,4 on 9x9
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.set(center.x, CONFIG.CAM_HEIGHT, center.z + CONFIG.CAM_DIST);
+  camera.lookAt(center);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.copy(center);
+  controls.enableZoom = true;
+  controls.minDistance = CONFIG.CAM_MIN;
+  controls.maxDistance = CONFIG.CAM_MAX;
+  controls.zoomSpeed = 0.9;
+  controls.enablePan = false;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minPolarAngle = THREE.MathUtils.degToRad(20); // 70° above horizon
+  controls.maxPolarAngle = THREE.MathUtils.degToRad(70); // 20° above horizon
+  controls.update();
+
+  // lighting
+  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+  const hemi = new THREE.HemisphereLight(0xcfe0d2, 0x2a221a, 0.5); scene.add(hemi);
+  const key1 = new THREE.DirectionalLight(0xfff3e0, 1.05);
+  key1.position.set(center.x + 6, 14, center.z + 8);
+  key1.castShadow = true;
+  key1.shadow.mapSize.set(2048, 2048);
+  key1.shadow.camera.near = 1; key1.shadow.camera.far = 40;
+  const sc = key1.shadow.camera; sc.left=-9; sc.right=9; sc.top=9; sc.bottom=-9;
+  key1.shadow.bias = -0.0004;
+  scene.add(key1);
+  const fill = new THREE.DirectionalLight(0x9fb6ff, 0.25);
+  fill.position.set(center.x - 7, 8, center.z - 6); scene.add(fill);
+
+  // base slab beneath the board
+  const slab = new THREE.Mesh(
+    new THREE.BoxGeometry(SIZE + 0.8, 0.6, SIZE + 0.8),
+    new THREE.MeshStandardMaterial({ color: 0x241d14, roughness: 0.9, metalness: 0.0 })
+  );
+  slab.position.set(center.x, -0.32, center.z);
+  slab.receiveShadow = true;
+  scene.add(slab);
+
+  /* ---- board tiles ---- */
+  const tiles = []; // tiles[col][row]
+  const tileGeo = new THREE.BoxGeometry(0.96, 0.1, 0.96);
+  const TILE_BASE = { light: new THREE.Color(CONFIG.COLORS.TILE_LIGHT), dark: new THREE.Color(CONFIG.COLORS.TILE_DARK) };
+  for (let c = 0; c < SIZE; c++) {
+    tiles[c] = [];
+    for (let r = 0; r < SIZE; r++) {
+      const isLight = (c + r) % 2 === 0;
+      const isCenter = CENTER_KEY && key(c, r) === CENTER_KEY;
+      const baseCol = isCenter
+        ? new THREE.Color(CONFIG.COLORS.CENTER).multiplyScalar(0.62)
+        : (isLight ? TILE_BASE.light : TILE_BASE.dark).clone();
+      const mat = new THREE.MeshStandardMaterial({
+        color: baseCol,
+        roughness: isCenter ? 0.55 : 0.85, metalness: isCenter ? 0.15 : 0.0,
+        emissive: new THREE.Color(isCenter ? CONFIG.COLORS.CENTER : 0x000000),
+        emissiveIntensity: isCenter ? 0.25 : 0,
+      });
+      const m = new THREE.Mesh(tileGeo, mat);
+      const w = tileToWorld(c, r);
+      m.position.set(w.x, -0.05, w.z);
+      m.receiveShadow = true;
+      m.userData = { col: c, row: r, base: mat.color.clone(), isLight, isCenter };
+      scene.add(m);
+      tiles[c][r] = m;
+    }
+  }
+  // floating "6" marker + glow above the bonus tile so its purpose reads at a glance
+  if (CENTER_KEY) {
+    const cw = tileToWorld(CENTER_CELL.col, CENTER_CELL.row);
+    const markCv = document.createElement('canvas'); markCv.width = markCv.height = 256;
+    const mx = markCv.getContext('2d');
+    mx.clearRect(0,0,256,256);
+    const pad = 36, rr = 30, sz = 256 - pad*2;
+    mx.fillStyle = 'rgba(20,16,8,0.0)';
+    // rounded gold plate
+    mx.fillStyle = CONFIG.COLORS.CENTER;
+    mx.strokeStyle = 'rgba(0,0,0,0.28)'; mx.lineWidth = 10;
+    mx.beginPath();
+    mx.moveTo(pad+rr, pad);
+    mx.arcTo(pad+sz, pad, pad+sz, pad+sz, rr);
+    mx.arcTo(pad+sz, pad+sz, pad, pad+sz, rr);
+    mx.arcTo(pad, pad+sz, pad, pad, rr);
+    mx.arcTo(pad, pad, pad+sz, pad, rr);
+    mx.closePath(); mx.fill(); mx.stroke();
+    // six pips
+    mx.fillStyle = '#2a2010';
+    const pr = 17;
+    [[1,1],[1,2],[1,3],[3,1],[3,2],[3,3]].forEach(([gx,gy])=>{
+      const px = pad + (gx/4)*sz, py = pad + (gy/4)*sz;
+      mx.beginPath(); mx.arc(px,py,pr,0,Math.PI*2); mx.fill();
+    });
+    const markTex = new THREE.CanvasTexture(markCv);
+    markTex.colorSpace = THREE.SRGBColorSpace; markTex.anisotropy = 4;
+    const centerMark = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.6, 0.6),
+      new THREE.MeshBasicMaterial({ map: markTex, transparent: true, opacity: 0.92, depthWrite: false })
+    );
+    centerMark.rotation.x = -Math.PI/2;
+    centerMark.position.set(cw.x, 0.055, cw.z);
+    scene.add(centerMark);
+    // soft breathing glow on the marker (tile emissive is owned by paintReachable)
+    gsap.to(centerMark.material, { opacity: 0.55, duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+  }
+
+  // origin ring (shown on the die's start cell during a turn)
+  const originRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.40, 0.48, 40),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.DoubleSide })
+  );
+  originRing.rotation.x = -Math.PI/2;
+  originRing.position.y = 0.012;
+  scene.add(originRing);
+
+  /* =========================================================================
+     TARGET-ZONE BORDERS
+     A glowing frame around each home corner so a player can always see where
+     their dice are headed. Convention: a frame is drawn in the colour of the
+     player who must REACH it (their goal), so "your colour marks your destination".
+       P2's home (cols0-2, rows6-8) is Player 1's target  -> blue  frame
+       P1's home (cols6-8, rows0-2) is Player 2's target  -> orange frame
+     ========================================================================= */
+  function makeZoneFrame(cMin, cMax, rMin, rMax, colorHex) {
+    const g = new THREE.Group();
+    const x0 = cMin - 0.5, x1 = cMax + 0.5;
+    const z0 = (SIZE - 1 - rMax) - 0.5, z1 = (SIZE - 1 - rMin) + 0.5;
+    const W = x1 - x0, D = z1 - z0;
+    const band = 0.12, h = 0.06, y = 0.045;
+    const mat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(colorHex), transparent: true, opacity: 0.4,
+      depthWrite: false,
+    });
+    g.userData.mat = mat;
+    const bar = (w, d, x, z) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      m.position.set(x, y, z); g.add(m);
+    };
+    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    bar(W + band, band, cx, z0);   // far edge
+    bar(W + band, band, cx, z1);   // near edge
+    bar(band, D + band, x0, cz);   // left edge
+    bar(band, D + band, x1, cz);   // right edge
+    scene.add(g);
+    return g;
+  }
+  // targetFrame[p] = the zone player p is trying to fill, drawn in p's colour
+  const targetFrame = {
+    1: makeZoneFrame(0, 2, 6, 8, CONFIG.COLORS.HIGHLIGHT[1]), // P1 -> P2 home
+    2: makeZoneFrame(6, 8, 0, 2, CONFIG.COLORS.HIGHLIGHT[2]), // P2 -> P1 home
+  };
+  function updateZoneFocus(activePlayer) {
+    [1, 2].forEach(p => {
+      const mat = targetFrame[p].userData.mat;
+      gsap.killTweensOf(mat);
+      if (p === activePlayer) {
+        mat.opacity = 0.7;
+        gsap.to(mat, { opacity: 1.0, duration: 1.1, ease: 'sine.inOut',
+                       yoyo: true, repeat: -1 });
+      } else {
+        gsap.to(mat, { opacity: 0.32, duration: 0.4 });
+      }
+    });
+  }
+
+  /* =========================================================================
+     DIE MESH — textured BoxGeometry. Face material order [+X,-X,+Y,-Y,+Z,-Z]
+     maps to painted values [3,4,1,6,2,5], matching LOCAL_FACE exactly.
+     ========================================================================= */
+  const PIP_LAYOUT = {
+    1: [[2,2]],
+    2: [[1,1],[3,3]],
+    3: [[1,1],[2,2],[3,3]],
+    4: [[1,1],[1,3],[3,1],[3,3]],
+    5: [[1,1],[1,3],[2,2],[3,1],[3,3]],
+    6: [[1,1],[1,2],[1,3],[3,1],[3,2],[3,3]],
+  };
+  function pipTexture(value, bodyHex, pipHex) {
+    const S = 256, cv = document.createElement('canvas'); cv.width = cv.height = S;
+    const x = cv.getContext('2d');
+    x.fillStyle = bodyHex; x.fillRect(0,0,S,S);
+    // faint inner border to imply a chamfered edge
+    x.strokeStyle = 'rgba(0,0,0,0.10)'; x.lineWidth = S*0.06;
+    x.strokeRect(S*0.05, S*0.05, S*0.9, S*0.9);
+    x.fillStyle = pipHex;
+    const r = S*0.085;
+    for (const [gx, gy] of PIP_LAYOUT[value]) {
+      const px = (gx/4)*S, py = (gy/4)*S;
+      x.beginPath(); x.arc(px, py, r, 0, Math.PI*2); x.fill();
+      // tiny highlight for depth
+      x.save(); x.globalAlpha = 0.18; x.fillStyle = '#ffffff';
+      x.beginPath(); x.arc(px - r*0.3, py - r*0.3, r*0.4, 0, Math.PI*2); x.fill(); x.restore();
+      x.fillStyle = pipHex;
+    }
+    const tex = new THREE.CanvasTexture(cv);
+    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    return tex;
+  }
+  const texByPlayer = { 1:{}, 2:{} };
+  for (let v = 1; v <= 6; v++) {
+    texByPlayer[1][v] = pipTexture(v, CONFIG.COLORS.P1_BODY, CONFIG.COLORS.P1_PIPS);
+    texByPlayer[2][v] = pipTexture(v, CONFIG.COLORS.P2_BODY, CONFIG.COLORS.P2_PIPS);
+  }
+  const FACE_ORDER = [3,4,1,6,2,5]; // +X,-X,+Y,-Y,+Z,-Z
+  function makeDieMaterials(player) {
+    return FACE_ORDER.map(v => new THREE.MeshStandardMaterial({
+      map: texByPlayer[player][v], roughness: 0.5, metalness: 0.02,
+    }));
+  }
+  const dieGeo = new THREE.BoxGeometry(CONFIG.DIE_SIZE, CONFIG.DIE_SIZE, CONFIG.DIE_SIZE);
+  function makeDieMesh(player) {
+    const m = new THREE.Mesh(dieGeo, makeDieMaterials(player));
+    m.castShadow = true; m.receiveShadow = false;
+    return m;
+  }
+
+  class Die {
+    constructor(player, col, row, topValue) {
+      this.player = player;
+      this.col = col; this.row = row;
+      this.spawnValue = topValue;           // canonical starting top (1,2,3)
+      this.mesh = makeDieMesh(player);
+      this.quaternion = initialQuat(topValue, player);
+      this.mesh.quaternion.copy(this.quaternion);
+      const w = cellToWorld(col, row);
+      this.mesh.position.copy(w);
+      this.mesh.userData.die = this;
+      scene.add(this.mesh);
+    }
+    get value() { return topFaceValue(this.quaternion); }
+    syncMesh() { this.mesh.quaternion.copy(this.quaternion); this.mesh.position.copy(cellToWorld(this.col, this.row)); }
+  }
+
+  /* =========================================================================
+     DIE PREVIEW (secondary renderer, bottom-center HUD canvas)
+     ========================================================================= */
+  const pvCanvas = document.getElementById('preview-canvas');
+  const pvRenderer = new THREE.WebGLRenderer({ canvas: pvCanvas, antialias: true, alpha: true });
+  pvRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  pvRenderer.setSize(92, 92, false);
+  pvRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  const pvScene = new THREE.Scene();
+  pvScene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  const pvLight = new THREE.DirectionalLight(0xffffff, 1.0); pvLight.position.set(2,4,3); pvScene.add(pvLight);
+  const pvCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 20);
+  pvCamera.position.set(1.6, 1.4, 2.0); pvCamera.lookAt(0,0,0);
+  const pvControls = new OrbitControls(pvCamera, pvCanvas);
+  pvControls.enableZoom = false; pvControls.enablePan = false; pvControls.enableDamping = true;
+  pvControls.target.set(0,0,0);
+  const pvDie = { 1: makeDieMesh(1), 2: makeDieMesh(2) };
+  let pvActive = null;
+  function setPreviewDie(die) {
+    pvScene.remove(pvDie[1]); pvScene.remove(pvDie[2]);
+    if (die) { pvActive = pvDie[die.player]; pvScene.add(pvActive); }
+    else pvActive = null;
+    document.getElementById('preview-wrap').classList.toggle('show', !!die);
+  }
+
+  /* =========================================================================
+     GAME STATE
+     ========================================================================= */
+  const PHASE = { PREGAME:'PREGAME', PLAYER_TURN:'PLAYER_TURN', DIE_SELECTED:'DIE_SELECTED',
+                  DIE_MOVING:'DIE_MOVING', TRANSITION:'TRANSITION', WIN:'WIN' };
+
+  const ZONE = {
+    1: [], // P1's home (cols 6-8, rows 0-2) — P2 wins by filling it
+    2: [], // P2's home (cols 0-2, rows 6-8) — P1 wins by filling it
+  };
+  for (let c=6;c<=8;c++) for (let r=0;r<=2;r++) ZONE[1].push(key(c,r));
+  for (let c=0;c<=2;c++) for (let r=6;r<=8;r++) ZONE[2].push(key(c,r));
+
+  class GameState {
+    constructor() { this.reset(); }
+    reset() {
+      // clear meshes
+      if (this.dice) this.dice.forEach(d => scene.remove(d.mesh));
+      this.dice = [];
+      this.occupied = new Map();         // cellKey -> die
+      this.phase = PHASE.PREGAME;
+      this.currentPlayer = 1;
+      this.turnNumber = 1;
+      this.selected = null;
+      this.stepBudget = 0;
+      this.stepsRemaining = 0;
+      this.origin = null;                // {col,row}
+      this.path = [];                    // [{dir, fromCol, fromRow}]
+      this.redoStack = [];               // [dir]
+      this.inputLocked = true;
+      this.spawnDice();
+    }
+    spawnDice() {
+      // P1 layout (cols 6-8, rows 0-2) — corner I1 = (8,0)
+      const p1 = [
+        [6,2,1],[7,2,1],[8,2,1],
+        [6,1,1],[7,1,2],[8,1,2],
+        [6,0,1],[7,0,2],[8,0,3],
+      ];
+      // P2 layout (cols 0-2, rows 6-8) — corner A9 = (0,8)
+      const p2 = [
+        [0,6,1],[1,6,1],[2,6,1],
+        [0,7,2],[1,7,2],[2,7,1],
+        [0,8,3],[1,8,2],[2,8,1],
+      ];
+      const place = (arr, player) => arr.forEach(([c,r,v]) => {
+        const d = new Die(player, c, r, v);
+        this.dice.push(d); this.occupied.set(key(c,r), d);
+      });
+      place(p1, 1); place(p2, 2);
+    }
+    occWithout(die) {
+      const m = new Map(this.occupied);
+      m.delete(key(die.col, die.row));
+      return m;
+    }
+    dieAt(c, r) { return this.occupied.get(key(c,r)) || null; }
+    isStuck(die) {
+      for (const d in DIRECTIONS) {
+        const nc = die.col + DIRECTIONS[d].dc, nr = die.row + DIRECTIONS[d].dr;
+        if (inBounds(nc, nr) && !this.occupied.has(key(nc,nr))) return false;
+      }
+      return true;
+    }
+    playerHasMove() { return this.dice.some(d => d.player===this.currentPlayer && !this.isStuck(d)); }
+  }
+  const game = new GameState();
+
+  /* =========================================================================
+     ANIMATION — physical roll using the verified pivot-arc + incremental quat.
+     ========================================================================= */
+  function animateRoll(die, direction) {
+    return new Promise(resolve => {
+      const startQuat = die.quaternion.clone();
+      const startPos = cellToWorld(die.col, die.row);
+      const d = DIRECTIONS[direction].world;
+      const axis = axisFor(direction);
+      // Pivot is the die's OWN leading bottom edge resting on the floor (half the
+      // die's width ahead), so it tips like a real cube instead of hopping.
+      const half = CONFIG.DIE_SIZE / 2;
+      const pivot = new THREE.Vector3(
+        startPos.x + d.x * half, 0,
+        startPos.z + d.z * half
+      );
+      const offset = startPos.clone().sub(pivot);
+      // A 90° edge-roll advances the centre by exactly DIE_SIZE; the cell pitch is
+      // CELL_SIZE, so glide the small remainder in over the same eased clock to land
+      // dead-centre on the next tile. No vertical lift is added — the arc the pivot
+      // already traces is the whole motion, which reads as weighty rather than jumpy.
+      const deficit = CONFIG.CELL_SIZE - CONFIG.DIE_SIZE;
+      const partial = new THREE.Quaternion();
+      const proxy = { t: 0 };
+      gsap.to(proxy, {
+        t: 1, duration: CONFIG.ROLL_DURATION, ease: 'none',
+        onUpdate: () => {
+          partial.setFromAxisAngle(axis, HALF_PI * proxy.t);
+          die.mesh.quaternion.copy(partial.clone().multiply(startQuat).normalize());
+          const p = offset.clone().applyQuaternion(partial).add(pivot);
+          p.x += d.x * deficit * proxy.t;
+          p.z += d.z * deficit * proxy.t;
+          die.mesh.position.copy(p);
+        },
+        onComplete: () => {
+          // commit logical state, snap exactly, normalize to kill drift
+          die.col += DIRECTIONS[direction].dc;
+          die.row += DIRECTIONS[direction].dr;
+          die.quaternion = rollDie(startQuat, direction);
+          die.syncMesh();
+          resolve();
+        }
+      });
+    });
+  }
+
+  /* =========================================================================
+     TILE HIGHLIGHTING (GSAP owns all 3D animation)
+     ========================================================================= */
+  let highlightSet = new Map();   // current reachable map
+  let trailSet = new Set();       // visited cellKeys this turn
+
+  function accentColor() { return new THREE.Color(CONFIG.COLORS.HIGHLIGHT[game.currentPlayer]); }
+
+  const CENTER_GLOW = 0.3;
+  const goldColor = new THREE.Color(CONFIG.COLORS.CENTER);
+  function clearAllTileFX() {
+    for (let c=0;c<SIZE;c++) for (let r=0;r<SIZE;r++) {
+      const m = tiles[c][r].material;
+      if (tiles[c][r].userData.isCenter) { m.emissive.copy(goldColor); gsap.to(m, { emissiveIntensity: CENTER_GLOW, duration: 0.2 }); }
+      else gsap.to(m, { emissiveIntensity: 0, duration: 0.2 });
+    }
+  }
+  function paintReachable() {
+    const acc = accentColor();
+    // reset all first (cheap: only those previously lit + new)
+    for (let c=0;c<SIZE;c++) for (let r=0;r<SIZE;r++) {
+      const m = tiles[c][r].material;
+      const k = key(c,r);
+      const isCenter = tiles[c][r].userData.isCenter;
+      let targetInt = isCenter ? CENTER_GLOW : 0;
+      if (highlightSet.has(k)) { targetInt = 0.6; m.emissive.copy(acc); }
+      else if (trailSet.has(k)) { targetInt = 0.10; m.emissive.copy(new THREE.Color(CONFIG.COLORS.TRAIL)); }
+      else if (isCenter) { m.emissive.copy(goldColor); }
+      gsap.to(m, { emissiveIntensity: targetInt, duration: 0.25, ease:'power2.out' });
+    }
+  }
+  function showOrigin(show) {
+    if (show && game.origin) {
+      const w = tileToWorld(game.origin.col, game.origin.row);
+      originRing.position.set(w.x, 0.012, w.z);
+      originRing.material.color.copy(accentColor());
+      gsap.to(originRing.material, { opacity: 0.85, duration: 0.3 });
+    } else {
+      gsap.to(originRing.material, { opacity: 0, duration: 0.25 });
+    }
+  }
+
+  /* =========================================================================
+     HUD CONTROLLER (anime.js owns the DOM)
+     ========================================================================= */
+  const el = id => document.getElementById(id);
+  const HUD = {
+    showActiveCluster(show) {
+      const c = el('active-cluster');
+      anime.remove(c);
+      anime({ targets: c, opacity: show ? 1 : 0, translateY: show ? [12,0] : [0,12],
+              easing: 'easeOutElastic(1,.7)', duration: 600 });
+    },
+    setSteps(n, pop=true) {
+      const s = el('step-counter'); s.textContent = n;
+      s.style.color = game.currentPlayer===1 ? CONFIG.COLORS.HIGHLIGHT[1] : CONFIG.COLORS.HIGHLIGHT[2];
+      if (pop) { anime.remove(s); anime({ targets:s, scale:[1,1.15,1], easing:'easeOutQuad', duration:260 }); }
+    },
+    setTurn(n) { el('turn-num').textContent = n; },
+    setActivePlayer(p) {
+      el('plate-p1').classList.toggle('active', p===1);
+      el('plate-p1').classList.toggle('dim', p!==1);
+      el('plate-p2').classList.toggle('active', p===2);
+      el('plate-p2').classList.toggle('dim', p!==2);
+      updateZoneFocus(p);
+    },
+    updateUndoRedo() {
+      el('btn-undo').disabled = !(game.selected && game.path.length>0 && !game.inputLocked);
+      el('btn-redo').disabled = !(game.selected && game.redoStack.length>0 && !game.inputLocked);
+    },
+    showStuck(show) {
+      anime.remove(el('stuck-hint'));
+      anime({ targets: el('stuck-hint'), opacity: show?1:0, translateY: show?[8,0]:0,
+              easing:'easeOutQuad', duration:300 });
+    },
+    turnCard(player, cb) {
+      const card = el('turn-card');
+      el('turn-card-who').textContent = player===1 ? 'White' : 'Black';
+      el('turn-card-who').style.color = CONFIG.COLORS.HIGHLIGHT[player];
+      anime.remove(card);
+      anime({ targets: card, opacity:[0,1], scale:[0.9,1], easing:'easeOutElastic(1,.6)', duration:700,
+              complete: () => {
+                AudioFX.chime();
+                setTimeout(() => {
+                  anime({ targets: card, opacity:0, scale:0.95, easing:'easeInQuad', duration:380,
+                          complete: cb });
+                }, 700);
+              }});
+    },
+  };
+
+  /* =========================================================================
+     SELECTION / MOVEMENT FLOW
+     ========================================================================= */
+  function recomputeReachable() {
+    if (!game.selected) { highlightSet = new Map(); paintReachable(); return; }
+    highlightSet = getReachableCells(
+      { col: game.selected.col, row: game.selected.row },
+      game.stepsRemaining,
+      game.occWithout(game.selected)
+    );
+    paintReachable();
+    const stuck = highlightSet.size === 0 && game.stepsRemaining > 0;
+    HUD.showStuck(stuck);
+  }
+
+  function selectDie(die) {
+    if (game.phase !== PHASE.PLAYER_TURN && game.phase !== PHASE.DIE_SELECTED) return;
+    if (die.player !== game.currentPlayer || game.inputLocked) return;
+    if (game.isStuck(die)) return;
+    game.selected = die;
+    game.phase = PHASE.DIE_SELECTED;
+    game.stepBudget = die.value;                 // captured at selection
+    game.stepsRemaining = die.value;
+    game.origin = { col: die.col, row: die.row };
+    game.path = []; game.redoStack = [];
+    trailSet = new Set([key(die.col, die.row)]);
+    setPreviewDie(die);
+    HUD.showActiveCluster(true);
+    HUD.setSteps(game.stepsRemaining, false);
+    HUD.updateUndoRedo();
+    showOrigin(true);
+    recomputeReachable();
+  }
+
+  function deselect() {
+    if (game.path.length > 0) return;            // locked once a step is taken
+    game.selected = null;
+    game.phase = PHASE.PLAYER_TURN;
+    highlightSet = new Map();
+    trailSet = new Set();
+    setPreviewDie(null);
+    HUD.showActiveCluster(false);
+    HUD.showStuck(false);
+    showOrigin(false);
+    paintReachable();
+    HUD.updateUndoRedo();
+  }
+
+  function reconstructPath(targetK) {
+    const seq = [];
+    let cur = targetK;
+    while (cur && highlightSet.get(cur) && highlightSet.get(cur).prev !== null) {
+      const node = highlightSet.get(cur);
+      seq.push({ col: node.col, row: node.row, prev: node.prev });
+      cur = node.prev;
+    }
+    seq.reverse();
+    // convert cell sequence to directions starting from origin position
+    const dirs = [];
+    let pc = game.selected.col, pr = game.selected.row;
+    for (const cell of seq) {
+      const dc = cell.col - pc, dr = cell.row - pr;
+      for (const d in DIRECTIONS) if (DIRECTIONS[d].dc===dc && DIRECTIONS[d].dr===dr) dirs.push(d);
+      pc = cell.col; pr = cell.row;
+    }
+    return dirs;
+  }
+
+  async function moveToTile(col, row) {
+    const targetK = key(col, row);
+    if (!highlightSet.has(targetK)) return;
+    const dirs = reconstructPath(targetK);
+    if (!dirs.length) return;
+    game.redoStack = [];                          // any fresh move clears redo
+    await runSteps(dirs);
+  }
+
+  async function runSteps(dirs) {
+    game.phase = PHASE.DIE_MOVING;
+    game.inputLocked = true;
+    HUD.updateUndoRedo();
+    for (const dir of dirs) {
+      const from = { col: game.selected.col, row: game.selected.row };
+      // vacate, animate, occupy
+      game.occupied.delete(key(from.col, from.row));
+      await animateRoll(game.selected, dir);
+      game.occupied.set(key(game.selected.col, game.selected.row), game.selected);
+      game.path.push({ dir, fromCol: from.col, fromRow: from.row });
+      trailSet.add(key(game.selected.col, game.selected.row));
+      game.stepsRemaining--;
+      AudioFX.clack();
+      HUD.setSteps(game.stepsRemaining);
+      if (game.stepsRemaining > 0) { recomputeReachable(); }
+      await wait(20);
+    }
+    if (game.stepsRemaining <= 0) { await endTurn(); return; }
+    game.phase = PHASE.DIE_SELECTED;
+    game.inputLocked = false;
+    recomputeReachable();
+    HUD.updateUndoRedo();
+  }
+
+  async function doUndo() {
+    if (!game.selected || game.path.length===0 || game.inputLocked) return;
+    game.inputLocked = true; HUD.updateUndoRedo();
+    const last = game.path.pop();
+    const rev = OPPOSITE[last.dir];
+    game.occupied.delete(key(game.selected.col, game.selected.row));
+    trailSet.delete(key(game.selected.col, game.selected.row));
+    await animateRoll(game.selected, rev);        // reverse physical roll
+    game.occupied.set(key(game.selected.col, game.selected.row), game.selected);
+    game.stepsRemaining++;
+    game.redoStack.push(last.dir);
+    AudioFX.clack();
+    HUD.setSteps(game.stepsRemaining);
+    game.inputLocked = false;
+    recomputeReachable();
+    HUD.updateUndoRedo();
+  }
+
+  async function doRedo() {
+    if (!game.selected || game.redoStack.length===0 || game.inputLocked) return;
+    const dir = game.redoStack.pop();
+    await runStepsKeepRedo([dir]);
+  }
+  async function runStepsKeepRedo(dirs) {
+    game.phase = PHASE.DIE_MOVING; game.inputLocked = true; HUD.updateUndoRedo();
+    for (const dir of dirs) {
+      const from = { col: game.selected.col, row: game.selected.row };
+      game.occupied.delete(key(from.col, from.row));
+      await animateRoll(game.selected, dir);
+      game.occupied.set(key(game.selected.col, game.selected.row), game.selected);
+      game.path.push({ dir, fromCol: from.col, fromRow: from.row });
+      trailSet.add(key(game.selected.col, game.selected.row));
+      game.stepsRemaining--; AudioFX.clack(); HUD.setSteps(game.stepsRemaining);
+      if (game.stepsRemaining>0) recomputeReachable();
+      await wait(20);
+    }
+    if (game.stepsRemaining<=0) { await endTurn(); return; }
+    game.phase = PHASE.DIE_SELECTED; game.inputLocked = false;
+    recomputeReachable(); HUD.updateUndoRedo();
+  }
+
+  function checkWin(player) {
+    const zone = new Set(ZONE[player===1?2:1]); // P1 must fill P2's home (zone[2])
+    const mine = game.dice.filter(d => d.player===player);
+    return mine.every(d => zone.has(key(d.col, d.row)));
+  }
+
+  // Center bonus: the die floats up, tumbles, and settles showing 6 on top.
+  function playCenterBonus(die) {
+    return new Promise(resolve => {
+      AudioFX.bonus();
+      const baseY = cellToWorld(die.col, die.row).y;
+      const qStart = die.quaternion.clone();
+      const qEnd = initialQuat(6, die.player);
+      const proxy = { t: 0 };
+      const tmp = new THREE.Quaternion();
+      const spinQ = new THREE.Quaternion();
+      gsap.to(proxy, {
+        t: 1, duration: 0.95, ease: 'sine.inOut',
+        onUpdate: () => {
+          const t = proxy.t;
+          die.mesh.position.y = baseY + Math.sin(Math.PI * t) * CONFIG.BONUS_LIFT;
+          tmp.slerpQuaternions(qStart, qEnd, t);
+          spinQ.setFromAxisAngle(UP, (1 - t) * 2 * Math.PI * 2); // 2 full spins, resolves to 0
+          die.mesh.quaternion.copy(spinQ.clone().multiply(tmp).normalize());
+        },
+        onComplete: () => {
+          die.quaternion = qEnd.clone();
+          die.syncMesh();
+          AudioFX.clack();
+          resolve();
+        }
+      });
+    });
+  }
+
+  async function endTurn() {
+    const die = game.selected;
+    const onCenter = die && CENTER_KEY && key(die.col, die.row) === CENTER_KEY;
+    if (die && !onCenter) {
+      // settle bounce
+      const baseY = cellToWorld(die.col, die.row).y;
+      gsap.to(die.mesh.position, { y: baseY + 0.06, duration:0.1, yoyo:true, repeat:1, ease:'power2.out' });
+    }
+    showOrigin(false);
+    HUD.showStuck(false);
+
+    if (onCenter) { await playCenterBonus(die); }
+
+    const justMoved = game.currentPlayer;
+    // clear selection state
+    game.selected = null; game.path = []; game.redoStack = [];
+    highlightSet = new Map(); trailSet = new Set(); paintReachable();
+    setPreviewDie(null); HUD.showActiveCluster(false);
+
+    if (checkWin(justMoved)) { return winGame(justMoved); }
+
+    await transitionTurn();
+  }
+
+  function winGame(player) {
+    game.phase = PHASE.WIN; game.inputLocked = true;
+    AudioFX.fanfare();
+    el('win-title').textContent = (player===1?'White':'Black') + ' wins';
+    el('win-title').style.color = CONFIG.COLORS.HIGHLIGHT[player];
+    el('win-sub').textContent = 'All nine dice reached the home corner.';
+    el('winscreen').classList.remove('hidden');
+    anime({ targets:'#winscreen .wtitle', scale:[0.8,1], opacity:[0,1], easing:'easeOutElastic(1,.6)', duration:900 });
+    launchConfetti();
+  }
+
+  async function transitionTurn() {
+    game.phase = PHASE.TRANSITION; game.inputLocked = true;
+    controls.enabled = false;
+    HUD.updateUndoRedo();
+
+    game.currentPlayer = game.currentPlayer===1 ? 2 : 1;
+    game.turnNumber++;
+    HUD.setTurn(game.turnNumber);
+
+    await new Promise(res => {
+      HUD.turnCard(game.currentPlayer, () => res());
+      // camera 180° flip runs during the card
+      AudioFX.whoosh();
+      flipCamera();
+    });
+
+    HUD.setActivePlayer(game.currentPlayer);
+    controls.enabled = true;
+    game.phase = PHASE.PLAYER_TURN;
+    game.inputLocked = false;
+
+    // auto-forfeit if no legal move
+    if (!game.playerHasMove()) {
+      await wait(400);
+      await transitionTurn();
+    }
+  }
+
+  function flipCamera() {
+    const offset = camera.position.clone().sub(center);
+    const startA = Math.atan2(offset.z, offset.x);
+    const radius = Math.hypot(offset.x, offset.z);
+    const h = offset.y;
+    const proxy = { a: 0 };
+    gsap.to(proxy, {
+      a: Math.PI, duration: CONFIG.CAMERA_TRANSITION, ease:'power2.inOut',
+      onUpdate: () => {
+        const ang = startA + proxy.a;
+        camera.position.set(center.x + Math.cos(ang)*radius, center.y + h, center.z + Math.sin(ang)*radius);
+        camera.lookAt(center);
+      },
+      onComplete: () => { controls.update(); }
+    });
+  }
+
+  /* =========================================================================
+     INPUT — raycasting for dice + tiles
+     ========================================================================= */
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  let downXY = null;
+
+  function setPointer(e) {
+    pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  }
+  renderer.domElement.addEventListener('pointerdown', e => { downXY = { x:e.clientX, y:e.clientY }; });
+  renderer.domElement.addEventListener('pointerup', e => {
+    if (!downXY) return;
+    const moved = Math.hypot(e.clientX-downXY.x, e.clientY-downXY.y);
+    downXY = null;
+    if (moved > 6) return;                  // was a drag/orbit, not a click
+    handleClick(e);
+  });
+
+  function handleClick(e) {
+    AudioFX.resume();
+    if (game.inputLocked) return;
+    if (game.phase !== PHASE.PLAYER_TURN && game.phase !== PHASE.DIE_SELECTED) return;
+    setPointer(e);
+    raycaster.setFromCamera(pointer, camera);
+
+    // dice first
+    const dieMeshes = game.dice.map(d => d.mesh);
+    const dieHit = raycaster.intersectObjects(dieMeshes, false)[0];
+    if (dieHit) {
+      const die = dieHit.object.userData.die;
+      if (game.selected === die) { deselect(); return; }
+      if (die.player === game.currentPlayer && game.path.length===0) { selectDie(die); return; }
+      return; // clicking opponent / locked die does nothing
+    }
+    // tiles
+    if (game.selected) {
+      const tileMeshes = [];
+      for (let c=0;c<SIZE;c++) for (let r=0;r<SIZE;r++) tileMeshes.push(tiles[c][r]);
+      const tHit = raycaster.intersectObjects(tileMeshes, false)[0];
+      if (tHit) {
+        const { col, row } = tHit.object.userData;
+        moveToTile(col, row);
+      }
+    }
+  }
+
+  // hover brighten on reachable tiles
+  let hovered = null;
+  renderer.domElement.addEventListener('pointermove', e => {
+    if (game.inputLocked || !game.selected) { return; }
+    setPointer(e); raycaster.setFromCamera(pointer, camera);
+    const tileMeshes = [];
+    for (let c=0;c<SIZE;c++) for (let r=0;r<SIZE;r++) tileMeshes.push(tiles[c][r]);
+    const hit = raycaster.intersectObjects(tileMeshes, false)[0];
+    const k = hit ? key(hit.object.userData.col, hit.object.userData.row) : null;
+    if (k !== hovered) {
+      if (hovered && highlightSet.has(hovered)) {
+        const [c,r] = hovered.split(',').map(Number);
+        gsap.to(tiles[c][r].material, { emissiveIntensity:0.55, duration:0.15 });
+      }
+      hovered = (k && highlightSet.has(k)) ? k : null;
+      if (hovered) {
+        const [c,r] = hovered.split(',').map(Number);
+        gsap.to(tiles[c][r].material, { emissiveIntensity:0.95, duration:0.15 });
+      }
+    }
+  });
+
+  el('btn-undo').addEventListener('click', doUndo);
+  el('btn-redo').addEventListener('click', doRedo);
+
+  /* =========================================================================
+     PREGAME — animated first roll
+     ========================================================================= */
+  function tumbleDie(die, finalValue, dur, onDone) {
+    // sequence of random rolls then settle on finalValue
+    const dirsPool = ['NORTH','SOUTH','EAST','WEST'];
+    const steps = 6;
+    let i = 0;
+    const stepDur = dur / steps;
+    const doStep = () => {
+      if (i >= steps) {
+        die.quaternion = initialQuat(finalValue, die.player);
+        die.mesh.quaternion.copy(die.quaternion);
+        onDone && onDone(); return;
+      }
+      const dir = dirsPool[(Math.random()*4)|0];
+      const startQ = die.quaternion.clone();
+      const axis = axisFor(dir);
+      const proxy = { t:0 };
+      gsap.to(proxy, { t:1, duration:stepDur, ease:'none', onUpdate:()=>{
+        const partial = new THREE.Quaternion().setFromAxisAngle(axis, HALF_PI*proxy.t);
+        die.mesh.quaternion.copy(partial.multiply(startQ).normalize());
+      }, onComplete:()=>{ die.quaternion = rollDie(startQ, dir); i++; doStep(); }});
+    };
+    doStep();
+  }
+
+  function startGame() {
+    AudioFX.resume();
+    el('btn-start').disabled = true;
+    el('roll-result').textContent = 'Rolling…';
+    // representative dice — temporarily reposition two dice center-stage
+    const d1 = game.dice.find(d => d.player===1 && d.col===8 && d.row===0);
+    const d2 = game.dice.find(d => d.player===2 && d.col===0 && d.row===8);
+    const v1 = 1 + ((Math.random()*6)|0);
+    const v2 = 1 + ((Math.random()*6)|0);
+    let done = 0;
+    const finish = () => {
+      if (++done < 2) return;
+      AudioFX.clack();
+      el('roll-result').innerHTML =
+        `White rolled <b>${v1}</b> · Black rolled <b>${v2}</b> — ` +
+        (v1===v2 ? 'tie, rolling again…' : `<b style="color:${CONFIG.COLORS.HIGHLIGHT[v1>v2?1:2]}">${v1>v2?'White':'Black'}</b> goes first`);
+      if (v1===v2) { setTimeout(()=>{ d1.syncMesh(); d2.syncMesh(); restartRoll(d1,d2); }, 700); return; }
+      setTimeout(() => beginPlay(v1>v2?1:2, d1, d2), 1100);
+    };
+    tumbleDie(d1, v1, 1.0, finish);
+    tumbleDie(d2, v2, 1.0, finish);
+  }
+  function restartRoll(d1,d2){
+    const v1=1+((Math.random()*6)|0), v2=1+((Math.random()*6)|0);
+    let done=0; const finish=()=>{ if(++done<2)return;
+      el('roll-result').innerHTML = `White rolled <b>${v1}</b> · Black rolled <b>${v2}</b> — ` +
+        (v1===v2?'tie, rolling again…':`<b style="color:${CONFIG.COLORS.HIGHLIGHT[v1>v2?1:2]}">${v1>v2?'White':'Black'}</b> goes first`);
+      if(v1===v2){ setTimeout(()=>restartRoll(d1,d2),700); return; }
+      setTimeout(()=>beginPlay(v1>v2?1:2,d1,d2),1100);
+    };
+    tumbleDie(d1,v1,0.8,finish); tumbleDie(d2,v2,0.8,finish);
+  }
+
+  function beginPlay(firstPlayer, d1, d2) {
+    // restore every die to its canonical spawn orientation (pregame nudged two)
+    resetStartingDice();
+
+    el('pregame').classList.add('hidden');
+    game.currentPlayer = firstPlayer;
+    game.turnNumber = 1;
+    HUD.setTurn(1);
+    HUD.setActivePlayer(firstPlayer);
+
+    // orient camera to the first player's side, then unlock
+    const targetZ = firstPlayer===1 ? center.z + CONFIG.CAM_DIST : center.z - CONFIG.CAM_DIST;
+    const proxy = { x: camera.position.x, z: camera.position.z };
+    game.phase = PHASE.TRANSITION; game.inputLocked = true; controls.enabled=false;
+    gsap.to(camera.position, { z: targetZ, duration: 0.8, ease:'power2.inOut',
+      onUpdate:()=>camera.lookAt(center),
+      onComplete:()=>{
+        controls.update(); controls.enabled=true;
+        game.phase = PHASE.PLAYER_TURN; game.inputLocked=false;
+        HUD.turnCard(firstPlayer, ()=>{});
+      }});
+  }
+  function resetStartingDice() {
+    // restore every die to the canonical pose for its spawn value
+    game.dice.forEach(d => {
+      d.quaternion = initialQuat(d.spawnValue, d.player);
+      d.syncMesh();
+    });
+  }
+
+  el('btn-start').addEventListener('click', startGame);
+  el('btn-again').addEventListener('click', () => {
+    el('winscreen').classList.add('hidden');
+    document.querySelectorAll('.confetti').forEach(c=>c.remove());
+    game.reset();
+    HUD.setActivePlayer(1); HUD.setTurn(1);
+    el('btn-start').disabled = false; el('roll-result').textContent='';
+    el('pregame').classList.remove('hidden');
+    camera.position.set(center.x, CONFIG.CAM_HEIGHT, center.z + CONFIG.CAM_DIST); camera.lookAt(center); controls.update();
+  });
+
+  function launchConfetti() {
+    const colors = ['#F5F0E8','#4A9EFF','#FF6B4A','#cdbf9f','#ffffff'];
+    for (let i=0;i<90;i++){
+      const c = document.createElement('div'); c.className='confetti';
+      c.style.left = Math.random()*100+'vw';
+      c.style.background = colors[(Math.random()*colors.length)|0];
+      document.body.appendChild(c);
+      anime({ targets:c, translateY:[ -20, window.innerHeight+40 ],
+        translateX:(Math.random()*2-1)*180, rotate: Math.random()*720,
+        opacity:[1,1,0], easing:'easeInQuad', duration: 1800+Math.random()*1600,
+        delay: Math.random()*600, complete:()=>c.remove() });
+    }
+  }
+
+  /* =========================================================================
+     RENDER LOOP — single GSAP ticker drives everything (no extra rAF)
+     ========================================================================= */
+  gsap.ticker.add(() => {
+    controls.update();
+    renderer.render(scene, camera);
+    if (pvActive && game.selected) {
+      pvActive.quaternion.copy(game.selected.quaternion); // live sync with board die
+      pvControls.update();
+      pvRenderer.render(pvScene, pvCamera);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  /* =========================================================================
+     SELF-TESTS — non-negotiable rotation correctness (logged to console)
+     ========================================================================= */
+  function runSelfTests() {
+    const start = new THREE.Quaternion();
+    const eq = (a,b) => a.angleTo(b) < 1e-6;
+    const results = [];
+
+    let q = start.clone();
+    for (let i=0;i<4;i++) q = rollDie(q,'NORTH');
+    results.push(['NORTH ×4 == identity', eq(q,start)]);
+
+    q = rollDie(rollDie(start.clone(),'NORTH'),'SOUTH');
+    results.push(['NORTH then SOUTH == start', eq(q,start)]);
+
+    q = rollDie(rollDie(start.clone(),'EAST'),'WEST');
+    results.push(['EAST then WEST == start', eq(q,start)]);
+
+    ['EAST','WEST','SOUTH'].forEach(d=>{
+      let r=start.clone(); for(let i=0;i<4;i++) r=rollDie(r,d);
+      results.push([d+' ×4 == identity', eq(r,start)]);
+    });
+
+    results.push(['top(identity)==1', topFaceValue(start)===1]);
+    results.push(['top(NORTH)==2', topFaceValue(rollDie(start.clone(),'NORTH'))===2]);
+    results.push(['top(WEST)==3', topFaceValue(rollDie(start.clone(),'WEST'))===3]);
+
+    const allPass = results.every(r=>r[1]);
+    console.groupCollapsed('%cDice Corners — rotation self-tests: '+(allPass?'ALL PASS ✓':'FAILURE ✗'),
+      'color:'+(allPass?'#6cd47a':'#ff5a5a')+';font-weight:bold');
+    results.forEach(([name,pass]) => console.log((pass?'✓':'✗')+' '+name));
+    console.groupEnd();
+    if (!allPass) console.error('Dice Corners: rotation invariants violated — implementation is wrong.');
+    return allPass;
+  }
+
+  // boot
+  HUD.setActivePlayer(1);
+  HUD.setTurn(1);
+  runSelfTests();
+  </script>
+</body>
+</html>
