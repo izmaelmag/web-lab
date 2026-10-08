@@ -20,6 +20,8 @@ import {
 } from './view-math.js';
 import { createAudio } from './audio.js';
 import * as Art from './textures.js';
+import { SoftRenderer } from './soft-renderer.js';
+import { createOverlayShader, createSkyShader } from './soft-shaders.js';
 
 const VERSION = '2.0.0';
 const DIE_Y = DIE_SIZE / 2;
@@ -33,9 +35,15 @@ const GUILDS = {
   2: { name: 'Ember', color: '#ff7a45', deep: '#a8322a' }
 };
 const QUALITY = [
-  { name: 'high', shadow: 1024, pixelTarget: 30, particles: 1 },
-  { name: 'balanced', shadow: 512, pixelTarget: 26, particles: 0.6 },
-  { name: 'low', shadow: 0, pixelTarget: 22, particles: 0.35 }
+  { name: 'high', shadow: 1024, pixelTarget: 30, particles: 1, relicLight: true },
+  { name: 'balanced', shadow: 512, pixelTarget: 26, particles: 0.6, relicLight: true },
+  { name: 'low', shadow: 0, pixelTarget: 22, particles: 0.35, relicLight: false }
+];
+// Without WebGL the CPU draws every art pixel, so the art pixels are a little
+// chunkier (fewer of them per cell) and there are no shadow maps.
+const SOFTWARE_QUALITY = [
+  { name: 'software', shadow: 0, pixelTarget: 22, particles: 0.6, relicLight: true },
+  { name: 'software-low', shadow: 0, pixelTarget: 17, particles: 0.35, relicLight: true }
 ];
 const FLAG = { TRAIL: 1, ORIGIN: 2, HOVER: 4, PATH: 8, CURSOR: 16, MOVABLE: 32 };
 const LINK = { NORTH: 1, SOUTH: 2, EAST: 4, WEST: 8 };
@@ -323,6 +331,11 @@ void main() {
    Boot
    --------------------------------------------------------------------------- */
 
+// three.js (r163+) only speaks WebGL 2. When the browser cannot create a
+// WebGL 2 context — hardware acceleration off, GPU or driver blocklisted, a VM
+// or remote desktop; Chromium stopped falling back to software GL in Chrome
+// 137 — the game draws the same scene with the Canvas 2D software renderer.
+// `?renderer=software` forces that path (handy for testing).
 function webgl2Available() {
   try {
     const probe = document.createElement('canvas');
@@ -332,6 +345,53 @@ function webgl2Available() {
     return true;
   } catch {
     return false;
+  }
+}
+
+function wantsSoftware() {
+  try {
+    return new URLSearchParams(window.location.search).get('renderer') === 'software';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The WebGL renderer, or the software renderer when `software` is set. If
+ * WebGL fails, the canvas (which may already hold a dead context) is replaced
+ * by a fresh one; then it falls back to software when `fallback` is set, or
+ * rethrows so boot() can restart the whole game in software mode.
+ * @param {HTMLCanvasElement} canvas
+ * @param {{ software: boolean, fallback?: boolean, alpha?: boolean, powerPreference?: WebGLPowerPreference }} options
+ * @returns {{ renderer: any, canvas: HTMLCanvasElement }}
+ */
+function createRenderer(
+  canvas,
+  { software, fallback = false, alpha = false, powerPreference = 'default' }
+) {
+  if (!software) {
+    try {
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: false,
+        alpha,
+        powerPreference
+      });
+      return { renderer, canvas };
+    } catch (error) {
+      const fresh = /** @type {HTMLCanvasElement} */ (canvas.cloneNode(false));
+      canvas.replaceWith(fresh);
+      canvas = fresh;
+      if (!fallback) throw error;
+    }
+  }
+  try {
+    return { renderer: new SoftRenderer({ canvas, alpha }), canvas };
+  } catch {
+    // the canvas is still bound to a WebGL context from a failed attempt
+    const fresh = /** @type {HTMLCanvasElement} */ (canvas.cloneNode(false));
+    canvas.replaceWith(fresh);
+    return { renderer: new SoftRenderer({ canvas: fresh, alpha }), canvas: fresh };
   }
 }
 
@@ -350,18 +410,33 @@ function writePref(key, value) {
   }
 }
 
+/** Shows the failure card with the reason and logs the actual error. */
+function failBoot(/** @type {unknown} */ error) {
+  console.error('Dice Corners failed to start:', error);
+  const detail = document.getElementById('fallback-detail');
+  if (detail) detail.textContent = error instanceof Error ? error.message : String(error);
+  document.documentElement.dataset.boot = 'failed';
+}
+
 function boot() {
   const root = document.documentElement;
-  if (!webgl2Available()) {
-    root.dataset.boot = 'failed';
-    return;
-  }
+  const software = wantsSoftware() || !webgl2Available();
   let game;
   try {
-    game = createGame();
-  } catch {
-    root.dataset.boot = 'failed';
-    return;
+    game = createGame(software);
+  } catch (error) {
+    if (software) {
+      failBoot(error);
+      return;
+    }
+    // WebGL started but the game could not: retry on the software renderer
+    console.warn('Dice Corners: WebGL start failed, using the software renderer.', error);
+    try {
+      game = createGame(true);
+    } catch (retryError) {
+      failBoot(retryError);
+      return;
+    }
   }
   root.dataset.boot = 'ready';
   Object.defineProperty(window, '__DICE_CORNERS__', {
@@ -382,7 +457,8 @@ function boot() {
    The game
    --------------------------------------------------------------------------- */
 
-function createGame() {
+/** @param {boolean} software draw with the Canvas 2D renderer instead of WebGL */
+function createGame(software) {
   const $ = (/** @type {string} */ id) => /** @type {HTMLElement} */ (document.getElementById(id));
   const root = document.documentElement;
   const dom = {
@@ -424,6 +500,14 @@ function createGame() {
     grain: $('grain')
   };
 
+  // First, so a WebGL failure throws before anything else is set up.
+  const { renderer, canvas: stage } = createRenderer(dom.stage, {
+    software,
+    powerPreference: 'high-performance'
+  });
+  dom.stage = stage;
+  root.dataset.renderer = software ? 'software' : 'webgl2';
+
   const lifetime = new AbortController();
   const { signal } = lifetime;
   const listen = (target, type, handler, options = {}) =>
@@ -444,22 +528,22 @@ function createGame() {
   let revealAt = 0;
   let frameCount = 0;
   let fps = 60;
+  let renderMs = 0;
   const errors = [];
   listen(window, 'error', (event) => errors.push(String(event.message || event)));
   listen(window, 'unhandledrejection', (event) => errors.push(String(event.reason)));
 
   const coarse = matchMedia('(pointer: coarse)').matches;
-  const governor = createQualityGovernor({ levels: QUALITY.length, start: coarse ? 1 : 0 });
-  let quality = QUALITY[governor.level];
+  const tiers = software ? SOFTWARE_QUALITY : QUALITY;
+  const governor = createQualityGovernor({
+    levels: tiers.length,
+    start: coarse && !software ? 1 : 0
+  });
+  let quality = tiers[governor.level];
   let pixelScale = 1;
 
   /* ---------------- renderer, scene, camera ---------------- */
 
-  const renderer = new THREE.WebGLRenderer({
-    canvas: dom.stage,
-    antialias: false,
-    powerPreference: 'high-performance'
-  });
   renderer.setPixelRatio(1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = quality.shadow > 0;
@@ -552,6 +636,7 @@ function createGame() {
       })
     )
   );
+  sky.material.userData.softSky = createSkyShader(skyUniforms);
   sky.position.copy(CENTER);
   sky.renderOrder = -10;
   scene.add(sky);
@@ -588,6 +673,13 @@ function createGame() {
   tileMaterial.customProgramCacheKey = () => 'dice-corners-tile-atlas';
   const tileGeometry = geometry(new THREE.BoxGeometry(0.94, 0.12, 0.94));
   const atlas = new Float32Array(81 * 2);
+  // the same atlas offset for the software renderer: uv * 0.5 + atlas
+  tileMaterial.userData.softUv = (/** @type {number} */ i) => [
+    0.5,
+    0.5,
+    atlas[i * 2],
+    atlas[i * 2 + 1]
+  ];
   const tileRandom = Art.seeded(2718);
   const tiles = new THREE.InstancedMesh(tileGeometry, tileMaterial, 81);
   const tileTone = new THREE.Color();
@@ -821,6 +913,7 @@ function createGame() {
       })
     )
   );
+  overlay.material.userData.softFragment = createOverlayShader(overlayUniforms, cells);
   overlay.rotation.x = -Math.PI / 2;
   overlay.position.set(4, 0.008, 4);
   overlay.renderOrder = 2;
@@ -852,6 +945,12 @@ function createGame() {
         blending: THREE.AdditiveBlending
       })
     );
+    material.userData.softPoints = {
+      color: 'aColor',
+      alpha: 'aAlpha',
+      size: 'aSize',
+      scale: () => material.uniforms.uScale.value
+    };
     const points = new THREE.Points(g, material);
     points.frustumCulled = false;
     points.renderOrder = 5;
@@ -1023,7 +1122,9 @@ function createGame() {
 
   const preview = (() => {
     try {
-      const r = new THREE.WebGLRenderer({ canvas: dom.preview, antialias: false, alpha: true });
+      const made = createRenderer(dom.preview, { software, fallback: true, alpha: true });
+      const r = made.renderer;
+      dom.preview = made.canvas;
       r.outputColorSpace = THREE.SRGBColorSpace;
       const s = new THREE.Scene();
       s.add(new THREE.HemisphereLight(0xb9aee0, 0x1a0f14, 1.6));
@@ -1373,7 +1474,14 @@ function createGame() {
       safe
     });
     const cellCssPx = height / (2 * view.distance * Math.tan((FOV * Math.PI) / 360));
-    pixelScale = choosePixelScale({ cellCssPx, dpr, target: quality.pixelTarget });
+    pixelScale = choosePixelScale({
+      cellCssPx,
+      dpr,
+      target: quality.pixelTarget,
+      // the software renderer's cost grows with art pixels, so on huge or
+      // dense screens let them grow instead of the buffer
+      max: software ? 12 : 6
+    });
     const bufferWidth = Math.max(1, Math.round((width * dpr) / pixelScale));
     bufferHeight = Math.max(1, Math.round((height * dpr) / pixelScale));
     renderer.setSize(bufferWidth, bufferHeight, false);
@@ -1412,7 +1520,7 @@ function createGame() {
   };
 
   function applyQuality(level) {
-    quality = QUALITY[level];
+    quality = tiers[level];
     const shadows = quality.shadow > 0;
     if (renderer.shadowMap.enabled !== shadows) {
       renderer.shadowMap.enabled = shadows;
@@ -1428,7 +1536,7 @@ function createGame() {
       key.shadow.map?.dispose();
       key.shadow.map = null;
     }
-    relicLight.visible = level < 2;
+    relicLight.visible = quality.relicLight;
     layout();
   }
   key.castShadow = quality.shadow > 0;
@@ -2300,8 +2408,10 @@ function createGame() {
     overlayUniforms.uTime.value = time;
     skyUniforms.uTime.value = time;
     sparks.update(dt);
+    const renderStart = performance.now();
     renderer.render(scene, camera);
     preview?.render(state.selectedId, controls.getAzimuthalAngle());
+    renderMs += (performance.now() - renderStart - renderMs) * 0.05;
     if (entranceDone) {
       const next = governor.sample(dt * 1000);
       if (next !== null) applyQuality(next);
@@ -2352,12 +2462,14 @@ function createGame() {
     }),
     getDiagnostics: () => ({
       version: VERSION,
-      webgl: renderer.capabilities.isWebGL2 ? 'webgl2' : 'webgl',
+      renderer: software ? 'software' : 'webgl2',
+      webgl: software ? 'none' : 'webgl2',
       quality: quality.name,
       pixelScale,
       buffer: { width: dom.stage.width, height: dom.stage.height },
       cameraDistance: Number(camera.position.distanceTo(CENTER).toFixed(3)),
       fps: Math.round(fps),
+      renderMs: Number(renderMs.toFixed(2)),
       frames: frameCount,
       drawCalls: renderer.info.render.calls,
       triangles: renderer.info.render.triangles,
