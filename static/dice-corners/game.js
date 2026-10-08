@@ -410,6 +410,14 @@ function writePref(key, value) {
   }
 }
 
+/** Shows the failure card with the reason and logs the actual error. */
+function failBoot(/** @type {unknown} */ error) {
+  console.error('Dice Corners failed to start:', error);
+  const detail = document.getElementById('fallback-detail');
+  if (detail) detail.textContent = error instanceof Error ? error.message : String(error);
+  document.documentElement.dataset.boot = 'failed';
+}
+
 function boot() {
   const root = document.documentElement;
   const software = wantsSoftware() || !webgl2Available();
@@ -418,16 +426,15 @@ function boot() {
     game = createGame(software);
   } catch (error) {
     if (software) {
-      console.error(error);
-      root.dataset.boot = 'failed';
+      failBoot(error);
       return;
     }
     // WebGL started but the game could not: retry on the software renderer
+    console.warn('Dice Corners: WebGL start failed, using the software renderer.', error);
     try {
       game = createGame(true);
     } catch (retryError) {
-      console.error(retryError);
-      root.dataset.boot = 'failed';
+      failBoot(retryError);
       return;
     }
   }

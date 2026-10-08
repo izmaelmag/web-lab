@@ -30,4 +30,33 @@ describe('Dice Corners runtime assets', () => {
     expect(game).not.toMatch(/if \(!webgl2Available\(\)\) \{\s*root\.dataset\.boot = 'failed'/);
     expect(html).not.toContain('WebGL 2');
   });
+
+  it('resolves its relative URLs inside /dice-corners/ even when served without a trailing slash', () => {
+    const html = readFileSync(resolve(diceRoot, 'index.html'), 'utf8');
+
+    // Vercel serves the page at /dice-corners too, where ./game.js would mean /game.js
+    const base = html.indexOf('<base href="/dice-corners/" />');
+    expect(base).toBeGreaterThan(-1);
+    for (const relative of [
+      '<script type="importmap">',
+      'src="./game.js"',
+      'href="./classic.html"'
+    ]) {
+      const at = html.indexOf(relative);
+      expect(at).toBeGreaterThan(base);
+    }
+    expect(html.match(/<base /g)).toHaveLength(1);
+  });
+
+  it('reports why it failed instead of failing silently', () => {
+    const html = readFileSync(resolve(diceRoot, 'index.html'), 'utf8');
+    const game = readFileSync(resolve(diceRoot, 'game.js'), 'utf8');
+
+    expect(html).toContain('id="fallback-detail"');
+    expect(html).toContain(
+      "console.error('Dice Corners: could not load ' + this.src + ' or a module it imports')"
+    );
+    expect(html).toContain("window.addEventListener('error'");
+    expect(game).toContain("console.error('Dice Corners failed to start:', error)");
+  });
 });

@@ -2,6 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!--
+      The page is served at both /dice-corners and /dice-corners/. Without a base
+      URL, relative paths on /dice-corners resolve against the site root
+      (/game.js → 404), so every relative URL below is anchored to the folder.
+    -->
+    <base href="/dice-corners/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#07050b" />
     <meta
@@ -717,6 +723,15 @@
       #fallback .card p {
         color: var(--mist);
       }
+      #fallback-detail {
+        font: 12px/1.4 var(--font-label);
+        color: var(--mist);
+        opacity: 0.7;
+        word-break: break-word;
+      }
+      #fallback-detail:empty {
+        display: none;
+      }
       #loading {
         font-size: 13px;
         color: var(--mist);
@@ -858,6 +873,17 @@
         root.dataset.motion = reduced ? 'reduced' : 'full';
         root.dataset.turn = '1';
         root.dataset.boot = 'loading';
+        // A script error before the game boots must not leave "Setting the
+        // table…" forever: show the failure card with the reason, and log it.
+        const failEarly = (/** @type {unknown} */ reason) => {
+          if (root.dataset.boot !== 'loading') return;
+          console.error('Dice Corners failed to start:', reason);
+          root.dataset.boot = 'failed';
+          const detail = document.getElementById('fallback-detail');
+          if (detail) detail.textContent = String(reason);
+        };
+        window.addEventListener('error', (event) => failEarly(event.error || event.message));
+        window.addEventListener('unhandledrejection', (event) => failEarly(event.reason));
       })();
     </script>
     <script type="importmap">
@@ -1058,6 +1084,7 @@
             Dice Corners could not start in this browser. Reload the page, or try an up-to-date
             version of Chrome, Firefox, Safari or Edge.
           </p>
+          <p id="fallback-detail"></p>
         </div>
       </section>
 
@@ -1110,7 +1137,11 @@
     <script
       type="module"
       src="./game.js"
-      onerror="document.documentElement.dataset.boot = 'failed'"
+      onerror="
+        console.error('Dice Corners: could not load ' + this.src + ' or a module it imports');
+        document.getElementById('fallback-detail').textContent = 'Could not load ' + this.src + ' or a module it imports';
+        document.documentElement.dataset.boot = 'failed';
+      "
     ></script>
   </body>
 </html>

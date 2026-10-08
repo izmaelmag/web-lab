@@ -89,9 +89,16 @@ export function prepareTexture(texture) {
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (ctx) {
-      ctx.drawImage(image, 0, 0);
-      bytes = ctx.getImageData(0, 0, w, h).data;
+    try {
+      if (ctx) {
+        ctx.drawImage(image, 0, 0);
+        bytes = ctx.getImageData(0, 0, w, h).data;
+      }
+    } catch (error) {
+      // a privacy setting or a tainted image refused the read-back: draw the
+      // surface in its flat material colour rather than fail
+      console.warn('Dice Corners: could not read a texture, drawing it untextured.', error);
+      return null;
     }
   }
   if (!bytes) return null;
