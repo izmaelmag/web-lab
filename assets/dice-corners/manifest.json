@@ -1,0 +1,1187 @@
+{
+  "game": "Dice Corners",
+  "version": "2.0.0",
+  "generator": "scripts/export-dice-assets.mjs",
+  "chrome": "148.0.7778.96",
+  "seed": {
+    "algorithm": "mulberry32 as textures.js seeded() and src/lib/dice-corners/test-utils.ts seededRandom",
+    "canonical": 53710,
+    "note": "Each cue builds its own AudioContext, so the seed rebuilds the reverb impulse and then the cue. Variant N uses canonical + (N - 1). Trailing silence below one 16-bit LSB is trimmed, then 50 ms is kept."
+  },
+  "notExported": [
+    "Sky, route overlay and spark shaders are procedural GLSL. See docs/dice-corners/SHADERS.md.",
+    "Spark particles are coloured points, not sprites.",
+    "Opening-roll pips are CSS boxes driven by PIP_LAYOUT, not a texture.",
+    "The 5×7 coordinate glyphs are baked into the rail PNGs and listed in PRESENTATION.md."
+  ],
+  "textures": [
+    {
+      "file": "textures/die-face-moon-1.png",
+      "source": "textures.js dieFace(1, 1)",
+      "width": 128,
+      "height": 128,
+      "use": "Moon die face 1. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[1].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-moon-2.png",
+      "source": "textures.js dieFace(2, 1)",
+      "width": 128,
+      "height": 128,
+      "use": "Moon die face 2. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[2].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-moon-3.png",
+      "source": "textures.js dieFace(3, 1)",
+      "width": 128,
+      "height": 128,
+      "use": "Moon die face 3. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[3].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-moon-4.png",
+      "source": "textures.js dieFace(4, 1)",
+      "width": 128,
+      "height": 128,
+      "use": "Moon die face 4. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[4].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-moon-5.png",
+      "source": "textures.js dieFace(5, 1)",
+      "width": 128,
+      "height": 128,
+      "use": "Moon die face 5. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[5].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-moon-6.png",
+      "source": "textures.js dieFace(6, 1)",
+      "width": 128,
+      "height": 128,
+      "use": "Moon die face 6. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[6].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-atlas-moon.png",
+      "source": "game.js faceAtlas(1) via textures.js dieFace and game-logic.js FACE_ORDER",
+      "width": 384,
+      "height": 256,
+      "use": "Moon 3×2 face atlas in three.js BoxGeometry slot order [+X, -X, +Y, -Y, +Z, -Z] = FACE_ORDER [3, 4, 1, 6, 2, 5]. Each slot is 128×128.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-ember-1.png",
+      "source": "textures.js dieFace(1, 2)",
+      "width": 128,
+      "height": 128,
+      "use": "Ember die face 1. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[1].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-ember-2.png",
+      "source": "textures.js dieFace(2, 2)",
+      "width": 128,
+      "height": 128,
+      "use": "Ember die face 2. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[2].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-ember-3.png",
+      "source": "textures.js dieFace(3, 2)",
+      "width": 128,
+      "height": 128,
+      "use": "Ember die face 3. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[3].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-ember-4.png",
+      "source": "textures.js dieFace(4, 2)",
+      "width": 128,
+      "height": 128,
+      "use": "Ember die face 4. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[4].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-ember-5.png",
+      "source": "textures.js dieFace(5, 2)",
+      "width": 128,
+      "height": 128,
+      "use": "Ember die face 5. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[5].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-face-ember-6.png",
+      "source": "textures.js dieFace(6, 2)",
+      "width": 128,
+      "height": 128,
+      "use": "Ember die face 6. 32×32 art pixels, nearest-upscaled ×4. Pip layout is PIP_LAYOUT[6].",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/die-atlas-ember.png",
+      "source": "game.js faceAtlas(2) via textures.js dieFace and game-logic.js FACE_ORDER",
+      "width": 384,
+      "height": 256,
+      "use": "Ember 3×2 face atlas in three.js BoxGeometry slot order [+X, -X, +Y, -Y, +Z, -Z] = FACE_ORDER [3, 4, 1, 6, 2, 5]. Each slot is 128×128.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/tile-atlas.png",
+      "source": "textures.js tileAtlas()",
+      "width": 256,
+      "height": 256,
+      "use": "2×2 atlas of carved stone tile variants, 32 art pixels each, nearest-upscaled ×4. Per-tile variant index is chosen in game.js with seeded(2718), not inside this texture.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/rail-moon-edge.png",
+      "source": "textures.js railTexture(seed 11, flip false, vertical false)",
+      "width": 684,
+      "height": 54,
+      "use": "Moon-edge rail (world +Z, board row 1). Columns A–I, upright. 32 art pixels per world unit, nearest-upscaled ×2.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/rail-ember-edge.png",
+      "source": "textures.js railTexture(seed 12, flip true, vertical false)",
+      "width": 684,
+      "height": 54,
+      "use": "Ember-edge rail (world −Z, board row 9). Columns A–I, engraved upside down. 32 art pixels per world unit, nearest-upscaled ×2.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/rail-west.png",
+      "source": "textures.js railTexture(seed 13, flip false, vertical true)",
+      "width": 54,
+      "height": 576,
+      "use": "West rail (column A). Rows 1–9, upright. 32 art pixels per world unit, nearest-upscaled ×2.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/rail-east.png",
+      "source": "textures.js railTexture(seed 14, flip true, vertical true)",
+      "width": 54,
+      "height": 576,
+      "use": "East rail (column I). Rows 1–9, engraved upside down. 32 art pixels per world unit, nearest-upscaled ×2.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/sigil-moon-board.png",
+      "source": "textures.js upscale(sigilCanvas('moon', { size: 96, line: '#5d77b4', shade: '#0b0712' }), 2)",
+      "width": 192,
+      "height": 192,
+      "use": "Moon crescent decal on Ember’s home corner (goal Moon must fill), 3×3 cells.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/sigil-ember-board.png",
+      "source": "textures.js upscale(sigilCanvas('ember', { size: 96, line: '#b8573a', shade: '#0b0712' }), 2)",
+      "width": 192,
+      "height": 192,
+      "use": "Ember flame decal on Moon’s home corner (goal Ember must fill), 3×3 cells.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/sigil-moon-hud-24.png",
+      "source": "textures.js sigilCanvas('moon', { size: 24, line: guild colour, shade: '#07050b', fill: '#1d1429' })",
+      "width": 24,
+      "height": 24,
+      "use": "moon sigil painted into the HUD guild plate (canvas is 24×24, displayed at 34 CSS px).",
+      "godot": {
+        "filter": false,
+        "mipmaps": false,
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 0
+      }
+    },
+    {
+      "file": "textures/sigil-ember-hud-24.png",
+      "source": "textures.js sigilCanvas('ember', { size: 24, line: guild colour, shade: '#07050b', fill: '#1d1429' })",
+      "width": 24,
+      "height": 24,
+      "use": "ember sigil painted into the HUD guild plate (canvas is 24×24, displayed at 34 CSS px).",
+      "godot": {
+        "filter": false,
+        "mipmaps": false,
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 0
+      }
+    },
+    {
+      "file": "textures/sigil-moon-hud-32.png",
+      "source": "textures.js sigilCanvas('moon', { size: 32, line: guild colour, shade: '#07050b', fill: '#1d1429' })",
+      "width": 32,
+      "height": 32,
+      "use": "moon sigil used on the menu versus row, the turn banner and the win card (32×32).",
+      "godot": {
+        "filter": false,
+        "mipmaps": false,
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 0
+      }
+    },
+    {
+      "file": "textures/sigil-ember-hud-32.png",
+      "source": "textures.js sigilCanvas('ember', { size: 32, line: guild colour, shade: '#07050b', fill: '#1d1429' })",
+      "width": 32,
+      "height": 32,
+      "use": "ember sigil used on the menu versus row, the turn banner and the win card (32×32).",
+      "godot": {
+        "filter": false,
+        "mipmaps": false,
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 0
+      }
+    },
+    {
+      "file": "textures/relic-seal.png",
+      "source": "textures.js relicSeal()",
+      "width": 128,
+      "height": 128,
+      "use": "Gold six-pip seal decal on the centre cell. 32 art pixels, nearest-upscaled ×4.",
+      "godot": {
+        "filter": false,
+        "mipmaps": true,
+        "minFilter": "linear-mipmap-linear",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 4
+      }
+    },
+    {
+      "file": "textures/table.png",
+      "source": "textures.js tableTexture()",
+      "width": 512,
+      "height": 512,
+      "use": "Astral table top, 512×512, seed 7331. Sampled with nearest filtering and no mipmaps.",
+      "godot": {
+        "filter": false,
+        "mipmaps": false,
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 0
+      }
+    },
+    {
+      "file": "textures/grain.png",
+      "source": "textures.js grainCanvas()",
+      "width": 64,
+      "height": 64,
+      "use": "64×64 film-grain tile for the CSS overlay. Seed 99. Tiled at 128 CSS px, overlay blend, opacity 0.5.",
+      "godot": {
+        "filter": false,
+        "mipmaps": false,
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 0
+      }
+    },
+    {
+      "file": "textures/toon-gradient.png",
+      "source": "game.js gradientMap bytes [88, 150, 206, 255]",
+      "width": 4,
+      "height": 1,
+      "use": "Four-stop toon ramp. Sampled nearest at NdotL * 0.5 + 0.5. Red, green and blue hold the same stop so the ramp is usable as an RGB texture.",
+      "godot": {
+        "filter": false,
+        "mipmaps": false,
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "repeat": "clamp",
+        "srgb": true,
+        "anisotropy": 0
+      }
+    }
+  ],
+  "audio": [
+    {
+      "file": "audio/ui.wav",
+      "source": "audio.js createAudio().ui()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 0.126,
+      "peak": 0.004065,
+      "seed": 53710,
+      "renderSeconds": 1.2,
+      "use": "Button click: rules, sound, motion, start, play again.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/hover.wav",
+      "source": "audio.js createAudio().hover()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 0.100937,
+      "peak": 0.003233,
+      "seed": 53710,
+      "renderSeconds": 1,
+      "use": "Pointer entered a new reachable cell, or the keyboard cursor moved.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/select-moon.wav",
+      "source": "audio.js createAudio().select(1)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.23675,
+      "peak": 0.041605,
+      "seed": 53710,
+      "renderSeconds": 2.8,
+      "use": "Moon die picked. Includes the wooden clack. Variant 1 of 3; seed 53710 (0xd1ce). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/select-moon-v2.wav",
+      "source": "audio.js createAudio().select(1)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.2195,
+      "peak": 0.040767,
+      "seed": 53711,
+      "renderSeconds": 2.8,
+      "use": "Moon die picked. Includes the wooden clack. Variant 2 of 3; seed 53711 (0xd1cf). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/select-moon-v3.wav",
+      "source": "audio.js createAudio().select(1)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.297604,
+      "peak": 0.041632,
+      "seed": 53712,
+      "renderSeconds": 2.8,
+      "use": "Moon die picked. Includes the wooden clack. Variant 3 of 3; seed 53712 (0xd1d0). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/select-ember.wav",
+      "source": "audio.js createAudio().select(2)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.233854,
+      "peak": 0.039903,
+      "seed": 53710,
+      "renderSeconds": 2.8,
+      "use": "Ember die picked. Includes the wooden clack. Variant 1 of 3; seed 53710 (0xd1ce). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/select-ember-v2.wav",
+      "source": "audio.js createAudio().select(2)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.211604,
+      "peak": 0.039548,
+      "seed": 53711,
+      "renderSeconds": 2.8,
+      "use": "Ember die picked. Includes the wooden clack. Variant 2 of 3; seed 53711 (0xd1cf). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/select-ember-v3.wav",
+      "source": "audio.js createAudio().select(2)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.311687,
+      "peak": 0.039409,
+      "seed": 53712,
+      "renderSeconds": 2.8,
+      "use": "Ember die picked. Includes the wooden clack. Variant 3 of 3; seed 53712 (0xd1d0). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/deselect.wav",
+      "source": "audio.js createAudio().deselect()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 0.951167,
+      "peak": 0.008305,
+      "seed": 53710,
+      "renderSeconds": 2.2,
+      "use": "Pick dropped before any roll.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-0.wav",
+      "source": "audio.js createAudio().step(0, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.073875,
+      "peak": 0.032577,
+      "seed": 53710,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 0 (0-based). Variant 1 of 3; seed 53710 (0xd1ce). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-0-v2.wav",
+      "source": "audio.js createAudio().step(0, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.058479,
+      "peak": 0.033646,
+      "seed": 53711,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 0 (0-based). Variant 2 of 3; seed 53711 (0xd1cf). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-0-v3.wav",
+      "source": "audio.js createAudio().step(0, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.048771,
+      "peak": 0.033291,
+      "seed": 53712,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 0 (0-based). Variant 3 of 3; seed 53712 (0xd1d0). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-0-last.wav",
+      "source": "audio.js createAudio().step(0, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.234542,
+      "peak": 0.044551,
+      "seed": 53710,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 0, with the extra fifth.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-1.wav",
+      "source": "audio.js createAudio().step(1, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.077438,
+      "peak": 0.035822,
+      "seed": 53710,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 1 (0-based).",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-1-last.wav",
+      "source": "audio.js createAudio().step(1, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.209833,
+      "peak": 0.050151,
+      "seed": 53710,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 1, with the extra fifth.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-2.wav",
+      "source": "audio.js createAudio().step(2, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.068,
+      "peak": 0.033757,
+      "seed": 53710,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 2 (0-based).",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-2-last.wav",
+      "source": "audio.js createAudio().step(2, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.277354,
+      "peak": 0.046981,
+      "seed": 53710,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 2, with the extra fifth.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-3.wav",
+      "source": "audio.js createAudio().step(3, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.081354,
+      "peak": 0.035022,
+      "seed": 53710,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 3 (0-based).",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-3-last.wav",
+      "source": "audio.js createAudio().step(3, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.226208,
+      "peak": 0.049586,
+      "seed": 53710,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 3, with the extra fifth.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-4.wav",
+      "source": "audio.js createAudio().step(4, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.061604,
+      "peak": 0.034468,
+      "seed": 53710,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 4 (0-based).",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-4-last.wav",
+      "source": "audio.js createAudio().step(4, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.250292,
+      "peak": 0.047571,
+      "seed": 53710,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 4, with the extra fifth.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-5.wav",
+      "source": "audio.js createAudio().step(5, false)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.032667,
+      "peak": 0.035789,
+      "seed": 53710,
+      "renderSeconds": 2.6,
+      "use": "A roll that is not the last step of the turn. Pentatonic degree 5 (0-based).",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-5-last.wav",
+      "source": "audio.js createAudio().step(5, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.329521,
+      "peak": 0.049551,
+      "seed": 53710,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 5, with the extra fifth. Variant 1 of 3; seed 53710 (0xd1ce). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-5-last-v2.wav",
+      "source": "audio.js createAudio().step(5, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.282,
+      "peak": 0.053909,
+      "seed": 53711,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 5, with the extra fifth. Variant 2 of 3; seed 53711 (0xd1cf). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/step-5-last-v3.wav",
+      "source": "audio.js createAudio().step(5, true)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.267854,
+      "peak": 0.053973,
+      "seed": 53712,
+      "renderSeconds": 3.2,
+      "use": "The roll that spends the final step. Pentatonic degree 5, with the extra fifth. Variant 3 of 3; seed 53712 (0xd1d0). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/undo.wav",
+      "source": "audio.js createAudio().undo()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.023917,
+      "peak": 0.028117,
+      "seed": 53710,
+      "renderSeconds": 2.4,
+      "use": "One roll undone. Includes the wooden clack. Variant 1 of 3; seed 53710 (0xd1ce). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/undo-v2.wav",
+      "source": "audio.js createAudio().undo()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.071625,
+      "peak": 0.028735,
+      "seed": 53711,
+      "renderSeconds": 2.4,
+      "use": "One roll undone. Includes the wooden clack. Variant 2 of 3; seed 53711 (0xd1cf). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/undo-v3.wav",
+      "source": "audio.js createAudio().undo()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.049313,
+      "peak": 0.030455,
+      "seed": 53712,
+      "renderSeconds": 2.4,
+      "use": "One roll undone. Includes the wooden clack. Variant 3 of 3; seed 53712 (0xd1d0). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/denied.wav",
+      "source": "audio.js createAudio().denied()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 0.286,
+      "peak": 0.020011,
+      "seed": 53710,
+      "renderSeconds": 1.4,
+      "use": "Illegal pick, stuck die, locked die, or a key that does nothing.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/turn-moon.wav",
+      "source": "audio.js createAudio().turn(1)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.839458,
+      "peak": 0.069969,
+      "seed": 53710,
+      "renderSeconds": 3.6,
+      "use": "Turn handed to Moon, including the opening banner.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/turn-ember.wav",
+      "source": "audio.js createAudio().turn(2)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.814521,
+      "peak": 0.070539,
+      "seed": 53710,
+      "renderSeconds": 3.6,
+      "use": "Turn handed to Ember.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/forfeit.wav",
+      "source": "audio.js createAudio().forfeit()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.675458,
+      "peak": 0.066461,
+      "seed": 53710,
+      "renderSeconds": 3.8,
+      "use": "A guild has no die free to move and the turn passes.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/arrive.wav",
+      "source": "audio.js createAudio().arrive()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.30325,
+      "peak": 0.028265,
+      "seed": 53710,
+      "renderSeconds": 2.6,
+      "use": "A turn ended with the moved die standing in its goal corner.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/bonus.wav",
+      "source": "audio.js createAudio().bonus()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 1.642187,
+      "peak": 0.122063,
+      "seed": 53710,
+      "renderSeconds": 3.4,
+      "use": "Centre relic: the die is turned to 6.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/rattle.wav",
+      "source": "audio.js createAudio().rattle()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 0.688167,
+      "peak": 0.084799,
+      "seed": 53710,
+      "renderSeconds": 2.2,
+      "use": "Opening-roll tumble, once per tied or deciding pair. Variant 1 of 3; seed 53710 (0xd1ce). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/rattle-v2.wav",
+      "source": "audio.js createAudio().rattle()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 0.688937,
+      "peak": 0.083455,
+      "seed": 53711,
+      "renderSeconds": 2.2,
+      "use": "Opening-roll tumble, once per tied or deciding pair. Variant 2 of 3; seed 53711 (0xd1cf). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/rattle-v3.wav",
+      "source": "audio.js createAudio().rattle()",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 0.721042,
+      "peak": 0.091141,
+      "seed": 53712,
+      "renderSeconds": 2.2,
+      "use": "Opening-roll tumble, once per tied or deciding pair. Variant 3 of 3; seed 53712 (0xd1d0). The unsuffixed file is the canonical take.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/win-moon.wav",
+      "source": "audio.js createAudio().win(1)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 2.484521,
+      "peak": 0.129255,
+      "seed": 53710,
+      "renderSeconds": 4.6,
+      "use": "Moon fills the far corner.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    },
+    {
+      "file": "audio/win-ember.wav",
+      "source": "audio.js createAudio().win(2)",
+      "sampleRate": 48000,
+      "channels": 2,
+      "bitDepth": 16,
+      "durationSeconds": 2.466312,
+      "peak": 0.136293,
+      "seed": 53710,
+      "renderSeconds": 4.6,
+      "use": "Ember fills the far corner.",
+      "godot": {
+        "loop": false,
+        "loopBegin": null,
+        "loopEnd": null,
+        "normalize": false
+      }
+    }
+  ]
+}
