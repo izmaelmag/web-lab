@@ -327,7 +327,12 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('pagehide', () => {
   stopPlayback();
-  worker?.terminate();
+  if (worker) {
+    worker.terminate();
+    worker = null;
+    setRunning(false);
+    setStatus('Match stopped when you left the page. You can start another match.');
+  }
 });
 // Individual labels keep the grid aligned at every viewport width.
 for (const [selector, labels] of [
