@@ -1015,7 +1015,17 @@ const describeDie = (die) => ({
   col: die.col,
   row: die.row,
   top: topFaceValue(die.quat),
-  cell: cellLabel(die.col, die.row)
+  cell: cellLabel(die.col, die.row),
+  spawnValue: die.spawnValue,
+  quat: { ...die.quat },
+  faces: {
+    top: topFaceValue(die.quat),
+    bottom: faceValueToward(die.quat, [0, -1, 0]),
+    north: faceValueToward(die.quat, [0, 0, -1]),
+    south: faceValueToward(die.quat, [0, 0, 1]),
+    east: faceValueToward(die.quat, [1, 0, 0]),
+    west: faceValueToward(die.quat, [-1, 0, 0])
+  }
 });
 
 /**
@@ -1034,6 +1044,7 @@ export function snapshotState(state) {
     origin: state.origin ? { ...state.origin } : null,
     path: state.path.map((step) => ({ ...step })),
     redoStack: [...state.redoStack],
+    selectedId: state.selectedId,
     selected: die ? describeDie(die) : null,
     dice: state.dice.map(describeDie),
     reachable: [...selectionReach(state).values()].map(({ col, row, dist }) => ({

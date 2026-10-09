@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <base href="/dice-corners/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07050b" />
+    <title>Dice Corners — Match Observatory</title>
+    <meta
+      name="description"
+      content="Run seeded test-player matches and replay every roll in Dice Corners."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jacquard+24&family=Pixelify+Sans:wght@400..700&family=Silkscreen&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./replay.css" />
+    <script type="module" src="./replay.js"></script>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="back" href="./">← Play Dice Corners</a>
+        <span class="badge">Test-player prototype</span>
+        <p class="eyebrow">The midnight tournament</p>
+        <h1>Match Observatory</h1>
+        <p class="intro">Two players. Every roll remembered.</p>
+      </header>
+      <main>
+        <section class="arena panel" aria-label="Match replay">
+          <div class="scoreboard">
+            <div class="player moon">
+              <span class="eyebrow">Moon</span><strong id="moon-name">Goal-seeking test bot</strong
+              ><span id="moon-score">0 / 9 home</span>
+            </div>
+            <span class="versus">VS</span>
+            <div class="player ember">
+              <span class="eyebrow">Ember</span
+              ><strong id="ember-name">Goal-seeking test bot</strong
+              ><span id="ember-score">0 / 9 home</span>
+            </div>
+          </div>
+          <div class="board-wrap">
+            <div class="rank-labels" aria-hidden="true">
+              9<br />8<br />7<br />6<br />5<br />4<br />3<br />2<br />1
+            </div>
+            <div
+              id="board"
+              class="board"
+              aria-label="Board. Select a die to inspect all six faces."
+            ></div>
+            <div class="file-labels" aria-hidden="true">A B C D E F G H I</div>
+          </div>
+          <div class="frame-caption">
+            <span id="frame-description">Ready for a new match</span
+            ><span id="frame-count">No recording</span>
+          </div>
+          <label class="sr-only" for="seek">Replay position</label
+          ><input id="seek" type="range" min="0" max="0" value="0" disabled />
+          <div class="transport" aria-label="Replay controls">
+            <button id="first" title="First frame" aria-label="First frame" disabled>⏮</button>
+            <button id="previous" title="Previous frame" aria-label="Previous frame" disabled>
+              ‹
+            </button>
+            <button id="play" class="primary" disabled>Play</button>
+            <button id="next" title="Next frame" aria-label="Next frame" disabled>›</button>
+            <button id="last" title="Last frame" aria-label="Last frame" disabled>⏭</button>
+            <label class="speed"
+              ><span class="sr-only">Playback speed</span
+              ><select id="speed">
+                <option value="0.5">0.5×</option>
+                <option value="1" selected>1×</option>
+                <option value="2">2×</option>
+                <option value="4">4×</option>
+                <option value="8">8×</option>
+              </select></label
+            >
+          </div>
+          <p id="outcome" class="outcome" role="status">
+            Run a seeded match to begin. No API keys or paid calls.
+          </p>
+        </section>
+        <aside>
+          <section class="panel setup">
+            <p class="eyebrow">New experiment</p>
+            <h2>Set the table</h2>
+            <form id="match-form">
+              <label for="moon">Moon player</label
+              ><select id="moon">
+                <option value="goal-seeking">Goal-seeking · test bot</option>
+                <option value="wander">Wander · test bot</option>
+              </select>
+              <label for="ember">Ember player</label
+              ><select id="ember">
+                <option value="goal-seeking">Goal-seeking · test bot</option>
+                <option value="wander">Wander · test bot</option>
+              </select>
+              <div class="field-row">
+                <div>
+                  <label for="seed">Seed</label
+                  ><input id="seed" value="2026" maxlength="64" required />
+                </div>
+                <div>
+                  <label for="turn-cap">Turn cap</label
+                  ><input
+                    id="turn-cap"
+                    type="number"
+                    min="1"
+                    max="500"
+                    step="1"
+                    value="200"
+                    required
+                  />
+                </div>
+              </div>
+              <button id="run" class="primary wide" type="submit">Run test match</button
+              ><button id="demo" class="wide" type="button">Watch completed demo</button
+              ><button id="cancel" class="wide" type="button" hidden>Cancel match</button>
+            </form>
+            <p id="run-status" class="note" role="status">
+              Runs on your device. Demo uses scripted test players. A turn cap is an experiment
+              cutoff, never a draw.
+            </p>
+            <details>
+              <summary>About this prototype</summary>
+              <p>
+                Test bots only. Model selection, provider keys and spending limits are not
+                connected. Matches keep the original rules, including returning along a path and
+                holding home squares.
+              </p>
+              <p>Replay reads saved states. It never asks a player or model to make a move.</p>
+            </details>
+          </section>
+          <section class="panel inspector" aria-labelledby="inspect-title">
+            <p class="eyebrow">Orientation inspector</p>
+            <h2 id="inspect-title">Every face counts</h2>
+            <p id="die-description" class="note">Tap any die on the board.</p>
+            <div id="die-net" class="die-net" aria-label="Six-face orientation" hidden></div>
+            <p id="quaternion" class="quaternion"></p>
+          </section>
+          <section class="panel history" aria-labelledby="history-title">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Saved on this device</p>
+                <h2 id="history-title">Match archive</h2>
+              </div>
+              <button id="download" title="Download this match as JSON" disabled>Export</button>
+            </div>
+            <p class="note">Your latest 5 matches. Export a recording to keep a copy.</p>
+            <div id="history"><p class="note">No saved matches yet.</p></div>
+          </section>
+        </aside>
+      </main>
+      <footer>
+        Original rules. Deterministic test players. A quiet place to watch strategy unfold.
+      </footer>
+    </div>
+  </body>
+</html>
