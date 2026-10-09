@@ -738,7 +738,10 @@ describe('reset and snapshots', () => {
       col: 6,
       row: 3,
       top: snap.selected?.top,
-      cell: 'G4'
+      cell: 'G4',
+      spawnValue: state.dice[id].spawnValue,
+      quat: state.dice[id].quat,
+      faces: { top: 2, bottom: 5, north: 3, south: 4, east: 6, west: 1 }
     });
     expect(snap.reachable).toContainEqual({ col: 6, row: 5, dist: 2 });
     expect(snap.trail).toEqual([
@@ -747,6 +750,8 @@ describe('reset and snapshots', () => {
     ]);
     snap.dice[id].col = 0;
     snap.path.length = 0;
+    snap.dice[id].quat.x = 99;
+    expect(state.dice[id].quat.x).not.toBe(99);
     expect(state.dice[id].col).toBe(6);
     expect(state.path).toHaveLength(1);
   });
