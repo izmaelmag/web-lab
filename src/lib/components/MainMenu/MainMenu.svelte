@@ -1,12 +1,14 @@
 <script lang="ts">
   import { links } from '$lib/data/mainMenu.json';
   import MainMenuLink from './MainMenuLink.svelte';
+
+  const homeLinks = links.filter((link) => !['showreel', 'links'].includes(link.id));
 </script>
 
 <div class="main-menu">
   <div class="wrapper">
     <nav class="links">
-      {#each links as link, index}
+      {#each homeLinks as link, index}
         <MainMenuLink {link} {index} />
       {/each}
     </nav>
