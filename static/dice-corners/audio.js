@@ -6,9 +6,18 @@
 
 const SCALE = [220, 261.63, 293.66, 329.63, 392, 440, 523.25];
 
-/** @param {{ muted: boolean }} options */
-export function createAudio({ muted }) {
-  /** @type {AudioContext | null} */
+/**
+ * @param {{
+ *   muted: boolean,
+ *   context?: AudioContext | OfflineAudioContext | null,
+ *   random?: () => number
+ * }} options
+ * `context` and `random` exist so the asset export can render cues offline
+ * with a fixed seed. The game only ever passes `muted`, which keeps playback
+ * identical: a real AudioContext, unlocked from a gesture, and Math.random.
+ */
+export function createAudio({ muted, context = null, random = Math.random }) {
+  /** @type {AudioContext | OfflineAudioContext | null} */
   let ctx = null;
   /** @type {GainNode | null} */
   let master = null;
@@ -19,32 +28,44 @@ export function createAudio({ muted }) {
   const LEVEL = 0.7;
 
   function build() {
-    const Ctor = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
-    if (!Ctor) return null;
-    const context = /** @type {AudioContext} */ (new Ctor());
-    master = context.createGain();
+    /** @type {AudioContext | OfflineAudioContext | null} */
+    let audioContext = context;
+    if (!audioContext) {
+      const Ctor = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
+      if (!Ctor) return null;
+      audioContext = /** @type {AudioContext} */ (new Ctor());
+    }
+    const audio = audioContext;
+    master = audio.createGain();
     master.gain.value = isMuted ? 0 : LEVEL;
-    const compressor = context.createDynamicsCompressor();
+    const compressor = audio.createDynamicsCompressor();
     compressor.threshold.value = -14;
-    master.connect(compressor).connect(context.destination);
+    master.connect(compressor).connect(audio.destination);
     // a short dark hall: exponentially decaying noise as the impulse response
-    const reverb = context.createConvolver();
-    const length = Math.floor(context.sampleRate * 1.6);
-    const impulse = context.createBuffer(2, length, context.sampleRate);
+    const reverb = audio.createConvolver();
+    const length = Math.floor(audio.sampleRate * 1.6);
+    const impulse = audio.createBuffer(2, length, audio.sampleRate);
     for (let ch = 0; ch < 2; ch++) {
       const data = impulse.getChannelData(ch);
-      for (let i = 0; i < length; i++)
-        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 3);
+      for (let i = 0; i < length; i++) data[i] = (random() * 2 - 1) * Math.pow(1 - i / length, 3);
     }
     reverb.buffer = impulse;
-    wet = context.createGain();
+    wet = audio.createGain();
     wet.gain.value = 0.28;
     wet.connect(reverb).connect(master);
-    return context;
+    return audio;
   }
 
-  /** @returns {AudioContext | null} */
-  const live = () => (ctx && !isMuted && ctx.state === 'running' ? ctx : null);
+  /**
+   * A provided context (the offline export) is rendered by its owner, so it is
+   * live while suspended. A page context stays silent until it is running.
+   * @returns {AudioContext | OfflineAudioContext | null}
+   */
+  const live = () => {
+    if (!ctx || isMuted) return null;
+    if (context) return ctx;
+    return ctx.state === 'running' ? ctx : null;
+  };
 
   /**
    * @param {number} freq
@@ -95,7 +116,7 @@ export function createAudio({ muted }) {
       c.sampleRate
     );
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    for (let i = 0; i < data.length; i++) data[i] = (random() * 2 - 1) * (1 - i / data.length);
     const src = c.createBufferSource();
     src.buffer = buffer;
     const filter = c.createBiquadFilter();
@@ -109,7 +130,7 @@ export function createAudio({ muted }) {
     src.start(t);
   }
 
-  const jitter = () => 0.94 + Math.random() * 0.12;
+  const jitter = () => 0.94 + random() * 0.12;
 
   function clack(weight = 1) {
     noise(0.05, { gain: 0.16 * weight, freq: 1900 * jitter(), q: 1.4 });
@@ -122,7 +143,8 @@ export function createAudio({ muted }) {
     unlock() {
       try {
         if (!ctx) ctx = build();
-        if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+        // Offline export owns startRendering(); resuming it would change the clock.
+        if (!context && ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
       } catch {
         ctx = null;
       }
@@ -209,7 +231,7 @@ export function createAudio({ muted }) {
     },
     rattle() {
       for (let i = 0; i < 6; i++) {
-        const when = i * 0.11 + Math.random() * 0.04;
+        const when = i * 0.11 + random() * 0.04;
         noise(0.04, { gain: 0.1, freq: 2000 * jitter(), when });
         tone(170 * jitter(), 0.06, { gain: 0.08, when, glide: 0.6, reverb: 0 });
       }
@@ -238,7 +260,7 @@ export function createAudio({ muted }) {
       );
     },
     close() {
-      if (ctx) ctx.close().catch(() => {});
+      if (!context && ctx) ctx.close().catch(() => {});
       ctx = null;
     }
   };
