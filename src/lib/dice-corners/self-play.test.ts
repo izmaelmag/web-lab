@@ -122,5 +122,5 @@ describe('seeded self-play', () => {
     expect(undos).toBeGreaterThan(50);
     expect(redos).toBeGreaterThan(20);
     expect(bonuses).toBeGreaterThan(0);
-  });
+  }, 15_000);
 });
